@@ -59,6 +59,13 @@ public class Usuario {
     @Size(min = 1, max = 250, message = "El email del cliente debe tener entre 1 y 250 caracteres.")
     private String password;
 
+    @Column(name = "codigo_activacion", columnDefinition = "LONGTEXT")
+    private String codigoActivacion;
+    @Column(name = "codigo_recuperacion", columnDefinition = "LONGTEXT")
+    private String codigoRecuperacion;
+    @Column(name = "estado_activacion", nullable = false)
+    private boolean estadoActivacion;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -85,13 +92,16 @@ public class Usuario {
      * @param nit
      * @param password
      */
-    public Usuario(Long id, String nombres, String apellidos, String email, String nit, String password) {
+    public Usuario(Long id, String nombres, String apellidos, String email, String nit, String password, String codigoActivacion, String codigoRecuperacion, boolean estadoActivacion) {
         this.id = id;
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.email = email;
         this.nit = nit;
         this.password = password;
+        this.codigoActivacion = codigoActivacion;
+        this.codigoRecuperacion = codigoRecuperacion;
+        this.estadoActivacion = estadoActivacion;
     }
 
     /**
@@ -160,6 +170,30 @@ public class Usuario {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCodigoActivacion() {
+        return codigoActivacion;
+    }
+
+    public void setCodigoActivacion(String codigoActivacion) {
+        this.codigoActivacion = codigoActivacion;
+    }
+
+    public String getCodigoRecuperacion() {
+        return codigoRecuperacion;
+    }
+
+    public void setCodigoRecuperacion(String codigoRecuperacion) {
+        this.codigoRecuperacion = codigoRecuperacion;
+    }
+
+    public boolean isEstadoActivacion() {
+        return estadoActivacion;
+    }
+
+    public void setEstadoActivacion(boolean estadoActivacion) {
+        this.estadoActivacion = estadoActivacion;
     }
 
     public LocalDateTime getUpdatedAt() {

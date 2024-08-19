@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
+import com.ayd1.APIecommerce.services.tools.MailService;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private MailService mailService;
 
     public List<Usuario> getUsuarios() {
         return usuarioRepository.findAll();
@@ -31,7 +34,7 @@ public class UsuarioService {
     public Usuario updateUsuario(Long id, Usuario usuario) {
         Usuario usuarioExistente = usuarioRepository.findById(id).orElse(null);
         if (usuarioExistente != null) {
-            //return usuarioRepository.save(usuarioExistente);
+            return usuarioRepository.save(usuarioExistente);
         }
         return null;
     }
@@ -42,31 +45,27 @@ public class UsuarioService {
         }
 
         //mandamos a traer el estado de la cuenta
-        Optional<Usuario> busquedaUsuario = 
-                usuarioRepository.findByCorreoElectronico(correoElectronico);
+        Optional<Usuario> busquedaUsuario
+                = usuarioRepository.findByEmail(correo);
         if (!busquedaUsuario.isEmpty()) {
             throw new Exception("No hemos encontrado tu correo electrónico.");
         }
-
-        Optional<EstadoCuentaModel> busqueda = estadoCuentaRepository.findByUsuarioId(busquedaUsuario.get().getId());
-
-        //obtenemos el modelo de a busqueda
-        EstadoCuentaModel estadoCuenta = busqueda.get();
+        //obtenemos el modelo
+        Usuario usuario = busquedaUsuario.get();
         //creamos el codigo de recuperacion
         String codigoRecuperacion = UUID.randomUUID().toString();
         //actualizamos el codigo de recuperacion
-        estadoCuenta.setCodigoRecuperacion(codigoRecuperacion);
+        usuario.setCodigoRecuperacion(codigoRecuperacion);
         //actualizamos en la bd
-        EstadoCuentaModel actualizacion = (EstadoCuentaModel) estadoCuentaRepository.save(estadoCuenta);
+        Usuario actualizacion = usuarioRepository.save(usuario);
+
         if (actualizacion.getCodigoRecuperacion().equals(codigoRecuperacion)) {
             //usamos el servicio de mail para mander el correo electronico de recuperacion
-            mailSenderService.enviarCorreoEnSegundoPlano(correoElectronico, estadoCuenta.getCodigoRecuperacion(), 2);
-            return new ActionResposeModel("Te hemos enviado un correo electrónico con las "
-                    + "instrucciones para recuperar tu cuenta MeXpose. Por favor revisa tu bandeja de entrada.", true);
+            mailService.enviarCorreoEnSegundoPlano(actualizacion.getEmail(),
+                    actualizacion.getCodigoRecuperacion(), 2);
+            return "Te hemos enviado un correo electrónico con las "
+                    + "instrucciones para recuperar tu cuenta MeXpose. Por favor revisa tu bandeja de entrada.";
         }
-
-        return new ActionResposeModel("No hemos podido enviar el correo electrónico. Intentalo más tarde.", false);
-
-        return null;
+        throw new Exception("No hemos podido enviar el correo electrónico. Intentalo más tarde.");
     }
 }

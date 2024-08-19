@@ -1,12 +1,17 @@
 package com.ayd1.APIecommerce.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.ayd1.APIecommerce.models.Usuario;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.repository.CrudRepository;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
+
     //Busqueda de usuario por email
-    Usuario findByEmail(String email);
+    public Optional<Usuario> findByEmail(String email);
+
+    public List<Usuario> findAll();
 }
