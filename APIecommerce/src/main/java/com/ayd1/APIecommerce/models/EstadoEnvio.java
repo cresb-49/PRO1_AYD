@@ -19,48 +19,43 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  *
  * @author Luis Monterroso
  */
 @Entity
-@Table(name = "rol")
-public class Rol {
+@Table(name = "estado_envio")
+public class EstadoEnvio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "rol", length = 250, unique = true)
-    @NotBlank(message = "El nombre del rol no puede estar vacío.")
-    @NotNull(message = "El nombre del rol no puede ser nulo")
-    @Size(min = 1, max = 250, message = "El nombre del rol debe tener entre 1 y 250 caracteres.")
+    @Column(name = "nombre", length = 250, unique = false)
+    @NotBlank(message = "El nombre del envio no puede estar vacío.")
+    @NotNull(message = "El nombre del envio no puede ser nulo")
+    @Size(min = 1, max = 250, message = "El nombre del envio debe tener entre 1 y 250 caracteres.")
     private String nombre;
+
+    @OneToMany(mappedBy = "estadoEnvio", orphanRemoval = true)
+    @Cascade(CascadeType.ALL)
+    private List<Envio> envios;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @OneToMany(mappedBy = "rol", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
-    @Cascade(CascadeType.ALL)
-    private List<UsuarioRol> asignaciones;
-
-    public Rol(Long id, String nombre) {
+    public EstadoEnvio(Long id, String nombre) {
         this.id = id;
         this.nombre = nombre;
     }
 
-    public Rol(Long id) {
-        this.id = id;
+    public EstadoEnvio() {
     }
 
-    public Rol() {
+    public EstadoEnvio(Long id) {
+        this.id = id;
     }
 
     public Long getId() {
@@ -79,12 +74,12 @@ public class Rol {
         this.nombre = nombre;
     }
 
-    public List<UsuarioRol> getAsignaciones() {
-        return asignaciones;
+    public List<Envio> getEnvios() {
+        return envios;
     }
 
-    public void setAsignaciones(List<UsuarioRol> asignaciones) {
-        this.asignaciones = asignaciones;
+    public void setEnvios(List<Envio> envios) {
+        this.envios = envios;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -93,14 +88,6 @@ public class Rol {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
 }

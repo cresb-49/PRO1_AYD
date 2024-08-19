@@ -57,14 +57,6 @@ public class UsuarioRol {
         this.rol = rol;
     }
 
-    public UsuarioRol(Long id, Usuario usuario, Rol rol, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.usuario = usuario;
-        this.rol = rol;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     public UsuarioRol() {
     }
 

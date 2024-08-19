@@ -51,12 +51,6 @@ public class Categoria {
     @Cascade(CascadeType.ALL)
     private List<Producto> productos;
 
-    public Categoria(Long id, String nombre, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.nombre = nombre;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     public Categoria(Long id, String nombre) {
         this.id = id;

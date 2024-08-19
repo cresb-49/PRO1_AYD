@@ -57,15 +57,6 @@ public class LineaVenta {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public LineaVenta(Long id, Producto producto, Venta venta, Double precio, Integer cantidad, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.producto = producto;
-        this.venta = venta;
-        this.precio = precio;
-        this.cantidad = cantidad;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     public LineaVenta(Long id, Producto producto, Venta venta, Double precio, Integer cantidad) {
         this.id = id;

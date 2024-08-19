@@ -35,6 +35,11 @@ public class Envio {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Venta venta;
 
+    @ManyToOne//indicador de relacion muchos a uno
+    @JoinColumn(name = "estado_envio", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private EstadoEnvio estadoEnvio;
+
     private LocalDateTime entregadoAt;
 
     @CreatedDate
@@ -45,17 +50,10 @@ public class Envio {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Envio(Long id, Venta venta, LocalDateTime entregadoAt, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Envio(Long id, Venta venta, EstadoEnvio estadoEnvio, LocalDateTime entregadoAt) {
         this.id = id;
         this.venta = venta;
-        this.entregadoAt = entregadoAt;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public Envio(Long id, Venta venta, LocalDateTime entregadoAt) {
-        this.id = id;
-        this.venta = venta;
+        this.estadoEnvio = estadoEnvio;
         this.entregadoAt = entregadoAt;
     }
 
@@ -104,6 +102,14 @@ public class Envio {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public EstadoEnvio getEstadoEnvio() {
+        return estadoEnvio;
+    }
+
+    public void setEstadoEnvio(EstadoEnvio estadoEnvio) {
+        this.estadoEnvio = estadoEnvio;
     }
 
 }

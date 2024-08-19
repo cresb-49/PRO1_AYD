@@ -59,14 +59,6 @@ public class Venta {
     @Cascade(CascadeType.ALL)
     private List<Envio> envios;
 
-    public Venta(Long id, Double valorTotal, Integer cantidadProductos, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.valorTotal = valorTotal;
-        this.cantidadProductos = cantidadProductos;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     public Venta() {
     }
 

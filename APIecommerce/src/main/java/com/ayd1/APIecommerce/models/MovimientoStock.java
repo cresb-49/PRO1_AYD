@@ -61,15 +61,6 @@ public class MovimientoStock {
         this.cantidad = cantidad;
     }
 
-    public MovimientoStock(Long id, Producto producto, TipoMovimientoStock tipo, Integer cantidad, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.producto = producto;
-        this.tipo = tipo;
-        this.cantidad = cantidad;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
     public MovimientoStock(Long id) {
         this.id = id;
     }
