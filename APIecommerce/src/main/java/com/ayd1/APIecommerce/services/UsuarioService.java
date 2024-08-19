@@ -28,7 +28,7 @@ public class UsuarioService {
     public Usuario updateUsuario(Long id, Usuario usuario) {
         Usuario usuarioExistente = usuarioRepository.findById(id).orElse(null);
         if (usuarioExistente != null) {
-            //return usuarioRepository.save(usuarioExistente);
+            return usuarioRepository.save(usuarioExistente);
         }
         return null;
     }
