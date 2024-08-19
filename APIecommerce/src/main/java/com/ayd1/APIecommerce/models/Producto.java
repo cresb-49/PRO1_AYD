@@ -84,19 +84,6 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(Long id, String nombre, Categoria categoria, Integer stock, Double precio, Boolean habilitado, LocalDateTime createdAt, LocalDateTime updatedAt, List<MovimientoStock> movimientos, List<LineaVenta> lineaVentas) {
-        this.id = id;
-        this.nombre = nombre;
-        this.categoria = categoria;
-        this.stock = stock;
-        this.precio = precio;
-        this.habilitado = habilitado;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.movimientos = movimientos;
-        this.lineaVentas = lineaVentas;
-    }
-
     public Producto(Long id, String nombre, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
         this.id = id;
         this.nombre = nombre;
@@ -105,6 +92,7 @@ public class Producto {
         this.precio = precio;
         this.habilitado = habilitado;
     }
+
 
     public Producto(Long id) {
         this.id = id;

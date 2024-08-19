@@ -50,6 +50,11 @@ public class DatosFacturacion {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Venta venta;
 
+    @ManyToOne//indicador de relacion muchos a uno
+    @JoinColumn(name = "usuario", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Usuario usuario;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -58,20 +63,12 @@ public class DatosFacturacion {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public DatosFacturacion(Long id, String nit, String nombre, Venta venta, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public DatosFacturacion(Long id, String nit, String nombre, Venta venta, Usuario usuario) {
         this.id = id;
         this.nit = nit;
         this.nombre = nombre;
         this.venta = venta;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public DatosFacturacion(Long id, String nit, String nombre, Venta venta) {
-        this.id = id;
-        this.nit = nit;
-        this.nombre = nombre;
-        this.venta = venta;
+        this.usuario = usuario;
     }
 
     public DatosFacturacion() {
@@ -103,6 +100,14 @@ public class DatosFacturacion {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public Venta getVenta() {

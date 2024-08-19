@@ -71,28 +71,9 @@ public class Usuario {
     @Cascade(CascadeType.ALL)
     private List<UsuarioRol> roles;
 
-    /**
-     * Para Spring
-     *
-     * @param id
-     * @param nombres
-     * @param apellidos
-     * @param email
-     * @param nit
-     * @param password
-     * @param createdAt
-     * @param updatedAt
-     */
-    public Usuario(Long id, String nombres, String apellidos, String email, String nit, String password, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.nombres = nombres;
-        this.apellidos = apellidos;
-        this.email = email;
-        this.nit = nit;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
+    @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
+    @Cascade(CascadeType.ALL)
+    private List<DatosFacturacion> facturas;
 
     /**
      * Creacion y modificacion
@@ -195,6 +176,14 @@ public class Usuario {
 
     public void setRoles(List<UsuarioRol> roles) {
         this.roles = roles;
+    }
+
+    public List<DatosFacturacion> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<DatosFacturacion> facturas) {
+        this.facturas = facturas;
     }
 
 }

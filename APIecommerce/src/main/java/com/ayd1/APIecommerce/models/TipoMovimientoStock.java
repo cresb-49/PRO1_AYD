@@ -59,12 +59,6 @@ public class TipoMovimientoStock {
         this.nombre = nombre;
     }
 
-    public TipoMovimientoStock(Long id, String nombre, List<MovimientoStock> movimientos) {
-        this.id = id;
-        this.nombre = nombre;
-        this.movimientos = movimientos;
-    }
-
     public Long getId() {
         return id;
     }
