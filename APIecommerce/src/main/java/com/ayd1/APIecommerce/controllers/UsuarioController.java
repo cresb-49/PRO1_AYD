@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ayd1.APIecommerce.services.UsuarioService;
-
-
+import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 
 @RestController
 @RequestMapping("/api")
@@ -22,25 +21,23 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping("/usuario/{id}")
-    public String getUsuario(@PathVariable Long id) {
-        return usuarioService.getUsuario(id).toString();
+    public ApiBaseTransformer getUsuario(@PathVariable Long id) {
+        Object data = usuarioService.getUsuario(id);
+        return new ApiBaseTransformer(200, "OK", data, null, null);
     }
 
     @PostMapping("/usuario")
-    public String postMethodName(@RequestBody String entity) {
-        //TODO: process POST request
-        return entity;
+    public ApiBaseTransformer postMethodName(@RequestBody String entity) {
+        return new ApiBaseTransformer(200, "OK", null, null, null);
     }
-    
+
     @PutMapping("usuario/{id}")
-    public String putMethodName(@PathVariable String id, @RequestBody String entity) {
-        //TODO: process PUT request
-        
-        return entity;
+    public ApiBaseTransformer putMethodName(@PathVariable String id, @RequestBody String entity) {
+        return new ApiBaseTransformer(200, "OK", null, null, null);
     }
 
     @DeleteMapping("usuario/{id}")
-    public String deleteMethodName(@PathVariable String id) {
-        return "Usuario con id: " + id + " eliminado";
+    public ApiBaseTransformer deleteMethodName(@PathVariable String id) {
+        return new ApiBaseTransformer(200, "OK", null, null, null);
     }
 }
