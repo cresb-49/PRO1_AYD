@@ -7,11 +7,13 @@ package com.ayd1.APIecommerce.models.request;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Luis Monterroso
  */
+@Component
 public class PasswordChange {
 
     @Size(min = 1, max = 250, message = "La contraseña debe tener entre 1 y 250 caracteres.")
@@ -25,6 +27,9 @@ public class PasswordChange {
     public PasswordChange(String nuevaPassword, String codigo) {
         this.nuevaPassword = nuevaPassword;
         this.codigo = codigo;
+    }
+
+    public PasswordChange() {
     }
 
     public String getNuevaPassword() {
