@@ -1,5 +1,8 @@
 package com.ayd1.APIecommerce.controllers;
 
+import com.ayd1.APIecommerce.models.LoginDto;
+import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.models.request.PasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
+import java.util.Map;
+import org.springframework.http.HttpStatus;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("api")
 public class UsuarioController {
 
     @Autowired
@@ -40,4 +45,59 @@ public class UsuarioController {
     public ApiBaseTransformer deleteMethodName(@PathVariable String id) {
         return new ApiBaseTransformer(200, "OK", null, null, null);
     }
+
+    @PostMapping("/usuario/public/recuperarPasswordMail")
+    public ApiBaseTransformer
+            enviarMailDeRecuperacion(@RequestBody Map<String, Object> requestBody) {
+
+        try {
+            String correoElectronico = (String) requestBody.get("correoElectronico");
+            String mensaje = usuarioService.enviarMailDeRecuperacion(correoElectronico);
+            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", mensaje,
+                    null, null);
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    null, null, null);
+        }
+
+    }
+
+    @PostMapping("/usuario/public/cambioPassword")
+    public ApiBaseTransformer cambiarPassword(@RequestBody PasswordChange requestBody) {
+        try {
+            String respuesta = usuarioService.cambiarPassword(requestBody);
+            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
+                    null, null);
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    null, null, null);
+        }
+    }
+
+    @PostMapping("/usuario/public/login")
+    public ApiBaseTransformer login(@RequestBody Usuario login) {
+        try {
+            System.out.println(login.getEmail());
+            System.out.println(login.getPassword());
+            LoginDto respuesta = usuarioService.iniciarSesion(login);
+            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
+                    null, null);
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    null, null, null);
+        }
+    }
+
+    /*
+    @PostMapping("/usuario/activarCuentaMail")
+    public String enviarMailDeConfirmacion(@RequestBody String correoElectronico) {
+        return estadoCuentaService.enviarCorreoDeActivacion(correoElectronico);
+    }
+    @PostMapping("/usuario/activarCuenta")
+    public String activarCuenta(@RequestBody String codigo) {
+        return estadoCuentaService.activarCuenta(codigo);
+    } */
 }

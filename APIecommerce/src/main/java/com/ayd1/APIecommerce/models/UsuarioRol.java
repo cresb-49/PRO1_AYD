@@ -60,6 +60,11 @@ public class UsuarioRol {
     public UsuarioRol() {
     }
 
+    @Override
+    public String toString() {
+        return rol.getNombre();
+    }
+
     public Long getId() {
         return id;
     }
