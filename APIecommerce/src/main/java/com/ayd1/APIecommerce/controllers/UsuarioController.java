@@ -92,7 +92,7 @@ public class UsuarioController {
     @PostMapping("/usuario/public/crearUsuario")
     public ApiBaseTransformer crearUsuario(@RequestBody Usuario crear) {
         try {
-            String respuesta = usuarioService.crearUsuario(crear);
+            String respuesta = usuarioService.crearUsuarioNormal(crear);
             return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
                     null, null);
         } catch (Exception ex) {
