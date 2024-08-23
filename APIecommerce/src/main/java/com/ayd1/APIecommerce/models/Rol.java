@@ -4,13 +4,9 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -18,8 +14,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  *
@@ -27,11 +21,7 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @Entity
 @Table(name = "rol")
-public class Rol {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Rol extends Auditor{
 
     @Column(name = "rol", length = 250, unique = true)
     @NotBlank(message = "El nombre del rol no puede estar vacío.")
@@ -39,36 +29,21 @@ public class Rol {
     @Size(min = 1, max = 250, message = "El nombre del rol debe tener entre 1 y 250 caracteres.")
     private String nombre;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "rol", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     private List<UsuarioRol> asignaciones;
 
-    public Rol(Long id, String nombre) {
-        this.id = id;
+    public Rol(String nombre) {
         this.nombre = nombre;
     }
 
+
     public Rol(Long id) {
-        this.id = id;
+        super(id);
     }
+    
 
     public Rol() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNombre() {
@@ -85,22 +60,6 @@ public class Rol {
 
     public void setAsignaciones(List<UsuarioRol> asignaciones) {
         this.asignaciones = asignaciones;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
 }

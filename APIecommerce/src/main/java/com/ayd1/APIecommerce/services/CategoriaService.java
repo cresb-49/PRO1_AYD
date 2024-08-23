@@ -7,8 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 
-public class CategoriaService {
-    
+@org.springframework.stereotype.Service
+public class CategoriaService extends Service {
+
     @Autowired
     private CategoriaRepository categoriaRepository;
 
@@ -26,12 +27,11 @@ public class CategoriaService {
 
     public Categoria updateCategoria(Long id, Categoria categoria) {
         Categoria categoriaExistente = categoriaRepository.findById(id).orElse(null);
-        
+
         if (categoriaExistente != null) {
             return categoriaRepository.save(categoriaExistente);
-        } 
+        }
         return null;
     }
-
 
 }

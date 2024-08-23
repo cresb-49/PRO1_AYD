@@ -10,12 +10,12 @@ import java.util.List;
 
 @Service
 public class RolService {
-    
+
     @Autowired
     private RolRepository rolRepository;
 
     public List<Rol> getRoles() {
-        return rolRepository.findAll();
+        return (List<Rol>) rolRepository.findAll();
     }
 
     public Rol getRol(Long id) {

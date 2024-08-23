@@ -6,9 +6,6 @@ package com.ayd1.APIecommerce.models;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -23,11 +20,7 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "imagen")
-public class Imagen {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Imagen extends Auditor {
 
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "producto", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
@@ -39,25 +32,15 @@ public class Imagen {
     @NotNull(message = "La imagen del producto no puede ser nula.")
     private byte[] imagen;//imagen que debera indicar la herramienta seleccionada
 
-    public Imagen(Long id, Producto producto, byte[] imagen) {
-        this.id = id;
-        this.producto = producto;
-        this.imagen = imagen;
+    public Imagen(Long id) {
+        super(id);
     }
 
-    public Imagen(Long id) {
-        this.id = id;
+    public Imagen(Producto producto) {
+        this.producto = producto;
     }
 
     public Imagen() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Producto getProducto() {

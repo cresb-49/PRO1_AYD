@@ -1,6 +1,6 @@
 package com.ayd1.APIecommerce.controllers;
 
-import com.ayd1.APIecommerce.models.LoginDto;
+import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,12 +79,24 @@ public class UsuarioController {
     @PostMapping("/usuario/public/login")
     public ApiBaseTransformer login(@RequestBody Usuario login) {
         try {
-            System.out.println(login.getEmail());
-            System.out.println(login.getPassword());
             LoginDto respuesta = usuarioService.iniciarSesion(login);
             return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
                     null, null);
         } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    null, null, null);
+        }
+    }
+
+    @PostMapping("/usuario/public/crearUsuario")
+    public ApiBaseTransformer crearUsuario(@RequestBody Usuario crear) {
+        try {
+            String respuesta = usuarioService.crearUsuario(crear);
+            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
+                    null, null);
+        } catch (Exception ex) {
+            ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
                     ex.getMessage(),
                     null, null, null);
