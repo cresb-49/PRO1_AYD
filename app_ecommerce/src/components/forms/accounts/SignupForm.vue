@@ -177,8 +177,6 @@ export default {
         const payload = {
           firstName: this.firstName,
           lastName: this.lastName,
-          ra: this.ra,
-          career_code: this.careerCode,
           email: this.email,
           password: this.password
         }

@@ -25,8 +25,6 @@ export type SignupPayload = {
   lastName: string
   user: {
     email: string
-    career_code: number
-    ra: string
     password: string
   }
 }
@@ -42,11 +40,6 @@ export type Profile = {
 export type User = {
   id: number
   email: string
-  ra: string
-  career: {
-    code: number
-    name: string
-  }
   profile_id: number
   created_at: Date
   updated_at: Date
@@ -168,18 +161,10 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       //   return
       // }
 
-      if (error.value && error.value.data) {
+      if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value.data.message),
-          type: SnackbarType.ERROR
-        })
-        this.loading = false
-        return
-      } else if (error.value && error.value.cause) {
-        useSnackbarStore().showSnackbar({
-          title: 'Error',
-          message: convertError(error.value!.message),
+          message: convertError(error.value),
           type: SnackbarType.ERROR
         })
         this.loading = false

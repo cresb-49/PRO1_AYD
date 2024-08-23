@@ -4,7 +4,6 @@
           <v-col cols="11" sm="8" md="8" lg="5" xl="4">
           <LoginForm
             :loading="loading"
-            :error="error"
             :admin="false"
             :show-signup="true"
             @login="login($event)"
@@ -36,7 +35,6 @@ export default {
   },
   methods: {
     login(credentials: { email: string; password: string }) {
-      console.log('before');
       this.loginUser(credentials)
     },
     ...mapActions(useRegularAuthStore, ['loginUser'])
