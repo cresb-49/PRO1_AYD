@@ -4,13 +4,9 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -18,8 +14,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  *
@@ -27,11 +21,7 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @Entity
 @Table(name = "usuario")
-public class Usuario {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Usuario extends Auditor {
 
     @Column(name = "nombres", length = 250, unique = false)
     @NotBlank(message = "El nombre del cliente no puede estar vacío.")
@@ -59,18 +49,15 @@ public class Usuario {
     @Size(min = 1, max = 250, message = "El email del cliente debe tener entre 1 y 250 caracteres.")
     private String password;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
+    @Column(name = "codigo_activacion", columnDefinition = "LONGTEXT")
+    private String codigoActivacion;
+    @Column(name = "codigo_recuperacion", columnDefinition = "LONGTEXT")
+    private String codigoRecuperacion;
+    @Column(name = "estado_activacion", nullable = false)
+    private boolean estadoActivacion;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     private List<UsuarioRol> roles;
-
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     private List<DatosFacturacion> facturas;
@@ -85,33 +72,23 @@ public class Usuario {
      * @param nit
      * @param password
      */
-    public Usuario(Long id, String nombres, String apellidos, String email, String nit, String password) {
-        this.id = id;
+    public Usuario(String nombres, String apellidos, String email, String nit, String password, String codigoActivacion, String codigoRecuperacion, boolean estadoActivacion, Long id) {
+        super(id);
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.email = email;
         this.nit = nit;
         this.password = password;
+        this.codigoActivacion = codigoActivacion;
+        this.codigoRecuperacion = codigoRecuperacion;
+        this.estadoActivacion = estadoActivacion;
     }
 
-    /**
-     * Eliminacion
-     *
-     * @param id
-     */
     public Usuario(Long id) {
-        this.id = id;
+        super(id);
     }
 
     public Usuario() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNombres() {
@@ -154,20 +131,28 @@ public class Usuario {
         this.password = password;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getCodigoActivacion() {
+        return codigoActivacion;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCodigoActivacion(String codigoActivacion) {
+        this.codigoActivacion = codigoActivacion;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public String getCodigoRecuperacion() {
+        return codigoRecuperacion;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setCodigoRecuperacion(String codigoRecuperacion) {
+        this.codigoRecuperacion = codigoRecuperacion;
+    }
+
+    public boolean isEstadoActivacion() {
+        return estadoActivacion;
+    }
+
+    public void setEstadoActivacion(boolean estadoActivacion) {
+        this.estadoActivacion = estadoActivacion;
     }
 
     public List<UsuarioRol> getRoles() {

@@ -4,13 +4,9 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -18,7 +14,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.springframework.data.annotation.CreatedDate;
 
 /**
  *
@@ -26,11 +21,7 @@ import org.springframework.data.annotation.CreatedDate;
  */
 @Entity
 @Table(name = "estado_envio")
-public class EstadoEnvio {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class EstadoEnvio extends Auditor {
 
     @Column(name = "nombre", length = 250, unique = false)
     @NotBlank(message = "El nombre del envio no puede estar vacío.")
@@ -42,28 +33,15 @@ public class EstadoEnvio {
     @Cascade(CascadeType.ALL)
     private List<Envio> envios;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    public EstadoEnvio(Long id, String nombre) {
-        this.id = id;
+    public EstadoEnvio(String nombre) {
         this.nombre = nombre;
     }
 
-    public EstadoEnvio() {
-    }
-
     public EstadoEnvio(Long id) {
-        this.id = id;
+        super(id);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public EstadoEnvio() {
     }
 
     public String getNombre() {
@@ -81,13 +59,4 @@ public class EstadoEnvio {
     public void setEnvios(List<Envio> envios) {
         this.envios = envios;
     }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
 }

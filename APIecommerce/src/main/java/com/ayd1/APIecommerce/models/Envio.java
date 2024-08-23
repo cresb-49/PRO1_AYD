@@ -5,18 +5,12 @@
 package com.ayd1.APIecommerce.models;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  *
@@ -24,11 +18,7 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @Entity
 @Table(name = "envio")
-public class Envio {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Envio extends Auditor {
 
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "venta", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
@@ -42,34 +32,17 @@ public class Envio {
 
     private LocalDateTime entregadoAt;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    public Envio(Long id, Venta venta, EstadoEnvio estadoEnvio, LocalDateTime entregadoAt) {
-        this.id = id;
+    public Envio(Venta venta, EstadoEnvio estadoEnvio, LocalDateTime entregadoAt) {
         this.venta = venta;
         this.estadoEnvio = estadoEnvio;
         this.entregadoAt = entregadoAt;
     }
 
     public Envio(Long id) {
-        this.id = id;
+        super(id);
     }
 
     public Envio() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Venta getVenta() {
@@ -86,22 +59,6 @@ public class Envio {
 
     public void setEntregadoAt(LocalDateTime entregadoAt) {
         this.entregadoAt = entregadoAt;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public EstadoEnvio getEstadoEnvio() {

@@ -4,15 +4,10 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -24,8 +19,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  *
@@ -33,11 +26,7 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @Entity
 @Table(name = "producto")
-public class Producto {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class Producto extends Auditor {
 
     @Column(name = "nombre", length = 250, unique = false)
     @NotBlank(message = "El nombre del producto no puede estar vacío.")
@@ -61,14 +50,6 @@ public class Producto {
     @Column(name = "habilitado", nullable = false)
     private Boolean habilitado;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
     private List<MovimientoStock> movimientos;
@@ -84,8 +65,7 @@ public class Producto {
     public Producto() {
     }
 
-    public Producto(Long id, String nombre, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
-        this.id = id;
+    public Producto(String nombre, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
         this.nombre = nombre;
         this.categoria = categoria;
         this.stock = stock;
@@ -93,17 +73,8 @@ public class Producto {
         this.habilitado = habilitado;
     }
 
-
     public Producto(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        super(id);
     }
 
     public String getNombre() {
@@ -152,22 +123,6 @@ public class Producto {
 
     public void setHabilitado(Boolean habilitado) {
         this.habilitado = habilitado;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public Categoria getCategoria() {

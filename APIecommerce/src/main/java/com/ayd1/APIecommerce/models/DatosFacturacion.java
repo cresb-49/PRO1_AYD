@@ -4,12 +4,8 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -18,8 +14,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 /**
  *
@@ -27,11 +21,7 @@ import org.springframework.data.annotation.LastModifiedDate;
  */
 @Entity
 @Table(name = "datos_facturacion")
-public class DatosFacturacion {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class DatosFacturacion extends Auditor {
 
     @Column(name = "nit", length = 250, unique = false)
     @NotBlank(message = "El nit no puede estar vacío.")
@@ -55,16 +45,8 @@ public class DatosFacturacion {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario usuario;
 
-    @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    public DatosFacturacion(Long id, String nit, String nombre, Venta venta, Usuario usuario) {
-        this.id = id;
+    public DatosFacturacion(String nit, String nombre, Venta venta, Usuario usuario, Long id) {
+        super(id);
         this.nit = nit;
         this.nombre = nombre;
         this.venta = venta;
@@ -75,15 +57,7 @@ public class DatosFacturacion {
     }
 
     public DatosFacturacion(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        super(id);
     }
 
     public String getNit() {
@@ -117,21 +91,4 @@ public class DatosFacturacion {
     public void setVenta(Venta venta) {
         this.venta = venta;
     }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
 }
