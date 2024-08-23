@@ -1,18 +1,22 @@
 package com.ayd1.APIecommerce.services;
 
-import com.ayd1.APIecommerce.models.LoginDto;
+import com.ayd1.APIecommerce.models.dto.LoginDto;
+import com.ayd1.APIecommerce.models.Rol;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.models.UsuarioRol;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
+import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
 import com.ayd1.APIecommerce.services.tools.MailService;
 import com.ayd1.APIecommerce.tools.Encriptador;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
@@ -26,6 +30,8 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private RolRepository rolRepository;
     @Autowired
     private Encriptador encriptador;
     @Autowired
@@ -144,5 +150,37 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             return "Se cambió tu contraseña con exito.";
         }
         throw new Exception("No pudimos actualizar tu contraseña, inténtalo más tarde.");
+    }
+
+    @Transactional
+    public String crearUsuario(Usuario crear) throws Exception {
+        //validamos 
+        this.validar(crear);
+        // traer el rol (USUARIO)
+        Optional<Rol> rolBusqueda = this.rolRepository.findOneByNombre("USUARIO");
+        //si el rol no existe lanzamos error
+        if (rolBusqueda.isEmpty()) {
+            throw new Exception("Rol no encontrado.");
+        }
+        Rol rol = rolBusqueda.get();
+        //asignamos un rol al usuario
+        UsuarioRol usuarioRol = new UsuarioRol(crear, rol);
+        //creamos la lista de roles del usuairo
+        ArrayList<UsuarioRol> rols = new ArrayList<>();
+        //cargar la asinacion
+        rols.add(usuarioRol);
+        //asignamos los nuevos roles al usuarios
+        crear.setRoles(rols);
+        //encriptar la password 
+        crear.setPassword(this.encriptador.encriptarPassword(
+                crear.getPassword()
+        ));
+        //guardar el usuario
+        Usuario userCreado = this.usuarioRepository.save(crear);
+        //mandamos a editar la password y comparamos si se hizo el cambio
+        if (userCreado.getId() > 0) {
+            return "Tu usuario se creo con exito.";
+        }
+        throw new Exception("No pudimos crear tu uusuario, inténtalo más tarde.");
     }
 }
