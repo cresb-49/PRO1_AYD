@@ -152,8 +152,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         throw new Exception("No pudimos actualizar tu contraseña, inténtalo más tarde.");
     }
 
-    @Transactional
-    public String crearUsuario(Usuario crear) throws Exception {
+    public String crearUsuarioNormal(Usuario crear) throws Exception {
         //validamos 
         this.validar(crear);
         // traer el rol (USUARIO)
@@ -163,6 +162,11 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             throw new Exception("Rol no encontrado.");
         }
         Rol rol = rolBusqueda.get();
+        return this.crearUsuario(crear, rol);
+    }
+
+    @Transactional
+    private String crearUsuario(Usuario crear, Rol rol) throws Exception {
         //asignamos un rol al usuario
         UsuarioRol usuarioRol = new UsuarioRol(crear, rol);
         //creamos la lista de roles del usuairo
