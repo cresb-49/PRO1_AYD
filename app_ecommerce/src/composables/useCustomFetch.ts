@@ -6,7 +6,7 @@ export function useCustomFetch<T>(
   options: RequestInit = {}
 ) {
 
-  return useCustomFetchPartial<T>(url, options)
+  return useCustomFetchPartial<T>(url, options).json()
 }
 
 const useCustomFetchPartial = createFetch({
