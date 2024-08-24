@@ -25,7 +25,7 @@ public class CorsConfig implements WebMvcConfigurer {
         corsRegistry.addMapping("/**")
                 .allowedOrigins(
                         "http://localhost:" + this.appProperties.getHostFront1(),
-                        "http://localhost:" + this.appProperties.getHostFront1())
+                        "http://localhost:" + this.appProperties.getHostFront2())
                 .allowedMethods(
                         "GET",
                         "POST",
