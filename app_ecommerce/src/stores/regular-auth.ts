@@ -66,10 +66,10 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       // Fetch the data from the API
 
       const { data, error } = await useCustomFetch<LoginResponse>(
-        '/auth/login',
+        '/usuario/public/login',
         {
           method: 'POST',
-          body: payload
+          body: JSON.stringify(payload)
         }
       )
       if (error.value) {
@@ -116,7 +116,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       authStore.token = data?.value?.token ?? ''
       authStore.isAuthenticated = true
       // Redirect to the dashboard
-      router.push('/dashboard/home')
+      router.push('/')
       // Show success snackbar
       useSnackbarStore().showSnackbar({
         title: 'Session iniciada',
@@ -139,10 +139,10 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       const router = useRouter()
       // Fetch the data from the API
       const { data, error } = await useCustomFetch<LoginResponse>(
-        '/auth/sign-up',
+        '/usuario/public/crearUsuario',
         {
           method: 'POST',
-          body: newPayload
+          body: JSON.stringify(newPayload)
         }
       )
       // Error handling
@@ -183,7 +183,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       authStore.token = data?.value?.token ?? ''
       authStore.isAuthenticated = true
       // Redirect to the dashboard
-      router.push('/dashboard/home')
+      router.push('/')
       // Return the data and error
       this.loading = false
     },
@@ -209,7 +209,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       const router = useRouter()
       const { data, error } = await useCustomFetch<User>('/auth/me', {
         method: 'PUT',
-        body: payload
+        body: JSON.stringify(payload)
       })
       if (error.value) {
         console.log(error.value)
@@ -218,7 +218,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       }
       if (data.value) {
         this.myProfile()
-        router.push('/dashboard/profile')
+        router.push('/')
       }
       this.loading = false
     },

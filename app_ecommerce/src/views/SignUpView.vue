@@ -38,10 +38,11 @@ export default {
     ...mapState(useRegularAuthStore, ['loading', 'error'])
   },
   methods: {
+    ...mapActions(useRegularAuthStore, ['signupUser']),
     signUp(payload: SignupPayload) {
+      console.log('entra');
       this.signupUser(payload)
     },
-    ...mapActions(useRegularAuthStore, ['signupUser'])
   }
 }
 </script>
