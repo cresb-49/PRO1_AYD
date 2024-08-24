@@ -1,12 +1,13 @@
 package com.ayd1.APIecommerce.controllers;
 
-import com.ayd1.APIecommerce.models.dto.LoginDto;
-import com.ayd1.APIecommerce.models.Usuario;
-import com.ayd1.APIecommerce.models.noBD.AppProperties;
-import com.ayd1.APIecommerce.models.request.PasswordChange;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,13 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.models.dto.LoginDto;
+import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
-import java.util.Map;
-import org.springframework.http.HttpStatus;
-
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("api")
@@ -31,8 +30,12 @@ public class UsuarioController {
 
     @GetMapping("/usuario/{id}")
     public ResponseEntity<?> getUsuario(@PathVariable Long id) {
-        Object data = usuarioService.getUsuario(id);
-        return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
+        try {
+            Object data = usuarioService.getUsuario(id);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null, null, null).sendResponse();
+        }
     }
 
     @PostMapping("/usuario")
