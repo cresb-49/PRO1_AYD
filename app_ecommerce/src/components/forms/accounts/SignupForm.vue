@@ -11,7 +11,7 @@
         @submit.prevent="signup"
       >
         <v-text-field
-          v-model="firstName"
+          v-model="nombres"
           label="Nombre(s)"
           type="text"
           :rules="[validationRules.required, ...validationRules.name]"
@@ -23,7 +23,7 @@
           </template>
         </v-text-field>
         <v-text-field
-          v-model="lastName"
+          v-model="apellidos"
           label="Apellido(s)"
           type="text"
           :rules="[validationRules.required, ...validationRules.name]"
@@ -137,8 +137,8 @@ export default {
   emits: ['signup'],
   data() {
     return {
-      firstName: '',
-      lastName: '',
+      nombres: '',
+      apellidos: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -175,8 +175,8 @@ export default {
       const formRef = await this.$refs.form.validate()
       if (formRef.valid) {
         const payload = {
-          firstName: this.firstName,
-          lastName: this.lastName,
+          nombres: this.nombres,
+          apellidos: this.apellidos,
           email: this.email,
           password: this.password
         }
