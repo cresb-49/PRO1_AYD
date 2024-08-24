@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,14 +32,17 @@ public class Venta extends Auditor {
 
     @OneToMany(mappedBy = "venta", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private List<LineaVenta> lineaVentas;
 
     @OneToMany(mappedBy = "venta", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private List<DatosFacturacion> datosFacturacion;
 
     @OneToMany(mappedBy = "venta", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private List<Envio> envios;
 
     public Venta() {

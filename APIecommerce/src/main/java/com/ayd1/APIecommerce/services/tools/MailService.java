@@ -40,7 +40,7 @@ public class MailService {
             public void run() {
                 switch (tipoDeCorreo) {
                     case 1:
-                        enviarCorreoDeConfirmacion(correo, codigo);
+
                         break;
                     case 2:
                         enviarCorreoDeRecuperacion(correo, codigo);
@@ -51,32 +51,13 @@ public class MailService {
         hiloMail.start();
     }
 
-    private void enviarCorreoDeConfirmacion(String correo, String codigoActivacion) {
-        try {
-            Context context = new Context();//crear nuevo contexto
-            context.setVariable("code", codigoActivacion);//adjuntar las variables
-            context.setVariable("host", this.appProperties.getHostFront1());//adjuntar las variables
-            String html = templateEngine.process("CorreoConfirmacion", context);
-            //mandamos el correo electronico
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            helper.setText(html, true);//adjuntamos el mansaje indicando que sera un html
-            helper.setTo(correo);
-            helper.setSubject("Activación de cuenta MeXpose.");
-            helper.setFrom("MeXpose <namenotfound4004@gmail.com>");
-            mailSender.send(mimeMessage);
-        } catch (MessagingException ex) {
-            ex.printStackTrace();
-        }
-    }
-
     private void enviarCorreoDeRecuperacion(String correo, String codigoActivacion) {
         try {
-            System.out.println(this.appProperties.getHostFront1());
             Context context = new Context();//crear nuevo contexto
-            context.setVariable("code", codigoActivacion);//adjuntar las variables
-            context.setVariable("host", this.appProperties.getHostFront1());//adjuntar las variables
+            String url = String.format("http://localhost:%s/password_reset/form?c=%s",
+                    appProperties.getHostFront1(), codigoActivacion);
 
+            context.setVariable("url", url);//adjuntar las variables     
             String html = templateEngine.process("CorreoDeRecuperacion", context);
             //mandamos el correo electronico
             MimeMessage mimeMessage = mailSender.createMimeMessage();

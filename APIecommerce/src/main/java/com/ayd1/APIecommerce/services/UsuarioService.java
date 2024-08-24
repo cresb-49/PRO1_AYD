@@ -1,24 +1,13 @@
 package com.ayd1.APIecommerce.services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.UsuarioRol;
-
-import com.ayd1.APIecommerce.models.noBD.AppProperties;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.repositories.RolRepository;
@@ -37,7 +26,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-
 
 @Service
 public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
@@ -74,26 +62,48 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             throw new Exception("No hemos encontrado el usuario.");
         }
 
-        return busquedaUsuario.get();
+        Usuario usuarioEncontrado = busquedaUsuario.get();
+
+        //vemos si el usuario no  ha sido eliminado
+        if (usuarioEncontrado.getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+
+        return usuarioEncontrado;
     }
 
-    public String eliminarUsuario(Long id) throws Exception {
+    @Transactional
+    public String eliminarUsuario(Long id, String emailUsuarioAutenticado) throws Exception {
+
         if (id == null || id <= 0) {//si el correo esta en blanco entonces lanzmaos error
             throw new Exception("Id invalido.");
         }
+
         //mandamos a traer el estado de la cuenta
         Optional<Usuario> busquedaUsuario
                 = usuarioRepository.findById(id);
+
         //si esta vacio entonces el usuairo no existe
         if (busquedaUsuario.isEmpty()) {
             throw new Exception("No hemos encontrado el usuario.");
         }
+
         //extraer el usuario
-        Usuario usuario = busquedaUsuario.get();
+        Usuario usuarioEliminar = busquedaUsuario.get();
+
+        //vemos si el usuario no  ha sido eliminado
+        if (usuarioEliminar.getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+
+        //validar si el usuario tiene permiso de eliminar
+        this.verificarUsuarioJwt(usuarioEliminar, emailUsuarioAutenticado);
         //seteamos la fecha de eliminacion
-        usuario.setDeletedAt(Instant.now());
+        usuarioEliminar.setDeletedAt(Instant.now());
+
         //editar el usuario
-        Usuario usuarioUpdate = this.usuarioRepository.save(usuario);
+        Usuario usuarioUpdate = this.usuarioRepository.save(usuarioEliminar);
+
         //mandamos a editar la password y comparamos si se hizo el cambio
         if (usuarioUpdate.getId() > 0) {
             return "Se elimino el usuario con exito.";
@@ -102,29 +112,38 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     }
 
     @Transactional
-    public Usuario updateUsuario(Long id, Usuario usuario) throws Exception {
-        if (id == null || id <= 0) {//si el correo esta en blanco entonces lanzmaos error
-            throw new Exception("Id invalido.");
+    public Usuario updateUsuario(Usuario usuario, String emailUsuarioAutenticado) throws Exception {
+        if (usuario.getId() == null || usuario.getId() <= 0) {
+            throw new Exception("Id inválido.");
         }
-        Optional<Usuario> busquedaUsuario
-                = usuarioRepository.findById(id);
-        //si esta vacio entonces el usuairo no existe
+
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuario.getId());
         if (busquedaUsuario.isEmpty()) {
             throw new Exception("No hemos encontrado el usuario.");
         }
-        //extraer el usuario
         Usuario usuarioEncontrado = busquedaUsuario.get();
 
-        //si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese usuario
+        //validar si el usuario tiene permiso de eliminar
+        this.verificarUsuarioJwt(usuarioEncontrado, emailUsuarioAutenticado);
+
+        //vemos si el usuario no  ha sido eliminado
         if (usuarioEncontrado.getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
-        //evitamos que se cambie la contrasenia en este metodo
+        //vemos que no exista otro con el mismo email
+        if (this.usuarioRepository.existsUsuarioByEmailAndIdNot(usuario.getEmail(),
+                usuario.getId())) {
+            //si el metodo no se rompe hubo un error insesperado
+            throw new Exception(String.format("No se editó el usuario %s, "
+                    + "debido a que ya existe otro usuario con el mismo email.",
+                    usuario.getEmail()));
+        }
+        // Evitar el cambio de contraseña
         usuario.setPassword(usuarioEncontrado.getPassword());
+        usuario.setFacturas(usuarioEncontrado.getFacturas());
+        usuario.setRoles(usuarioEncontrado.getRoles());
         this.validar(usuario);
-        //editar el usuario
         Usuario usuarioUpdate = this.usuarioRepository.save(usuario);
-        //mandamos a editar la password y comparamos si se hizo el cambio
         if (usuarioUpdate.getId() > 0) {
             return usuarioUpdate;
         }
@@ -144,6 +163,10 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         }
         //obtenemos el modelo
         Usuario usuario = busquedaUsuario.get();
+        //vemos si el usuario no  ha sido eliminado
+        if (usuario.getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
         //creamos el codigo de recuperacion
         String codigoRecuperacion = UUID.randomUUID().toString();
         //actualizamos el codigo de recuperacion
@@ -174,7 +197,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
             //si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese usuario
             if (usuario.getDeletedAt() != null) {
-                throw new Exception("Uusario ha sido eliminado.");
+                throw new Exception("Usuario ya ha sido eliminado.");
             }
 
             authenticationManager.authenticate(
@@ -196,38 +219,84 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     }
 
     @Transactional
-    public String cambiarPassword(PasswordChange cambioPassword) throws Exception {
+    public String recuperarPassword(PasswordChange cambioPassword) throws Exception {
         //validamos 
         this.validar(cambioPassword);
 
         //para cambiar la password necesitamos obtener el usuario que solicito mediante el codigo
         Optional<Usuario> busqueda = this.usuarioRepository
                 .findByCodigoRecuperacion(cambioPassword.getCodigo());
+
         if (busqueda.isEmpty()) {//si esta vacio entonces el codigo no existe y devolvemos false
-            throw new Exception("Tu código de autorización ha sido usado o ha expirado.");
+            throw new Exception("Tu código de autorización invalido.");
         }
 
-        Usuario usuario = busqueda.get();
+        Usuario usuarioEncontrado = busqueda.get();
+
+        //vemos si el usuario no  ha sido eliminado
+        if (usuarioEncontrado.getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
 
         //mandamos a borrar el codigo de recuperacion 
-        usuario.setCodigoRecuperacion(null);
+        usuarioEncontrado.setCodigoRecuperacion(null);
         //encriptamos la password y hacemos el cambio en el modelo
-        usuario.setPassword(
+        usuarioEncontrado.setPassword(
                 Encriptador.encriptarPassword(
                         cambioPassword.getNuevaPassword()
                 )
         );
 
-        Usuario update = this.usuarioRepository.save(usuario);
+        Usuario update = this.usuarioRepository.save(usuarioEncontrado);
 
         //mandamos a editar la password y comparamos si se hizo el cambio
-        if (update.getId().longValue() == usuario.getId().longValue()) {
+        if (update.getId().longValue() == usuarioEncontrado.getId().longValue()) {
             return "Se cambió tu contraseña con exito.";
         }
         throw new Exception("No pudimos actualizar tu contraseña, inténtalo más tarde.");
     }
 
-    public String crearUsuarioNormal(Usuario crear) throws Exception {
+    @Transactional
+    public String cambiarPassword(Usuario usuPassChange, String emailUsuarioAutenticado) throws Exception {
+        //que el id no este vacio
+        if (usuPassChange.getId() == null || usuPassChange.getId() <= 0) {
+            throw new Exception("Id inválido.");
+        }
+        //validamos la password
+        this.validarAtributo(usuPassChange, "password");
+        //buscamos el usuario
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuPassChange.getId());
+
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+
+        Usuario usuarioEncontrado = busquedaUsuario.get();
+
+        //vemos si el usuario no  ha sido eliminado
+        if (usuarioEncontrado.getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+
+        //validar si el usuario tiene permiso de eliminar
+        this.verificarUsuarioJwt(usuarioEncontrado, emailUsuarioAutenticado);
+
+        //encriptamos la password y hacemos el cambio en el modelo
+        usuarioEncontrado.setPassword(
+                Encriptador.encriptarPassword(usuPassChange.getPassword()
+                )
+        );
+
+        Usuario update = this.usuarioRepository.save(usuarioEncontrado);
+
+        //mandamos a editar la password y comparamos si se hizo el cambio
+        if (update.getId().longValue() == usuarioEncontrado.getId().longValue()) {
+            return "Se cambió tu contraseña con exito.";
+        }
+        throw new Exception("No pudimos actualizar tu contraseña, inténtalo más tarde.");
+    }
+
+    public LoginDto crearUsuarioNormal(Usuario crear) throws Exception {
         //validamos 
         this.validar(crear);
         // traer el rol (USUARIO)
@@ -240,26 +309,48 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         return this.crearUsuario(crear, rol);
     }
 
+    /**
+     *
+     * @param crear
+     * @param rol
+     * @return
+     * @throws Exception
+     */
     @Transactional
-    private String crearUsuario(Usuario crear, Rol rol) throws Exception {
-        //asignamos un rol al usuario
-        UsuarioRol usuarioRol = new UsuarioRol(crear, rol);
-        //creamos la lista de roles del usuairo
-        ArrayList<UsuarioRol> rols = new ArrayList<>();
-        //cargar la asinacion
-        rols.add(usuarioRol);
-        //asignamos los nuevos roles al usuarios
-        crear.setRoles(rols);
-        //encriptar la password 
-        crear.setPassword(this.encriptador.encriptarPassword(
-                crear.getPassword()
-        ));
-        //guardar el usuario
-        Usuario userCreado = this.usuarioRepository.save(crear);
-        //mandamos a editar la password y comparamos si se hizo el cambio
-        if (userCreado.getId() > 0) {
-            return "Tu usuario se creo con exito.";
+    public LoginDto crearUsuario(Usuario crear, Rol rol) throws Exception {
+        if (this.usuarioRepository.existsByEmail(crear.getEmail())) {
+            throw new Exception("El Email ya existe.");
         }
-        throw new Exception("No pudimos crear tu uusuario, inténtalo más tarde.");
+        // Asignamos un rol al usuario
+        UsuarioRol usuarioRol = new UsuarioRol(crear, rol);
+        ArrayList<UsuarioRol> rols = new ArrayList<>();
+        rols.add(usuarioRol);
+        crear.setRoles(rols);
+
+        // Encriptar la contraseña 
+        crear.setPassword(this.encriptador.encriptarPassword(crear.getPassword()));
+
+        // Guardar el usuario
+        Usuario userCreado = this.usuarioRepository.save(crear);
+
+        // Generar el JWT para el usuario creado
+        UserDetails userDetails = authenticationService.loadUserByUsername(crear.getEmail());
+        String jwt = jwtGenerator.generateToken(userDetails);
+
+        // Retornar la confirmación con el JWT
+        if (userCreado.getId() > 0) {
+            return new LoginDto(userCreado, jwt);
+        }
+        throw new Exception("No pudimos crear tu usuario, inténtalo más tarde.");
     }
+
+    private boolean verificarUsuarioJwt(Usuario usuarioTratar, String emailUsuarioAutenticado) throws Exception {
+        //validar si el usuario tiene permiso de eliminar
+        if (!emailUsuarioAutenticado.equals(usuarioTratar.getEmail())
+                && !isUserAdmin(emailUsuarioAutenticado)) {
+            throw new Exception("No tienes permiso para realizar acciones a este usuario.");
+        }
+        return true;
+    }
+
 }

@@ -20,6 +20,8 @@ import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("api")
@@ -69,10 +71,26 @@ public class UsuarioController {
 
     }
 
-    @PostMapping("/usuario/public/cambioPassword")
-    public ResponseEntity<?> cambiarPassword(@RequestBody PasswordChange requestBody) {
+    @PatchMapping("/usuario/public/recuperarPassword")
+    public ResponseEntity<?> recuperarPassword(@RequestBody PasswordChange requestBody) {
         try {
-            String respuesta = usuarioService.cambiarPassword(requestBody);
+            String respuesta = usuarioService.recuperarPassword(requestBody);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
+                    null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
+                    ex.getMessage(),
+                    null, null, null).sendResponse();
+        }
+    }
+
+    @PatchMapping("/usuario/public/cambioPassword")
+    public ResponseEntity<?> cambiarPassword(@RequestBody Usuario requestBody) {
+        try {
+            // Obtener el usuario autenticado del contexto de seguridad o del token JWT
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String emailUsuarioAutenticado = authentication.getName();
+            String respuesta = usuarioService.cambiarPassword(requestBody, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
                     null, null).sendResponse();
         } catch (Exception ex) {
@@ -98,7 +116,7 @@ public class UsuarioController {
     @PostMapping("/usuario/public/crearUsuario")
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario crear) {
         try {
-            String respuesta = usuarioService.crearUsuarioNormal(crear);
+            LoginDto respuesta = usuarioService.crearUsuarioNormal(crear);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
                     null, null).sendResponse();
         } catch (Exception ex) {
@@ -126,7 +144,10 @@ public class UsuarioController {
     @DeleteMapping("/usuario/public/eliminarUsuario/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         try {
-            String confirmacion = usuarioService.eliminarUsuario(id);
+            // Obtener el usuario autenticado del contexto de seguridad o del token JWT
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String emailUsuarioAutenticado = authentication.getName();
+            String confirmacion = usuarioService.eliminarUsuario(id, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK",
                     confirmacion,
                     null, null).sendResponse();
@@ -141,11 +162,14 @@ public class UsuarioController {
         }
     }
 
-    @PatchMapping("/usuario/public/updateUsuario/{id}")
-    public ResponseEntity<?> actualizarUsuarioParcial(@PathVariable Long id,
+    @PatchMapping("/usuario/public/updateUsuario")
+    public ResponseEntity<?> actualizarUsuarioParcial(
             @RequestBody Usuario updates) {
         try {
-            Usuario confirmacion = usuarioService.updateUsuario(id, updates);
+            // Obtener el usuario autenticado del contexto de seguridad o del token JWT
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String emailUsuarioAutenticado = authentication.getName();
+            Usuario confirmacion = usuarioService.updateUsuario(updates, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK",
                     confirmacion,
                     null, null).sendResponse();
