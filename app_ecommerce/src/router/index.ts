@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import EmptyLayout from '@/layouts/EmptyLayout.vue'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      meta: {title: 'Homepage', layout: DefaultLayout},
       component: HomeView
     },
     {
@@ -31,6 +33,9 @@ const router = createRouter({
       component: () => import('../views/SignUpView.vue')
     }
   ]
+})
+
+router.beforeEach(async (to, from) => {
 })
 
 export default router
