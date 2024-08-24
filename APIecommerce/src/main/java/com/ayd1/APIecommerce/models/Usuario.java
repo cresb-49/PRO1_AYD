@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.DynamicUpdate;
 
 /**
  *
@@ -23,6 +25,7 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @Table(name = "usuario")
+@DynamicUpdate
 public class Usuario extends Auditor {
 
     @Column(name = "nombres", length = 250, unique = false)
@@ -42,7 +45,7 @@ public class Usuario extends Auditor {
     @Size(min = 1, max = 250, message = "El email del cliente debe tener entre 1 y 250 caracteres.")
     private String email;
 
-    @Column(name = "nit", length = 250, unique = true)
+    @Column(name = "nit", length = 250, unique = false)
     private String nit;
 
     @Column(name = "password", length = 250, unique = false)
@@ -57,7 +60,7 @@ public class Usuario extends Auditor {
     private String codigoRecuperacion;
     @Column(name = "estado_activacion", nullable = false)
     private boolean estadoActivacion;
-    @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     // @JsonManagedReference
     private List<UsuarioRol> roles;
@@ -76,8 +79,7 @@ public class Usuario extends Auditor {
      * @param nit
      * @param password
      */
-    public Usuario(String nombres, String apellidos, String email, String nit, String password, String codigoActivacion, String codigoRecuperacion, boolean estadoActivacion, Long id) {
-        super(id);
+    public Usuario(String nombres, String apellidos, String email, String nit, String password, String codigoActivacion, String codigoRecuperacion, boolean estadoActivacion) {
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.email = email;
