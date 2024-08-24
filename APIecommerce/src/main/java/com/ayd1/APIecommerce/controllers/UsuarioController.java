@@ -2,6 +2,7 @@ package com.ayd1.APIecommerce.controllers;
 
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.models.noBD.AppProperties;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 @RestController
 @RequestMapping("api")
@@ -24,27 +26,6 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
-
-    @GetMapping("/usuario/{id}")
-    public ApiBaseTransformer getUsuario(@PathVariable Long id) {
-        Object data = usuarioService.getUsuario(id);
-        return new ApiBaseTransformer(200, "OK", data, null, null);
-    }
-
-    @PostMapping("/usuario")
-    public ApiBaseTransformer postMethodName(@RequestBody String entity) {
-        return new ApiBaseTransformer(200, "OK", null, null, null);
-    }
-
-    @PutMapping("usuario/{id}")
-    public ApiBaseTransformer putMethodName(@PathVariable String id, @RequestBody String entity) {
-        return new ApiBaseTransformer(200, "OK", null, null, null);
-    }
-
-    @DeleteMapping("usuario/{id}")
-    public ApiBaseTransformer deleteMethodName(@PathVariable String id) {
-        return new ApiBaseTransformer(200, "OK", null, null, null);
-    }
 
     @PostMapping("/usuario/public/recuperarPasswordMail")
     public ApiBaseTransformer
@@ -97,6 +78,57 @@ public class UsuarioController {
                     null, null);
         } catch (Exception ex) {
             ex.printStackTrace();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    null, null, null);
+        }
+    }
+
+    @GetMapping("/usuario/public/perfil/{id}")
+    public ApiBaseTransformer getPerfil(@PathVariable Long id) {
+        try {
+            Usuario usuario = usuarioService.getUsuario(id);
+            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK",
+                    usuario,
+                    null, null);
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    null, null, null);
+        }
+    }
+
+    @DeleteMapping("/usuario/public/eliminarUsuario/{id}")
+    public ApiBaseTransformer eliminarUsuario(@PathVariable Long id) {
+        try {
+            String confirmacion = usuarioService.eliminarUsuario(id);
+            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK",
+                    confirmacion,
+                    null, null);
+        } catch (NumberFormatException ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    "Id con formato invalido",
+                    null, null, null);
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    ex.getMessage(),
+                    null, null, null);
+        }
+    }
+
+    @PatchMapping("/usuario/public/updateUsuario/{id}")
+    public ApiBaseTransformer actualizarUsuarioParcial(@PathVariable Long id,
+            @RequestBody Usuario updates) {
+        try {
+            Usuario confirmacion = usuarioService.updateUsuario(id, updates);
+            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK",
+                    confirmacion,
+                    null, null);
+        } catch (NumberFormatException ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+                    "Id con formato invalido",
+                    null, null, null);
+        } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
                     ex.getMessage(),
                     null, null, null);

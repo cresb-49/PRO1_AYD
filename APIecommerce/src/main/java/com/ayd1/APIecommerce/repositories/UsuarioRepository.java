@@ -15,6 +15,8 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
 
     public Optional<Usuario> findByCodigoRecuperacion(String codigo);
 
+    public Long deleteUsuarioById(Long id);
+
     @Override
     public List<Usuario> findAll();
 }
