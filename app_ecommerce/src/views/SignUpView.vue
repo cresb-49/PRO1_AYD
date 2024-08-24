@@ -11,38 +11,21 @@
     </v-row>
   </section>
 </template>
-<script lang="ts">
-import { mapState, mapActions, type Pinia } from 'pinia'
+<script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { useRegularAuthStore, type SignupPayload } from '../stores/regular-auth'
 import SignupForm from '../components/forms/accounts/SignupForm.vue'
-export default {
-  asyncData({ $pinia }: { $pinia: Pinia }) {
-    const store = useRegularAuthStore($pinia)
-    store.clearError()
-    return {}
-  },
-  components: {
-    SignupForm
-  },
-  setup() {
-  /*
-    useHead({
-      title: 'Registro'
-    })
-    */
-  },
-  data() {
-    return {}
-  },
-  computed: {
-    ...mapState(useRegularAuthStore, ['loading', 'error'])
-  },
-  methods: {
-    ...mapActions(useRegularAuthStore, ['signupUser']),
-    signUp(payload: SignupPayload) {
-      console.log('entra');
-      this.signupUser(payload)
-    },
+import { useRouter } from 'vue-router';
+
+const regularAuthStore = useRegularAuthStore();
+const {loading, error}  = storeToRefs(regularAuthStore);
+const {signupUser}  = regularAuthStore;
+const router = useRouter();
+ 
+async function signUp(payload: SignupPayload) {
+  const {error} = await signupUser(payload)
+  if (error === false) {
+    router.push('/');
   }
 }
 </script>
