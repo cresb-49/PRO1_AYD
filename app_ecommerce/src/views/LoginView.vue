@@ -4,7 +4,6 @@
           <v-col cols="11" sm="8" md="8" lg="5" xl="4">
           <LoginForm
             :loading="loading"
-            :error="error"
             :admin="false"
             :show-signup="true"
             @login="login($event)"
@@ -13,33 +12,21 @@
       </v-row>
     </section>
 </template>
-<script lang="ts">
-import { mapState, mapActions } from 'pinia'
+<script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { useRegularAuthStore } from '../stores/regular-auth'
 import LoginForm from '../components/forms/accounts/LoginForm.vue'
-export default {
-  components: {
-    LoginForm
-  },
-  setup() {
-  /*
-    useHead({
-      title: 'Iniciar sesión'
-    })
-    */
-  },
-  data() {
-    return {}
-  },
-  computed: {
-    ...mapState(useRegularAuthStore, ['loading', 'error'])
-  },
-  methods: {
-    login(credentials: { email: string; password: string }) {
-      console.log('before');
-      this.loginUser(credentials)
-    },
-    ...mapActions(useRegularAuthStore, ['loginUser'])
+import { useRouter } from 'vue-router';
+
+const regularAuthStore = useRegularAuthStore();
+const {loading, error} = storeToRefs(regularAuthStore);
+const {loginUser} = regularAuthStore;
+const router = useRouter();
+
+async function login(credentials: { email: string; password: string }) {
+  const {error} = await loginUser(credentials)
+  if (error === false) {
+    router.push('/');
   }
 }
 </script>

@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { SnackbarType, useSnackbarStore } from './snackbar'
-import { useRouter } from 'vue-router'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import { convertError } from '@/utils/error-converter'
 import { useCookies } from 'vue3-cookies'
@@ -12,50 +11,39 @@ type UserPayload = {
 }
 
 export type UserUpdatePayload = {
-  first_name?: string
-  last_name?: string
-  user?: {
-    email?: string
-    password?: string
-  }
+  nombres?: string
+  apellidos?: string
+  email?: string
+  password?: string
 }
 
 export type SignupPayload = {
-  firstName: string
-  lastName: string
-  user: {
-    email: string
-    career_code: number
-    ra: string
-    password: string
-  }
+  nombres: string
+  apellidos: string
+  email: string
+  password: string
 }
 
 export type Profile = {
   id: number
-  first_name: string
-  last_name: string
+  nombres: string
+  apellidos: string
   created_at: Date
   updated_at: Date
 }
 
 export type User = {
   id: number
+  nombres: string
+  apellidos: string
   email: string
-  ra: string
-  career: {
-    code: number
-    name: string
-  }
-  profile_id: number
   created_at: Date
   updated_at: Date
-  profile: Profile
 }
 
 export type LoginResponse = {
-  user: User
-  token: string
+  usuario: User
+  jwt: string
 }
 
 export const useRegularAuthStore = defineStore('regular-auth', {
@@ -65,69 +53,44 @@ export const useRegularAuthStore = defineStore('regular-auth', {
     error: null as any | string[] | null,
     user: null as User | null
   }),
+  persist: true,
   actions: {
     async loginUser(payload: UserPayload) {
+      const authStore = useAuthStore()
       this.loading = true
       this.error = null
-      const router = useRouter()
       // Fetch the data from the API
 
-      const { data, error } = await useCustomFetch<LoginResponse>(
-        '/auth/login',
+      const { data, error } = await useCustomFetch<any>(
+        'api/usuario/public/login',
         {
           method: 'POST',
-          body: payload
+          body: JSON.stringify(payload)
         }
       )
+      // Errorr Handling
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
           message: convertError(error.value),
           type: SnackbarType.ERROR
         })
-        /*
-        if (error.value.data) {
-          console.log('here3');
-          useSnackbarStore().showSnackbar({
-            title: 'Error',
-            message: convertError(error.value.data.message),
-            type: SnackbarType.ERROR
-          })
-        }
-        if (error.value.cause) {
-          useSnackbarStore().showSnackbar({
-            title: 'Error',
-            message: convertError(error.value!.message),
-            type: SnackbarType.ERROR
-          })
-        }
-        */
-        /*
-        Note: Set the error value to null to bypass nuxt's de-duplication (key based) mechanism
-        and be able to make the request again
-        */
-        error.value = null
         this.loading = false
-        return
+        return { data, error: error.value }
       }
       // Success
       // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.token!);
+      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
       useCookies().cookies.set('roleuser', 'regular');
       // Set the user in the store
-      this.user = data?.value?.user ?? null
+      this.user = data?.value?.data?.usuario ?? null
       this.authenticated = true
       // Set the token and role in the auth store
-      const authStore = useAuthStore()
-      authStore.role = 'regular'
-      authStore.token = data?.value?.token ?? ''
-      authStore.isAuthenticated = true
-      // Redirect to the dashboard
-      router.push('/dashboard/home')
+      authStore.login({role: 'regular', token: data?.value?.data?.jwt ?? ''})
       // Show success snackbar
       useSnackbarStore().showSnackbar({
         title: 'Session iniciada',
-        message: `Bienvenid@ ${this.user?.profile.first_name} ${this.user?.profile.last_name}`,
+        message: `Bienvenid@ ${this.user?.nombres} ${this.user?.apellidos}`,
         type: SnackbarType.SUCCESS
       })
       // Return the data and error
@@ -135,72 +98,46 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       return { data, error: false }
     },
     async signupUser(payload: SignupPayload) {
-      const { firstName, lastName, ...payloadRest } = payload
+      const authStore = useAuthStore()
+      const { nombres, apellidos, email, password } = payload
       const newPayload = {
-        first_name: firstName,
-        last_name: lastName,
-        user: payloadRest
+        nombres: nombres,
+        apellidos: apellidos,
+        email: email,
+        password: password
       }
       this.loading = true
       this.error = null
-      const router = useRouter()
       // Fetch the data from the API
       const { data, error } = await useCustomFetch<LoginResponse>(
-        '/auth/sign-up',
+        'api/usuario/public/crearUsuario',
         {
           method: 'POST',
-          body: newPayload
+          body: JSON.stringify(newPayload)
         }
       )
       // Error handling
-      // if (error.value?.data) {
-      //   // Check if the error message is an array or just a string
-      //   if (Array.isArray(error.value.data.message)) {
-      //     this.error = convertArrayErrors(error.value.data.message)
-      //   } else {
-      //     this.error = convertError(error.value.data.message)
-      //   }
-      //   this.loading = false
-      //   return
-      // } else if (error.value?.cause) {
-      //   this.loading = false
-      //   this.error = convertError(error.value.message)
-      //   return
-      // }
-
-      if (error.value && error.value.data) {
+      if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value.data.message),
+          message: convertError(error.value),
           type: SnackbarType.ERROR
         })
         this.loading = false
-        return
-      } else if (error.value && error.value.cause) {
-        useSnackbarStore().showSnackbar({
-          title: 'Error',
-          message: convertError(error.value!.message),
-          type: SnackbarType.ERROR
-        })
-        this.loading = false
-        return
+        return { data, error: error.value }
       }
       // Success
       // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.token!);
+      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
       useCookies().cookies.set('roleuser', 'regular');
       // Set the user in the store
-      this.user = data?.value?.user ?? null
+      this.user = data?.value?.data?.usuario ?? null
       this.authenticated = true
       // Set the token and role in the auth store
-      const authStore = useAuthStore()
-      authStore.role = 'regular'
-      authStore.token = data?.value?.token ?? ''
-      authStore.isAuthenticated = true
-      // Redirect to the dashboard
-      router.push('/dashboard/home')
+      authStore.login({role: 'regular', token: data?.value?.data?.jwt ?? ''})
       // Return the data and error
       this.loading = false
+      return { data, error: false }
     },
     async myProfile() {
       this.loading = true
@@ -221,10 +158,9 @@ export const useRegularAuthStore = defineStore('regular-auth', {
     },
     async updateProfile(payload: UserUpdatePayload) {
       this.loading = true
-      const router = useRouter()
       const { data, error } = await useCustomFetch<User>('/auth/me', {
         method: 'PUT',
-        body: payload
+        body: JSON.stringify(payload)
       })
       if (error.value) {
         console.log(error.value)
@@ -233,9 +169,9 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       }
       if (data.value) {
         this.myProfile()
-        router.push('/dashboard/profile')
       }
       this.loading = false
+      return { data, error: false }
     },
     clearError() {
       this.error = null

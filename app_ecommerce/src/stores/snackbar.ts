@@ -28,7 +28,6 @@ export const useSnackbarStore = defineStore({
       color?: string
       type?: SnackbarType
     }) {
-      console.log('snack');
       this.title = title
       this.message = message
       this.color = color!

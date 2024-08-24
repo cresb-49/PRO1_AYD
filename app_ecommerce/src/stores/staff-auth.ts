@@ -22,8 +22,8 @@ export type Role = {
 
 export type Staff = {
   id: number
-  first_name: string
-  last_name: string
+  nombres: string
+  apellidos: string
   email: string
   roles: Role[]
   created_at: Date
@@ -43,6 +43,7 @@ export const useStaffAuthStore = defineStore('staff-auth', {
     user: null as Staff | null,
     staffRoles: [] as any[]
   }),
+  persist: true,
   actions: {
     async loginStaff(payload: LoginPayload) {
       this.loading = true

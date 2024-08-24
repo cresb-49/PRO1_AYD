@@ -100,10 +100,6 @@ export default {
       type: Boolean,
       default: true
     }
-    // error: {
-    //   type: String,
-    //   default: () => null
-    // }
   },
   emits: ['login'],
   data() {

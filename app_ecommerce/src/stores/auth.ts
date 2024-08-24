@@ -5,23 +5,17 @@ import { useStaffAuthStore } from './staff-auth'
 import { useRouter } from "vue-router";
 import { useCookies } from 'vue3-cookies';
 
-type Profile = {
-  id: number
-  first_name: string
-  last_name: string
-  created_at: Date
-  updated_at: Date
-}
 type UserJwt = {
   id: number
   email: string
-  ra: string
-  profile_id: number
   created_at: Date
   updated_at: Date
-  profile: Profile
   iat: number
   exp: number
+}
+type LoginParameters = {
+  token: string,
+  role: string
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -30,15 +24,21 @@ export const useAuthStore = defineStore('auth', {
     token: '' as string | null,
     isAuthenticated: false
   }),
+  persist: true,
   actions: {
+    login(parameters: LoginParameters) {
+      const {token, role} = parameters
+      this.token = token
+      this.role = role
+      this.isAuthenticated = true
+    },
     logout() {
-      const router = useRouter()
       const regularAuthStore = useRegularAuthStore()
       const staffAuthStore = useStaffAuthStore()
       useCookies().cookies.remove('user-token');
       useCookies().cookies.remove('roleuser');
       // Clear the user in the respective store
-      if (regularAuthStore.user?.profile_id) {
+      if (regularAuthStore.user) {
         regularAuthStore.clear()
       } else {
         staffAuthStore.clear()
@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', {
       this.role = null
       this.token = null
       this.isAuthenticated = false
-      router.push('/')
+      return true;
     },
     async fetchAuth() {
       // const role = useCookie('cicsapp-roleuser')
