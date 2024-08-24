@@ -2,6 +2,8 @@ package com.ayd1.APIecommerce.transformers;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
 public class PaginateApiBaseTransformer extends ApiBaseTransformer {
 
     private int total;
@@ -15,15 +17,15 @@ public class PaginateApiBaseTransformer extends ApiBaseTransformer {
         super();
     }
 
-    public PaginateApiBaseTransformer(int code, String message, Object data, String warning, String error,
+    public PaginateApiBaseTransformer(HttpStatus status, String message, Object data, String warning, String error,
             List<String> errors, List<String> warnings) {
-        super(code, message, data, warning, error, errors, warnings);
+        super(status, message, data, warning, error, errors, warnings);
     }
 
-    public PaginateApiBaseTransformer(int code, String message, Object data, String warning, String error,
+    public PaginateApiBaseTransformer(HttpStatus status, String message, Object data, String warning, String error,
             List<String> errors, List<String> warnings, int total, int lastPage, int currentPage, int perPage,
             String nextPageUrl, String prevPageUrl) {
-        super(code, message, data, warning, error, errors, warnings);
+        super(status, message, data, warning, error, errors, warnings);
         this.total = total;
         this.lastPage = lastPage;
         this.currentPage = currentPage;
@@ -32,13 +34,13 @@ public class PaginateApiBaseTransformer extends ApiBaseTransformer {
         this.prevPageUrl = prevPageUrl;
     }
 
-    public PaginateApiBaseTransformer(int code, String message, Object data, String warning, String error) {
-        super(code, message, data, warning, error);
+    public PaginateApiBaseTransformer(HttpStatus status, String message, Object data, String warning, String error) {
+        super(status, message, data, warning, error);
     }
 
-    public PaginateApiBaseTransformer(int code, String message, Object data, String warning, String error, int total,
+    public PaginateApiBaseTransformer(HttpStatus status, String message, Object data, String warning, String error, int total,
             int lastPage, int currentPage, int perPage, String nextPageUrl, String prevPageUrl) {
-        super(code, message, data, warning, error);
+        super(status, message, data, warning, error);
         this.total = total;
         this.lastPage = lastPage;
         this.currentPage = currentPage;

@@ -17,6 +17,7 @@ import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("api")
@@ -26,80 +27,80 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping("/usuario/{id}")
-    public ApiBaseTransformer getUsuario(@PathVariable Long id) {
+    public ResponseEntity<?> getUsuario(@PathVariable Long id) {
         Object data = usuarioService.getUsuario(id);
-        return new ApiBaseTransformer(200, "OK", data, null, null);
+        return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
     }
 
     @PostMapping("/usuario")
-    public ApiBaseTransformer postMethodName(@RequestBody String entity) {
-        return new ApiBaseTransformer(200, "OK", null, null, null);
+    public ResponseEntity<?> postMethodName(@RequestBody String entity) {
+        return new ApiBaseTransformer(HttpStatus.OK, "OK", null, null, null).sendResponse();
     }
 
     @PutMapping("usuario/{id}")
-    public ApiBaseTransformer putMethodName(@PathVariable String id, @RequestBody String entity) {
-        return new ApiBaseTransformer(200, "OK", null, null, null);
+    public ResponseEntity<?> putMethodName(@PathVariable String id, @RequestBody String entity) {
+        return new ApiBaseTransformer(HttpStatus.OK, "OK", null, null, null).sendResponse();
     }
 
     @DeleteMapping("usuario/{id}")
-    public ApiBaseTransformer deleteMethodName(@PathVariable String id) {
-        return new ApiBaseTransformer(200, "OK", null, null, null);
+    public ResponseEntity<?> deleteMethodName(@PathVariable String id) {
+        return new ApiBaseTransformer(HttpStatus.OK, "OK", null, null, null).sendResponse();
     }
 
     @PostMapping("/usuario/public/recuperarPasswordMail")
-    public ApiBaseTransformer
+    public ResponseEntity<?>
             enviarMailDeRecuperacion(@RequestBody Map<String, Object> requestBody) {
 
         try {
             String correoElectronico = (String) requestBody.get("correoElectronico");
             String mensaje = usuarioService.enviarMailDeRecuperacion(correoElectronico);
-            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", mensaje,
-                    null, null);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", mensaje,
+                    null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     ex.getMessage(),
-                    null, null, null);
+                    null, null, null).sendResponse();
         }
 
     }
 
     @PostMapping("/usuario/public/cambioPassword")
-    public ApiBaseTransformer cambiarPassword(@RequestBody PasswordChange requestBody) {
+    public ResponseEntity<?> cambiarPassword(@RequestBody PasswordChange requestBody) {
         try {
             String respuesta = usuarioService.cambiarPassword(requestBody);
-            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
-                    null, null);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
+                    null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     ex.getMessage(),
-                    null, null, null);
+                    null, null, null).sendResponse();
         }
     }
 
     @PostMapping("/usuario/public/login")
-    public ApiBaseTransformer login(@RequestBody Usuario login) {
+    public ResponseEntity<?> login(@RequestBody Usuario login) {
         try {
             LoginDto respuesta = usuarioService.iniciarSesion(login);
-            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
-                    null, null);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
+                    null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     ex.getMessage(),
-                    null, null, null);
+                    null, null, null).sendResponse();
         }
     }
 
     @PostMapping("/usuario/public/crearUsuario")
-    public ApiBaseTransformer crearUsuario(@RequestBody Usuario crear) {
+    public ResponseEntity<?> crearUsuario(@RequestBody Usuario crear) {
         try {
             String respuesta = usuarioService.crearUsuarioNormal(crear);
-            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK", respuesta,
-                    null, null);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
+                    null, null).sendResponse();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     ex.getMessage(),
-                    null, null, null);
+                    null, null, null).sendResponse();
         }
     }
 
