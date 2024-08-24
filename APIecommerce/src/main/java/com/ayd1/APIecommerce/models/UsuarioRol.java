@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -22,6 +23,7 @@ public class UsuarioRol extends Auditor {
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "usuario", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private Usuario usuario;
 
     @ManyToOne//indicador de relacion muchos a uno

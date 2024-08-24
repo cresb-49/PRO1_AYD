@@ -4,6 +4,9 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,7 +24,7 @@ import org.hibernate.annotations.CascadeType;
  */
 @Entity
 @Table(name = "rol")
-public class Rol extends Auditor{
+public class Rol extends Auditor {
 
     @Column(name = "rol", length = 250, unique = true)
     @NotBlank(message = "El nombre del rol no puede estar vacío.")
@@ -31,17 +34,16 @@ public class Rol extends Auditor{
 
     @OneToMany(mappedBy = "rol", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    @JsonIgnore
     private List<UsuarioRol> asignaciones;
 
     public Rol(String nombre) {
         this.nombre = nombre;
     }
 
-
     public Rol(Long id) {
         super(id);
     }
-    
 
     public Rol() {
     }
