@@ -51,8 +51,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/usuario/public/recuperarPasswordMail")
-    public ResponseEntity<?>
-            enviarMailDeRecuperacion(@RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<?> enviarMailDeRecuperacion(@RequestBody Map<String, Object> requestBody) {
 
         try {
             String correoElectronico = (String) requestBody.get("correoElectronico");
@@ -108,63 +107,66 @@ public class UsuarioController {
     }
 
     @GetMapping("/usuario/public/perfil/{id}")
-    public ApiBaseTransformer getPerfil(@PathVariable Long id) {
+    public ResponseEntity<?> getPerfil(@PathVariable Long id) {
         try {
             Usuario usuario = usuarioService.getUsuario(id);
-            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK",
+            return new ApiBaseTransformer(HttpStatus.OK, "OK",
                     usuario,
-                    null, null);
+                    null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     ex.getMessage(),
-                    null, null, null);
+                    null, null, null).sendResponse();
         }
     }
 
     @DeleteMapping("/usuario/public/eliminarUsuario/{id}")
-    public ApiBaseTransformer eliminarUsuario(@PathVariable Long id) {
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         try {
             String confirmacion = usuarioService.eliminarUsuario(id);
-            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK",
+            return new ApiBaseTransformer(HttpStatus.OK, "OK",
                     confirmacion,
-                    null, null);
+                    null, null).sendResponse();
         } catch (NumberFormatException ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     "Id con formato invalido",
-                    null, null, null);
+                    null, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     ex.getMessage(),
-                    null, null, null);
+                    null, null, null).sendResponse();
         }
     }
 
     @PatchMapping("/usuario/public/updateUsuario/{id}")
-    public ApiBaseTransformer actualizarUsuarioParcial(@PathVariable Long id,
+    public ResponseEntity<?> actualizarUsuarioParcial(@PathVariable Long id,
             @RequestBody Usuario updates) {
         try {
             Usuario confirmacion = usuarioService.updateUsuario(id, updates);
-            return new ApiBaseTransformer(HttpStatus.OK.value(), "OK",
+            return new ApiBaseTransformer(HttpStatus.OK, "OK",
                     confirmacion,
-                    null, null);
+                    null, null).sendResponse();
         } catch (NumberFormatException ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     "Id con formato invalido",
-                    null, null, null);
+                    null, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST.value(),
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     ex.getMessage(),
-                    null, null, null);
+                    null, null, null).sendResponse();
         }
     }
 
     /*
-    @PostMapping("/usuario/activarCuentaMail")
-    public String enviarMailDeConfirmacion(@RequestBody String correoElectronico) {
-        return estadoCuentaService.enviarCorreoDeActivacion(correoElectronico);
-    }
-    @PostMapping("/usuario/activarCuenta")
-    public String activarCuenta(@RequestBody String codigo) {
-        return estadoCuentaService.activarCuenta(codigo);
-    } */
+     * @PostMapping("/usuario/activarCuentaMail")
+     * public String enviarMailDeConfirmacion(@RequestBody String correoElectronico)
+     * {
+     * return estadoCuentaService.enviarCorreoDeActivacion(correoElectronico);
+     * }
+     * 
+     * @PostMapping("/usuario/activarCuenta")
+     * public String activarCuenta(@RequestBody String codigo) {
+     * return estadoCuentaService.activarCuenta(codigo);
+     * }
+     */
 }
