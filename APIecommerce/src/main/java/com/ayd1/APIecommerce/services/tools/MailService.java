@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.services.tools;
 
+import com.ayd1.APIecommerce.models.noBD.AppProperties;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +20,19 @@ import org.thymeleaf.context.Context;
  */
 @Component
 public class MailService {
-    
+
     @Autowired
     private JavaMailSender mailSender;
     @Autowired
     private TemplateEngine templateEngine;
+    @Autowired
+    private AppProperties appProperties;
 
     /**
-     * 
+     *
      * @param correo 1: confirmacion, 2.recuperacion
      * @param codigo
-     * @param tipoDeCorreo 
+     * @param tipoDeCorreo
      */
     public void enviarCorreoEnSegundoPlano(String correo, String codigo, int tipoDeCorreo) {
         Thread hiloMail = new Thread() {
@@ -52,6 +55,7 @@ public class MailService {
         try {
             Context context = new Context();//crear nuevo contexto
             context.setVariable("code", codigoActivacion);//adjuntar las variables
+            context.setVariable("host", this.appProperties.getHostFront1());//adjuntar las variables
             String html = templateEngine.process("CorreoConfirmacion", context);
             //mandamos el correo electronico
             MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -68,8 +72,11 @@ public class MailService {
 
     private void enviarCorreoDeRecuperacion(String correo, String codigoActivacion) {
         try {
+            System.out.println(this.appProperties.getHostFront1());
             Context context = new Context();//crear nuevo contexto
             context.setVariable("code", codigoActivacion);//adjuntar las variables
+            context.setVariable("host", this.appProperties.getHostFront1());//adjuntar las variables
+
             String html = templateEngine.process("CorreoDeRecuperacion", context);
             //mandamos el correo electronico
             MimeMessage mimeMessage = mailSender.createMimeMessage();
