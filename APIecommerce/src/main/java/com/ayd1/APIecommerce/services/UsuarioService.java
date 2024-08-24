@@ -1,15 +1,25 @@
 package com.ayd1.APIecommerce.services;
 
-import com.ayd1.APIecommerce.models.dto.LoginDto;
-import com.ayd1.APIecommerce.models.Rol;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.UsuarioRol;
+
 import com.ayd1.APIecommerce.models.noBD.AppProperties;
+import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
@@ -17,6 +27,7 @@ import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
 import com.ayd1.APIecommerce.services.tools.MailService;
 import com.ayd1.APIecommerce.tools.Encriptador;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -26,6 +37,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+
 
 @Service
 public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
@@ -144,7 +156,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             mailService.enviarCorreoEnSegundoPlano(actualizacion.getEmail(),
                     actualizacion.getCodigoRecuperacion(), 2);
             return "Te hemos enviado un correo electrónico con las "
-                    + "instrucciones para recuperar tu cuenta MeXpose. Por favor revisa tu bandeja de entrada.";
+                    + "instrucciones para recuperar tu cuenta. Por favor revisa tu bandeja de entrada.";
         }
         throw new Exception("No hemos podido enviar el correo electrónico. Intentalo más tarde.");
     }

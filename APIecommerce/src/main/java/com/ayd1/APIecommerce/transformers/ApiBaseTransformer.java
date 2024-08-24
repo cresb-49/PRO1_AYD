@@ -2,7 +2,15 @@ package com.ayd1.APIecommerce.transformers;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ApiBaseTransformer {
+    @JsonIgnore
+    protected HttpStatus status;
+
     private int code;
     private String message;
     private Object data;
@@ -15,9 +23,11 @@ public class ApiBaseTransformer {
 
     }
 
-    public ApiBaseTransformer(int code, String message, Object data, String warning, String error, List<String> errors,
+    public ApiBaseTransformer(HttpStatus status, String message, Object data, String warning, String error,
+            List<String> errors,
             List<String> warnings) {
-        this.code = code;
+        this.status = status;
+        this.code = status.value();
         this.message = message;
         this.data = data;
         this.warning = warning;
@@ -26,14 +36,34 @@ public class ApiBaseTransformer {
         this.warnings = warnings;
     }
 
-    public ApiBaseTransformer(int code, String message, Object data, String warning, String error) {
-        this.code = code;
+    public ApiBaseTransformer(HttpStatus status, String message, Object data, String warning, String error) {
+        this.status = status;
+        this.code = status.value();
         this.message = message;
         this.data = data;
         this.warning = warning;
         this.error = error;
         this.errors = null;
         this.warnings = null;
+    }
+
+    public ResponseEntity<?> sendResponse() {
+        if (this.getClass().isAssignableFrom(ApiBaseTransformer.class)) {
+            return ResponseEntity.status(this.status).body((ApiBaseTransformer) this);
+        } else if (this.getClass().isAssignableFrom(PaginateApiBaseTransformer.class)) {
+            return ResponseEntity.status(this.status).body((PaginateApiBaseTransformer) this);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    public HttpStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+        this.code = status.value();
     }
 
     public int getCode() {
