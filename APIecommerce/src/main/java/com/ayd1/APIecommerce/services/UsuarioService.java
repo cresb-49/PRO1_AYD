@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.UsuarioRol;
+
+import com.ayd1.APIecommerce.models.noBD.AppProperties;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.repositories.RolRepository;
@@ -25,6 +27,17 @@ import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
 import com.ayd1.APIecommerce.services.tools.MailService;
 import com.ayd1.APIecommerce.tools.Encriptador;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
+import javax.transaction.Transactional;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+
 
 @Service
 public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
@@ -48,20 +61,74 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         return usuarioRepository.findAll();
     }
 
-    public Usuario getUsuario(Long id) {
-        return usuarioRepository.findById(id).orElse(null);
-    }
-
-    public Usuario createUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
-    }
-
-    public Usuario updateUsuario(Long id, Usuario usuario) {
-        Usuario usuarioExistente = usuarioRepository.findById(id).orElse(null);
-        if (usuarioExistente != null) {
-            return usuarioRepository.save(usuarioExistente);
+    public Usuario getUsuario(Long id) throws Exception {
+        if (id == null || id <= 0) {//si el correo esta en blanco entonces lanzmaos error
+            throw new Exception("Id invalido.");
         }
-        return null;
+
+        //mandamos a traer el estado de la cuenta
+        Optional<Usuario> busquedaUsuario
+                = usuarioRepository.findById(id);
+
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+
+        return busquedaUsuario.get();
+    }
+
+    public String eliminarUsuario(Long id) throws Exception {
+        if (id == null || id <= 0) {//si el correo esta en blanco entonces lanzmaos error
+            throw new Exception("Id invalido.");
+        }
+        //mandamos a traer el estado de la cuenta
+        Optional<Usuario> busquedaUsuario
+                = usuarioRepository.findById(id);
+        //si esta vacio entonces el usuairo no existe
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+        //extraer el usuario
+        Usuario usuario = busquedaUsuario.get();
+        //seteamos la fecha de eliminacion
+        usuario.setDeletedAt(Instant.now());
+        //editar el usuario
+        Usuario usuarioUpdate = this.usuarioRepository.save(usuario);
+        //mandamos a editar la password y comparamos si se hizo el cambio
+        if (usuarioUpdate.getId() > 0) {
+            return "Se elimino el usuario con exito.";
+        }
+        throw new Exception("No pudimos eliminar el usuario, inténtalo más tarde.");
+    }
+
+    @Transactional
+    public Usuario updateUsuario(Long id, Usuario usuario) throws Exception {
+        if (id == null || id <= 0) {//si el correo esta en blanco entonces lanzmaos error
+            throw new Exception("Id invalido.");
+        }
+        Optional<Usuario> busquedaUsuario
+                = usuarioRepository.findById(id);
+        //si esta vacio entonces el usuairo no existe
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+        //extraer el usuario
+        Usuario usuarioEncontrado = busquedaUsuario.get();
+
+        //si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese usuario
+        if (usuarioEncontrado.getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+        //evitamos que se cambie la contrasenia en este metodo
+        usuario.setPassword(usuarioEncontrado.getPassword());
+        this.validar(usuario);
+        //editar el usuario
+        Usuario usuarioUpdate = this.usuarioRepository.save(usuario);
+        //mandamos a editar la password y comparamos si se hizo el cambio
+        if (usuarioUpdate.getId() > 0) {
+            return usuarioUpdate;
+        }
+        throw new Exception("No pudimos actualizar el usuario, inténtalo más tarde.");
     }
 
     public String enviarMailDeRecuperacion(String correo) throws Exception {
@@ -103,6 +170,13 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
                 throw new Exception("Correo electronico incorrecto.");
             }
 
+            Usuario usuario = busquedaUsuario.get();
+
+            //si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese usuario
+            if (usuario.getDeletedAt() != null) {
+                throw new Exception("Uusario ha sido eliminado.");
+            }
+
             authenticationManager.authenticate(
                     //autenticar el usuario con la contrasenia encriptada
                     new UsernamePasswordAuthenticationToken(log.getEmail(),
@@ -114,7 +188,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
                             log.getEmail());
             //generar el token
             String jwt = jwtGenerator.generateToken(userDetails);
-            return new LoginDto(busquedaUsuario.get(), jwt);//devolver la respuesta 
+            return new LoginDto(usuario, jwt);//devolver la respuesta 
 
         } catch (AuthenticationException ex) {
             throw new Exception(ex.getMessage());

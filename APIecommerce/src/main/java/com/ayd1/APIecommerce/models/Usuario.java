@@ -4,6 +4,8 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -57,9 +59,11 @@ public class Usuario extends Auditor {
     private boolean estadoActivacion;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    // @JsonManagedReference
     private List<UsuarioRol> roles;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    @JsonIgnore
     private List<DatosFacturacion> facturas;
 
     /**
