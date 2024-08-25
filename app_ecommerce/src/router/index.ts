@@ -1,7 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, useRoute } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import EmptyLayout from '@/layouts/EmptyLayout.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,16 +10,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      meta: {title: 'Homepage', layout: DefaultLayout},
+      meta: {title: 'homepage', layout: DefaultLayout},
       component: HomeView
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      path: '/perfil',
+      name: 'perfil',
+      meta: {title: 'perfil', layout: DefaultLayout},
+      component: () => import('../views/profile/ProfileView.vue')
+    },
+    {
+      path: '/perfil/edit',
+      name: 'perfil-editar',
+      meta: {title: 'perfil-editar', layout: DefaultLayout},
+      component: () => import('../views/profile/ProfileEditView.vue')
     },
     {
       path: '/login',
@@ -36,6 +41,20 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
+  //Se obtiene la autenticacion actual
+  const {user, role} = useAuthStore();
+
+  if (to.path === '/login' && user) {
+    if (from.path === '/login') {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  } else if (to.path === '/sign-up' && user) {
+    if (from.path === '/sign-up') {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  }
 })
 
 export default router

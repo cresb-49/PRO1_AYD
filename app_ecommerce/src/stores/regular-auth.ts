@@ -143,9 +143,11 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.loading = true
       // const snackbarStore = useSnackbarStore()
 
-      const { data } = await useCustomFetch<User>('/auth/me')
+      const { data } = await useCustomFetch<User>(`api/usuario/public/perfil/${this.user!.id}`,
+        {method: 'GET'}
+      )
       if (data.value) {
-        this.user = data?.value
+        this.user = data?.value?.data
       } else {
         useSnackbarStore().showSnackbar({
           title: 'Error de sesión',
@@ -158,9 +160,10 @@ export const useRegularAuthStore = defineStore('regular-auth', {
     },
     async updateProfile(payload: UserUpdatePayload) {
       this.loading = true
-      const { data, error } = await useCustomFetch<User>('/auth/me', {
-        method: 'PUT',
-        body: JSON.stringify(payload)
+      const user_id = this.user!.id
+      const { data, error } = await useCustomFetch<User>('api/usuario/public/updateUsuario', {
+        method: 'PATCH',
+        body: JSON.stringify({user_id, ...payload})
       })
       if (error.value) {
         console.log(error.value)

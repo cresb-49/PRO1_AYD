@@ -4,7 +4,9 @@
       <v-btn icon="mdi-menu" @click="drawer = !drawer" />
         <v-spacer></v-spacer>
       <v-app-bar-title class="mt-n1">
-        <strong>Portal </strong> - ECommerce
+        <router-link to="/" style="text-decoration: none; color:inherit">
+        <strong> Logo </strong> - ECommerce
+        </router-link>
       </v-app-bar-title>
       <div v-if="!user" class="app-bar__user-info">
         <!-- Dashboard action (regular and admin) -->
@@ -23,7 +25,7 @@
             <v-avatar
               v-bind="props"
               class="app-bar__avatar text-accent-4"
-              @click="$router.push('/dashboard/profile')"
+              @click="$router.push('/perfil')"
             >
               <strong>
                 {{ loggedUser?.nombres[0]
@@ -88,7 +90,7 @@
 
       <v-footer style="flex-grow: 0" class="pa-4">
         <v-col class="text-center" cols="12">
-          <strong>CICS</strong> — {{ new Date().getFullYear() }}
+          <strong>AyD</strong> — {{ new Date().getFullYear() }}
         </v-col>
       </v-footer>
     </v-main>
@@ -117,6 +119,8 @@ const elevation = computed(() => {
 })
 
 const loggedUser = computed(() => {
+  console.log('usuario')
+  console.log(user)
   return user as User
 })
 
