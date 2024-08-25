@@ -30,7 +30,8 @@ public class CorsConfig implements WebMvcConfigurer {
                         "GET",
                         "POST",
                         "PUT",
-                        "DELETE")
+                        "DELETE",
+                        "PATCH")
                 .allowCredentials(true);
     }
 }
