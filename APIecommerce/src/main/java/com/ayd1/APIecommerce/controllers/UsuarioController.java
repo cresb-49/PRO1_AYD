@@ -116,7 +116,37 @@ public class UsuarioController {
     @PostMapping("/usuario/public/crearUsuario")
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario crear) {
         try {
-            LoginDto respuesta = usuarioService.crearUsuarioNormal(crear);
+            LoginDto respuesta = usuarioService.crearUsuario(crear, "USUARIO");
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
+                    null, null).sendResponse();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
+                    ex.getMessage(),
+                    null, null, null).sendResponse();
+        }
+    }
+
+    @PostMapping("/usuario/private/crearAdministrador")
+    public ResponseEntity<?> crearAdministrador(@RequestBody Usuario crear) {
+        try {
+            String rol = "ADMIN";
+            LoginDto respuesta = usuarioService.crearUsuario(crear, rol);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
+                    null, null).sendResponse();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
+                    ex.getMessage(),
+                    null, null, null).sendResponse();
+        }
+    }
+
+    @PostMapping("/usuario/private/crearAyudante")
+    public ResponseEntity<?> crearAyudante(@RequestBody Usuario crear) {
+        try {
+            String rol = "AYUDANTE";
+            LoginDto respuesta = usuarioService.crearUsuario(crear, rol);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
                     null, null).sendResponse();
         } catch (Exception ex) {
