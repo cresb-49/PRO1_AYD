@@ -296,11 +296,11 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         throw new Exception("No pudimos actualizar tu contraseña, inténtalo más tarde.");
     }
 
-    public LoginDto crearUsuarioNormal(Usuario crear) throws Exception {
+    public LoginDto crearUsuario(Usuario crear, String rolStr) throws Exception {
         //validamos 
         this.validar(crear);
         // traer el rol (USUARIO)
-        Optional<Rol> rolBusqueda = this.rolRepository.findOneByNombre("USUARIO");
+        Optional<Rol> rolBusqueda = this.rolRepository.findOneByNombre(rolStr);
         //si el rol no existe lanzamos error
         if (rolBusqueda.isEmpty()) {
             throw new Exception("Rol no encontrado.");
