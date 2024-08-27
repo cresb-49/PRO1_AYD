@@ -127,7 +127,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/usuario/private/crearAdministrador")
+    @PostMapping("/usuario/private/admin/crearAdministrador")
     public ResponseEntity<?> crearAdministrador(@RequestBody Usuario crear) {
         try {
             String rol = "ADMIN";
@@ -142,7 +142,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/usuario/private/crearAyudante")
+    @PostMapping("/usuario/private/admin/crearAyudante")
     public ResponseEntity<?> crearAyudante(@RequestBody Usuario crear) {
         try {
             String rol = "AYUDANTE";

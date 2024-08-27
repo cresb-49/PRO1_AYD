@@ -42,9 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests()
                 .antMatchers("/api/**/public/**").permitAll()
-                .antMatchers("/api/usuario/private/**").hasAnyRole("USUARIO")
-                .antMatchers("/api/admin/private/**").hasAnyRole("ADMIN")
-                .antMatchers("/api/ayudante/private/**").hasAnyRole("AYUDANTE")
+                .antMatchers("/api/**/private/admin/**").hasAnyRole("ADMIN")
+                .antMatchers("/api/**/private/**").hasAnyRole("ADMIN", "AYUDANTE")
                 .anyRequest().authenticated().and().cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //agregamos el filtro jwt antes de los demas filtros

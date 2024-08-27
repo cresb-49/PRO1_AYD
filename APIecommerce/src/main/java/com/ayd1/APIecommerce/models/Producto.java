@@ -36,6 +36,7 @@ public class Producto extends Auditor {
 
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "categoria", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @NotNull(message = "La categoria del producto no puede ser nula")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Categoria categoria;
 
