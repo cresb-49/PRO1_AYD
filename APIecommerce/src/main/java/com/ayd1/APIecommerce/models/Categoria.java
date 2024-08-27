@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,10 +32,15 @@ public class Categoria extends Auditor {
 
     @OneToMany(mappedBy = "categoria", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonIgnore
     private List<Producto> productos;
 
     public Categoria(String nombre, Long id) {
         super(id);
+        this.nombre = nombre;
+    }
+
+    public Categoria(String nombre) {
         this.nombre = nombre;
     }
 

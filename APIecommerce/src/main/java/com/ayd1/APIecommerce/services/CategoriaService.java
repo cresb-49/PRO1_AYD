@@ -14,7 +14,7 @@ public class CategoriaService extends Service {
     private CategoriaRepository categoriaRepository;
 
     public List<Categoria> getCategorias() {
-        return categoriaRepository.findAll();
+        return (List<Categoria>) categoriaRepository.findAll();
     }
 
     public Categoria getCategoria(Long id) {
