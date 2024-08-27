@@ -4,8 +4,10 @@
  */
 package com.ayd1.APIecommerce.config;
 
+import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.UsuarioService;
@@ -28,6 +30,8 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     @Autowired
     private RolRepository rolRepository;
     @Autowired
+    private CategoriaRepository categoriaRepository;
+    @Autowired
     private UsuarioService usuarioService;
 
     public Rol insertarRol(Rol rol) throws Exception {
@@ -42,6 +46,18 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
         }
     }
 
+    public Categoria insertarCategoria(Categoria cat) throws Exception {
+        try {
+            Optional<Categoria> opCat = this.categoriaRepository.findOneByNombre(cat.getNombre());
+            if (opCat.isPresent()) {
+                return opCat.get();
+            }
+            return this.categoriaRepository.save(cat);
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
+    }
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
@@ -50,12 +66,16 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             Rol rolAdmin = this.insertarRol(new Rol("ADMIN"));
             this.insertarRol(new Rol("AYUDANTE"));
 
+            Categoria categoria = new Categoria("Hogar");
+            this.insertarCategoria(categoria);
+
             //sider usuario Admin
             Usuario admin = new Usuario("admin", "admin",
                     "admin@admin", null,
                     "123",
                     null, null, false);
             this.usuarioService.crearUsuario(admin, rolAdmin);
+
         } catch (Exception ex) {
             Logger.getLogger(Inserts.class.getName()).log(Level.SEVERE, null, ex);
         }
