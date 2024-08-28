@@ -1,8 +1,11 @@
 package com.ayd1.APIecommerce.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +35,16 @@ public class CategoriaController {
         }
     }
 
+    @GetMapping("/categorias/")
+    public ResponseEntity<?> getCategorias(@RequestBody String param) {
+        try {
+            List<Categoria> listaCategorias = categoriaService.getCategorias();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK",listaCategorias,null,null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), param, null, null).sendResponse();
+        }
+    }
+
     @PostMapping("/categoria/private/crearCategoria")
     public ResponseEntity<?> crearCategoria(@RequestBody Categoria nuevaCategoria) {
         try {
@@ -54,6 +67,15 @@ public class CategoriaController {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     e.getMessage(),
                     null, null, null).sendResponse();
+        }
+    }
+
+    @DeleteMapping("/categoria/private/eliminarCategoria")
+    public ResponseEntity<?> eliminarCategoria() {
+        try {
+            return new ApiBaseTransformer(HttpStatus.OK, null,null,null,null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
     }
 }

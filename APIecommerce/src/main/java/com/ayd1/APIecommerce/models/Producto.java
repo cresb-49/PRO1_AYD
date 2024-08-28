@@ -7,6 +7,7 @@ package com.ayd1.APIecommerce.models;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -17,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -26,6 +28,7 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "producto")
+@DynamicUpdate
 public class Producto extends Auditor {
 
     @Column(name = "nombre", length = 250, unique = false)
@@ -36,6 +39,7 @@ public class Producto extends Auditor {
 
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "categoria", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @NotNull(message = "La categoria del producto no puede ser nula")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Categoria categoria;
 
@@ -48,6 +52,7 @@ public class Producto extends Auditor {
     private Double precio;
 
     @Column(name = "habilitado", nullable = false)
+    @NotNull(message = "El estado del producto no puede ser nulo")
     private Boolean habilitado;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
@@ -58,7 +63,7 @@ public class Producto extends Auditor {
     @Cascade(CascadeType.ALL)
     private List<LineaVenta> lineaVentas;
 
-    @OneToMany(mappedBy = "producto", orphanRemoval = true)
+    @OneToMany(mappedBy = "producto", orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
     private List<Imagen> imagenes;
 
