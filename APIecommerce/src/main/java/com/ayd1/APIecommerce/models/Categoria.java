@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -24,7 +26,8 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "categoria")
 public class Categoria extends Auditor {
 
-    @Column(name = "id_padre")
+    @ManyToOne
+    @JoinColumn(name = "id_padre")
     private Categoria padre;
 
     @Column(name = "nombre", length = 250, unique = true)
