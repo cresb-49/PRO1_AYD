@@ -6,22 +6,28 @@
         Regresar
       </v-btn>
     </header>
-    <section class="profile-edit-section">
-      <NewCategoryForm/>
+    <section class="">
+      <NewCategoryForm @create="crearCategoria"/>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/stores/auth';
-import { useRegularAuthStore } from '@/stores/regular-auth';
+import { useCategoryStore } from '@/stores/categories';
 import NewCategoryForm from '@/components/forms/admin/categories/NewCategoryForm.vue';
+import { useRouter } from 'vue-router';
 
-const authStore = useAuthStore()
-authStore.fetchUser()
-const regularAuthStore = useRegularAuthStore()
-const { user } = storeToRefs(regularAuthStore)
+const categoryStore = useCategoryStore();
+const {createCategory} = categoryStore;
+
+const router = useRouter();
+
+async function crearCategoria(parameters: {name: string, categoriaPadre: number}) {
+  const {error} = await createCategory(parameters)
+  if (error === false) {
+    router.push('/admin/categorias');
+  }
+}
 </script>
 
 <style lang="scss" scoped>
