@@ -2,7 +2,6 @@
   <v-app :theme="theme">
     <v-app-bar class="app-bar" :elevation="elevation">
       <v-btn icon="mdi-menu" @click="drawer = !drawer" />
-        <v-spacer></v-spacer>
       <v-app-bar-title class="mt-n1">
         <router-link to="/" style="text-decoration: none; color:inherit">
         <strong> Logo </strong> - ECommerce
@@ -18,7 +17,7 @@
           </template>
         </v-tooltip>
       </div>
-      <div v-if="user && loggedUser" class="app-bar__user-info">
+      <div v-if="user && role === 'regular'" class="app-bar__user-info">
         <!-- If user is logged in -->
         <v-tooltip text="Mi perfil" location="bottom">
           <template #activator="{ props }">
@@ -42,36 +41,22 @@
           </template>
         </v-tooltip>
       </div>
-      <div v-if="user && !loggedUser" class="app-bar__user-info">
+      <div v-if="user && role !== 'regular'" class="app-bar__user-info">
         <!-- Dashboard action (regular and admin) -->
         <v-tooltip text="Administración" location="bottom">
           <template #activator="{ props }">
             <v-avatar
               v-bind="props"
               class="app-bar__avatar text-accent-4"
-              @click="$router.push('/dashboard/home')"
+              @click="$router.push('/admin/')"
             >
               <v-icon> mdi-view-dashboard-outline </v-icon>
             </v-avatar>
           </template>
         </v-tooltip>
-        <!-- If user is logged in -->
-        <v-tooltip text="Mi perfil" location="bottom">
-          <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/perfil')"
-            >
-              <strong>
-                {{ loggedStaff?.nombres }}{{ loggedStaff?.apellidos }}
-              </strong>
-            </v-avatar>
-          </template>
-        </v-tooltip>
         <v-tooltip text="Cerrar sesión" location="bottom">
           <template #activator="{ props }">
-            <v-btn icon v-bind="props" @click="logout">
+            <v-btn icon v-bind="props" @click="logoutSession">
               <v-icon> mdi-logout-variant </v-icon>
             </v-btn>
           </template>
@@ -98,7 +83,6 @@
   </v-app>
 </template>
 <script setup lang="ts">
-import { mapState, mapActions, storeToRefs } from 'pinia'
 import { useConfigsStore } from '../stores/config'
 import { useAuthStore } from '../stores/auth'
 import { type User } from '../stores/regular-auth'
@@ -119,13 +103,7 @@ const elevation = computed(() => {
 })
 
 const loggedUser = computed(() => {
-  console.log('usuario')
-  console.log(user)
   return user as User
-})
-
-const loggedStaff = computed(() => {
-  return user as Staff
 })
 
 function logoutSession() {

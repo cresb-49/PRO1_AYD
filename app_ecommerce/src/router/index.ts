@@ -36,7 +36,19 @@ const router = createRouter({
       name: 'sign-up',
       meta: {title: 'Sign Up', layout: EmptyLayout},
       component: () => import('../views/SignUpView.vue')
-    }
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      meta: {title: 'Admin', layout: DefaultLayout},
+      component: () => import('../views/admin/AdminView.vue')
+    },
+    {
+      path: '/admin/categorias',
+      name: 'admin-categorias',
+      meta: {title: 'Admin Categorias', layout: DefaultLayout},
+      component: () => import('../views/admin/categorias/CategoriasView.vue')
+    },
   ]
 })
 
@@ -51,6 +63,18 @@ router.beforeEach(async (to, from) => {
     return {path: from.path};
   } else if (to.path === '/sign-up' && user) {
     if (from.path === '/sign-up') {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  } else if (to.path.includes('/perfil') && !user) {
+    if (from.path.includes('/perfil')) {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  } else if (to.path.includes('/admin') && (!user || (user && (role === 'regular')))) {
+    //Si se intenta ir a una ruta de admin y no hay usuario, o hay usuario pero su rol es normal
+    if (from.path.includes('/admin')) {
+      //Si el path de donde viene es igual al path a donde va se devuelve a home
       return {path: '/'};
     }
     return {path: from.path};
