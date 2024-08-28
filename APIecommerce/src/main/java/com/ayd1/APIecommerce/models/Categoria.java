@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -24,6 +26,10 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "categoria")
 public class Categoria extends Auditor {
 
+    @ManyToOne
+    @JoinColumn(name = "id_padre")
+    private Categoria padre;
+
     @Column(name = "nombre", length = 250, unique = true)
     @NotBlank(message = "El nombre de la categoria no puede estar vacío.")
     @NotNull(message = "El nombre de la categoria no puede ser nulo")
@@ -35,8 +41,8 @@ public class Categoria extends Auditor {
     @JsonIgnore
     private List<Producto> productos;
 
-    public Categoria(String nombre, Long id) {
-        super(id);
+    public Categoria(Categoria padre, String nombre) {
+        this.padre = padre;
         this.nombre = nombre;
     }
 
@@ -65,6 +71,14 @@ public class Categoria extends Auditor {
 
     public void setProductos(List<Producto> productos) {
         this.productos = productos;
+    }
+
+    public Categoria getPadre() {
+        return padre;
+    }
+
+    public void setPadre(Categoria padre) {
+        this.padre = padre;
     }
 
 }
