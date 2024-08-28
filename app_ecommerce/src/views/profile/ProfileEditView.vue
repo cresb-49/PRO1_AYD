@@ -17,24 +17,24 @@
       <PasswordProfileForm
         :src="user"
         :loading="loading"
+        ref="passwordForm"
         @save-password="updateUserPassword($event)"
       />
     </section>
   </main>
 </template>
 <script setup lang="ts">
-import PersonalInfoForm from '../../components/profile/PersonalInfoForm.vue'
-import PasswordProfileForm from '../../components/profile/PasswordProfileForm.vue'
+import PersonalInfoForm from '../../components/forms/profiles/PersonalInfoForm.vue'
+import PasswordProfileForm from '../../components/forms/profiles/PasswordProfileForm.vue'
 import { useRegularAuthStore, type UserUpdatePayload } from '@/stores/regular-auth';
+import { ref } from 'vue';
 
 const regularAuthStore = useRegularAuthStore();
-const {user, authenticated, loading, myProfile, updateProfile} = regularAuthStore;
-
-function updateUserProfile(user: UserUpdatePayload) {
-  updateProfile(user)
-}
+const {user, loading, updateProfile} = regularAuthStore;
+const passwordForm = ref()
 
 function updateUserPassword(userWithPassword: UserUpdatePayload) {
+  passwordForm.value!.resetFields()
   updateProfile(userWithPassword)
 }
 </script>

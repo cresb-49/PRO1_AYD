@@ -86,7 +86,10 @@ export default {
     async savePassword() {
       const form = await this.$refs.passForm.validate()
       if (!form.valid) return
-      this.$emit('savePassword', { user: { password: this.password } })
+      this.$emit('savePassword', { password: this.password })
+    },
+    resetFields() {
+      this.$refs.passForm.reset()
     }
   }
 }

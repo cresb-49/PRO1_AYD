@@ -56,7 +56,7 @@
 </template>
 <script lang="ts">
 import type { PropType } from 'vue';
-import { type User } from '../../stores/regular-auth'
+import { type User } from '../../../stores/regular-auth'
 
 export default {
   props: {
