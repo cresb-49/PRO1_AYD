@@ -49,7 +49,7 @@ public class CategoriaController {
     public ResponseEntity<?> crearCategoria(@RequestBody Categoria nuevaCategoria) {
         try {
             Categoria categoria = categoriaService.createCategoria(nuevaCategoria);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", null,
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", categoria,
                     null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
