@@ -49,6 +49,18 @@ const router = createRouter({
       meta: {title: 'Admin Categorias', layout: DefaultLayout},
       component: () => import('../views/admin/categorias/CategoriasView.vue')
     },
+    {
+      path: '/admin/categorias/edit/:id',
+      name: 'admin-categorias-editar',
+      meta: {title: 'Admin Categorias-Edit', layout: DefaultLayout},
+      component: () => import('../views/admin/categorias/CategoriasEditView.vue')
+    },
+    {
+      path: '/admin/categorias/add',
+      name: 'admin-categorias-agregar',
+      meta: {title: 'Admin Categorias-Add', layout: DefaultLayout},
+      component: () => import('../views/admin/categorias/CategoriasAddView.vue')
+    },
   ]
 })
 

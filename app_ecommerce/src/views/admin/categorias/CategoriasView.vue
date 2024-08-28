@@ -7,7 +7,7 @@
         to="/admin"
         class="mt-3"
       >
-        Volver
+        Regresar
       </v-btn>
       <v-btn
         prepend-icon="mdi-pencil-outline"
@@ -34,5 +34,5 @@
   const consoleLog = (i: number) => {
   }
   
-  const actionsTable = [{name: 'Editar', path: '/admin/categorias/add'}, {name: 'Disable', onClick: consoleLog}]
+  const actionsTable = [{name: 'Editar', path: '/admin/categorias/edit/:id'}, {name: 'Disable', onClick: consoleLog}]
 </script>
