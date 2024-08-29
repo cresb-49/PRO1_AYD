@@ -35,13 +35,13 @@ public class CategoriaController {
         }
     }
 
-    @GetMapping("/categorias/")
-    public ResponseEntity<?> getCategorias(@RequestBody String param) {
+    @GetMapping("/categorias")
+    public ResponseEntity<?> getCategorias() {
         try {
             List<Categoria> listaCategorias = categoriaService.getCategorias();
             return new ApiBaseTransformer(HttpStatus.OK, "OK",listaCategorias,null,null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), param, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
     }
 
