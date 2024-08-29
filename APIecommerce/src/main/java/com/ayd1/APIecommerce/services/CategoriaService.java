@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.el.stream.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ayd1.APIecommerce.models.Categoria;
@@ -16,8 +15,14 @@ public class CategoriaService extends Service {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public List<Categoria> getCategorias() {
-        return (List<Categoria>) categoriaRepository.findAll();
+    public List<Categoria> getCategorias() throws Exception {
+        
+        List<Categoria> listaCategorias = (List<Categoria>) categoriaRepository.findAll();
+        
+        if (listaCategorias == null) {
+            throw new Exception("No se encontró ninguna categoría");    
+        }
+        return listaCategorias;
     }
 
     public Categoria getCategoria(Long id) throws Exception {
