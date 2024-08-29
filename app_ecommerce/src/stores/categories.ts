@@ -28,18 +28,51 @@ export const useCategoryStore = defineStore('categories', {
     error: false
   }),
   actions: {
+    async fetchAllCategories() {
+      this.loading = true
+      
+      console.log('intenta obtener las categorias');
+
+      const { data, error } = await useCustomFetch<any>(
+        'api/categorias/',
+        {
+          method: 'GET',
+        }
+      )
+
+      console.log('intenta obtener las categorias');
+      console.log('data');
+      console.log(data);
+      console.log('error');
+      console.log(error);
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: convertError(error.value),
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
+    },
     async createCategory(payload: CreationPayload) {
       this.loading = true
 
       const { data, error } = await useCustomFetch<any>(
-        'api/usuario/private/crearCategoria',
+        'api/categoria/private/crearCategoria',
         {
           method: 'POST',
           body: JSON.stringify(payload)
         }
       )
 
-      // Errorr Handling
+      // Error Handling
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',

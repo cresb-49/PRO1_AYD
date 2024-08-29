@@ -23,8 +23,11 @@
   </main>
 </template>
 <script setup lang="ts">
-  import TableData from "../../../components/partials/TableData.vue";
-  
+import { useCategoryStore } from "@/stores/categories";
+import TableData from "../../../components/partials/TableData.vue";
+
+
+  const {fetchAllCategories} = useCategoryStore();
   const dataTable = [
     {id: '1', name: 'Categoria1'},
     {id: '2', name: 'Categoria2'},
@@ -35,4 +38,6 @@
   }
   
   const actionsTable = [{name: 'Editar', path: '/admin/categorias/edit/:id'}, {name: 'Disable', onClick: consoleLog}]
+
+  fetchAllCategories();
 </script>
