@@ -57,11 +57,11 @@ public class CategoriaController {
     }
 
     @PatchMapping("/categoria/private/updateCategoria")
-    public ResponseEntity<?> actualizarCategoria(@RequestBody Long id, Categoria editCategoria) {
+    public ResponseEntity<?> actualizarCategoria(@RequestBody Categoria editCategoria) {
         try {
-            Categoria okCategoria = categoriaService.updateCategoria(id, editCategoria);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-            okCategoria,
+            Categoria actualCategoria = categoriaService.updateCategoria(editCategoria);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoria actualizada",
+            actualCategoria,
             null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
@@ -70,10 +70,11 @@ public class CategoriaController {
         }
     }
 
-    @DeleteMapping("/categoria/private/eliminarCategoria")
-    public ResponseEntity<?> eliminarCategoria() {
+    @DeleteMapping("/categoria/private/eliminarCategoria/{id}")
+    public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
         try {
-            return new ApiBaseTransformer(HttpStatus.OK, null,null,null,null).sendResponse();
+            String eliminacionCategoria = categoriaService.deleteCategoria(id);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoría eliminada con éxito",eliminacionCategoria,null,null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
