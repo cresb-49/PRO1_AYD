@@ -6,25 +6,34 @@
         Regresar
       </v-btn>
     </header>
-    <section class="profile-edit-section">
-      {{ $route.params.id }}
+    <section class="edit-section">
+      <EditCategoryForm :category_id="(route.params.id as unknown as number)" @update="updateCategoria"/>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useAuthStore } from '@/stores/auth';
-import { useRegularAuthStore } from '@/stores/regular-auth';
+import EditCategoryForm from '@/components/forms/admin/categories/EditCategoryForm.vue';
+import { useCategoryStore } from '@/stores/categories';
+import { useRoute } from 'vue-router';
 
-const authStore = useAuthStore()
-authStore.fetchUser()
-const regularAuthStore = useRegularAuthStore()
-const { user } = storeToRefs(regularAuthStore)
+const route = useRoute()
+const {fetchAllCategories, updateCategory} = useCategoryStore();
+
+fetchAllCategories()
+
+async function updateCategoria(params: {id: number, nombre: string, padre?: number}) {
+  const newAttributes = {
+    id: params.id,
+    nombre: params.nombre,
+    padre: params.padre
+  }
+  await updateCategory(newAttributes)
+}
 </script>
 
 <style lang="scss" scoped>
-.profile-edit-section {
+.edit-section {
   margin-bottom: 1.5rem;
 }
 </style>

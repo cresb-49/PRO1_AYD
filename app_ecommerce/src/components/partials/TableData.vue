@@ -2,16 +2,16 @@
     <v-table>
         <thead>
             <tr>
-                <th v-for="(header, i) in columns" :key="i" class="text-left">
-                    {{ header }}
+                <th v-for="column in columns" :key="column.propertyName" class="text-left">
+                    {{ column.name }}
                 </th>
                 <th v-if="actions.length > 0">Acciones</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="row in data" :key="row[data_key as unknown as number]">
-                <td v-for="(cell, n) in row" :key="n">
-                    {{ cell }}
+                <td v-for="column in columns" :key="column.propertyName">
+                    {{ row[column.propertyName as unknown as number] }}
                 </td>
                 <td v-if="actions.length > 0">
                     <v-btn v-for="action in actions" 
@@ -31,12 +31,16 @@ type Action = {
     path?: string
     onClick?: (entry_id: number) => void
 }
+type Column = {
+    name: string,
+    propertyName: string
+}
 
 export interface keyable {
     [key: number]: any
 }
 const props = defineProps({
-    columns: { type: Array<String>, required: true },
+    columns: { type: Array<Column>, required: true },
     data: { type: Array<keyable>, required: true },
     data_key: { type: String, required: true },
     actions: { type: Array<Action>, default: [] }

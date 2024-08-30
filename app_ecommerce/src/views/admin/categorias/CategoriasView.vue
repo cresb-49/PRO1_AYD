@@ -18,26 +18,26 @@
       </v-btn>
     </header>
     <section>
-      <TableData :columns="['Id', 'Nombres']" :data="dataTable" data_key="id" :actions="actionsTable"/>
+      <TableData :columns="columns" :data="categories" data_key="id" :actions="actionsTable"/>
     </section>
   </main>
 </template>
 <script setup lang="ts">
 import { useCategoryStore } from "@/stores/categories";
 import TableData from "../../../components/partials/TableData.vue";
-
+import { storeToRefs } from "pinia";
 
   const {fetchAllCategories} = useCategoryStore();
-  const dataTable = [
-    {id: '1', name: 'Categoria1'},
-    {id: '2', name: 'Categoria2'},
-    {id: '3', name: 'Categoria3'},
-  ]
+  const {categories} = storeToRefs(useCategoryStore());
   
   const consoleLog = (i: number) => {
   }
   
-  const actionsTable = [{name: 'Editar', path: '/admin/categorias/edit/:id'}, {name: 'Disable', onClick: consoleLog}]
+  const columns = [
+    {name: 'Id', propertyName: 'id'},
+    {name: 'Nombre', propertyName: 'nombre'},
+  ]
+  const actionsTable = [{name: 'Editar', path: '/admin/categorias/edit/:id'}, {name: 'Eliminar', onClick: consoleLog}]
 
   fetchAllCategories();
 </script>

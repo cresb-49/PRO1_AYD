@@ -18,16 +18,18 @@ import NewCategoryForm from '@/components/forms/admin/categories/NewCategoryForm
 import { useRouter } from 'vue-router';
 
 const categoryStore = useCategoryStore();
-const {createCategory} = categoryStore;
+const {createCategory, fetchAllCategories} = categoryStore;
 
 const router = useRouter();
 
-async function crearCategoria(parameters: {name: string, categoriaPadre: number}) {
+async function crearCategoria(parameters: {nombre: string, categoriaPadre: number}) {
   const {error} = await createCategory(parameters)
   if (error === false) {
     router.push('/admin/categorias');
   }
 }
+
+fetchAllCategories()
 </script>
 
 <style lang="scss" scoped>
