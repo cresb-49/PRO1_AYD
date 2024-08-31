@@ -58,7 +58,6 @@ public class FacturaService extends Service {
         this.validar(ventaRequest);
         //construir la venta
         Venta venta = this.construirVenta(ventaRequest);
-
         //obtener los datos de factuacion
         DatosFacturacion factura = this.guardarDatosFactuacion(ventaRequest, venta);
         /* Envio envio = this.guardarEnvio(venta, ventaRequest);
@@ -115,7 +114,6 @@ public class FacturaService extends Service {
             producto.setStock(producto.getStock()
                     - productosRequest.getCantidad().intValue());
             //actualizamos el stock del producto
-            //this.productoService.updateProducto(prodActualizar);
             this.productoRepository.save(producto);
             //creamos la linea de venta del producto
             LineaVenta lineaVenta = new LineaVenta(producto, venta,
