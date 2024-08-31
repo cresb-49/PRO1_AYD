@@ -4,6 +4,7 @@ import { SnackbarType, useSnackbarStore } from './snackbar'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import { convertError } from '@/utils/error-converter'
 import { useCookies } from 'vue3-cookies'
+import { jwtDecode } from 'jwt-decode'
 
 type UserPayload = {
   email: string
@@ -39,6 +40,16 @@ export type User = {
   email: string
   created_at: Date
   updated_at: Date
+  roles: RoleResponse[]
+}
+
+export type RoleResponse = {
+  rol: Role
+}
+
+export type Role = {
+  id: number
+  nombre: string
 }
 
 export type LoginResponse = {
@@ -79,14 +90,30 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         return { data, error: error.value }
       }
       // Success
-      // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
-      useCookies().cookies.set('roleuser', 'regular');
       // Set the user in the store
       this.user = data?.value?.data?.usuario ?? null
       this.authenticated = true
+
+      let roleuser = '';
+      switch (this.user?.roles[0].rol.id) {
+        case 1:
+          roleuser = 'regular';
+          break;
+        case 2:
+          roleuser = 'admin';
+          break;
+        case 3:
+          roleuser = 'helper';
+          break;
+        default:
+          roleuser = 'regular';
+          break;
+      }
+      // Set cookies, user and role
+      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
+      useCookies().cookies.set('roleuser', roleuser);
       // Set the token and role in the auth store
-      authStore.login({role: 'regular', token: data?.value?.data?.jwt ?? ''})
+      authStore.login({role: roleuser, token: data?.value?.data?.jwt ?? ''})
       // Show success snackbar
       useSnackbarStore().showSnackbar({
         title: 'Session iniciada',
@@ -127,14 +154,30 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         return { data, error: error.value }
       }
       // Success
-      // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
-      useCookies().cookies.set('roleuser', 'regular');
       // Set the user in the store
       this.user = data?.value?.data?.usuario ?? null
       this.authenticated = true
+      
+      let roleuser = '';
+      switch (this.user?.roles[0].rol.id) {
+        case 1:
+          roleuser = 'regular';
+          break;
+        case 2:
+          roleuser = 'admin';
+          break;
+        case 3:
+          roleuser = 'helper';
+          break;
+        default:
+          roleuser = 'regular';
+          break;
+      }
+      // Set cookies, user and role
+      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
+      useCookies().cookies.set('roleuser', roleuser);
       // Set the token and role in the auth store
-      authStore.login({role: 'regular', token: data?.value?.data?.jwt ?? ''})
+      authStore.login({role: roleuser, token: data?.value?.data?.jwt ?? ''})
       // Return the data and error
       this.loading = false
       return { data, error: false }
@@ -143,9 +186,11 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.loading = true
       // const snackbarStore = useSnackbarStore()
 
-      const { data } = await useCustomFetch<User>('/auth/me')
+      const { data } = await useCustomFetch<User>(`api/usuario/public/perfil/${this.user!.id}`,
+        {method: 'GET'}
+      )
       if (data.value) {
-        this.user = data?.value
+        this.user = data?.value?.data
       } else {
         useSnackbarStore().showSnackbar({
           title: 'Error de sesión',
@@ -158,9 +203,13 @@ export const useRegularAuthStore = defineStore('regular-auth', {
     },
     async updateProfile(payload: UserUpdatePayload) {
       this.loading = true
-      const { data, error } = await useCustomFetch<User>('/auth/me', {
-        method: 'PUT',
-        body: JSON.stringify(payload)
+      const user_id = this.user!.id
+      
+      //Si se envia el password se envia solo esta a actualizar, caso contrario se actualizan los demas campos del usuario
+      const url_api_update = payload.password ? 'api/usuario/public/cambioPassword' : 'api/usuario/public/updateUsuario'
+      const { data, error } = await useCustomFetch<User>(url_api_update, {
+        method: 'PATCH',
+        body: JSON.stringify({id: user_id, ...payload})
       })
       if (error.value) {
         console.log(error.value)
@@ -171,6 +220,11 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         this.myProfile()
       }
       this.loading = false
+      useSnackbarStore().showSnackbar({
+        title: 'Actualizacion Exitosa',
+        message: payload.password ? `Password actualizada exitosamente` : `Tu perfil se ha actualizado exitosamente`,
+        type: SnackbarType.SUCCESS
+      })
       return { data, error: false }
     },
     clearError() {
