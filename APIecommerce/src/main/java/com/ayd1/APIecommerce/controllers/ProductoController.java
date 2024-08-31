@@ -56,7 +56,7 @@ public class ProductoController {
     @GetMapping("/producto/{id}")
     public ResponseEntity<?> getProducto(@Parameter(description = "ID del producto a buscar", required = true) @PathVariable Long id) {
         try {
-            ProductoDto respuesta = productoService.getProducto(id);
+            ProductoDto respuesta = productoService.getProductoDto(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();

@@ -37,6 +37,9 @@ public class Producto extends Auditor {
     @Size(min = 1, max = 250, message = "El nombre del producto debe tener entre 1 y 250 caracteres.")
     private String nombre;
 
+    @Column(name = "descripcion", length = 250, unique = false)
+    private String descripcion;
+
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "categoria", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
     @NotNull(message = "La categoria del producto no puede ser nula")
@@ -70,8 +73,9 @@ public class Producto extends Auditor {
     public Producto() {
     }
 
-    public Producto(String nombre, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
+    public Producto(String nombre, String descripcion, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
         this.nombre = nombre;
+        this.descripcion = descripcion;
         this.categoria = categoria;
         this.stock = stock;
         this.precio = precio;

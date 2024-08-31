@@ -35,16 +35,6 @@ public class Venta extends Auditor {
     @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private List<LineaVenta> lineaVentas;
 
-    @OneToMany(mappedBy = "venta", orphanRemoval = true)
-    @Cascade(CascadeType.ALL)
-    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
-    private List<DatosFacturacion> datosFacturacion;
-
-    @OneToMany(mappedBy = "venta", orphanRemoval = true)
-    @Cascade(CascadeType.ALL)
-    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
-    private List<Envio> envios;
-
     public Venta() {
     }
 
@@ -79,22 +69,6 @@ public class Venta extends Auditor {
 
     public void setLineaVentas(List<LineaVenta> lineaVentas) {
         this.lineaVentas = lineaVentas;
-    }
-
-    public List<DatosFacturacion> getDatosFacturacion() {
-        return datosFacturacion;
-    }
-
-    public void setDatosFacturacion(List<DatosFacturacion> datosFacturacion) {
-        this.datosFacturacion = datosFacturacion;
-    }
-
-    public List<Envio> getEnvios() {
-        return envios;
-    }
-
-    public void setEnvios(List<Envio> envios) {
-        this.envios = envios;
     }
 
 }

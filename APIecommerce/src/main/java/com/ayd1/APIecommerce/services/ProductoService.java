@@ -45,7 +45,7 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                 .collect(Collectors.toList());
     }
 
-    public ProductoDto getProducto(Long id) throws Exception {
+    public ProductoDto getProductoDto(Long id) throws Exception {
         if (id == null || id < 0) {
             throw new Exception("Id inválido.");
         }
@@ -66,6 +66,26 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
         productoDto.convertImagenesToUrls(producto.getImagenes());
         return productoDto;
+    }
+
+    public Producto getProducto(Long id) throws Exception {
+        if (id == null || id < 0) {
+            throw new Exception("Id inválido.");
+        }
+
+        Optional<Producto> productoOp = productoRepository.findById(id);
+
+        if (productoOp.isEmpty()) {
+            throw new Exception("Producto no encontrado.");
+        }
+
+        Producto producto = productoOp.get();
+
+        if (producto.getDeletedAt() != null) {
+            throw new Exception("Producto ya ha sido eliminado.");
+        }
+
+        return producto;
     }
 
     @Transactional
