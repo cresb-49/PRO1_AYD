@@ -27,15 +27,17 @@ public class ProductoDto {
 
     private Double precio;
 
+    private String descripcion;
+
     private ArrayList<String> imagenesUrls;
 
-    public ProductoDto(Long id, String nombre, Categoria categoria, Integer stock,
-            Double precio, ArrayList<String> imagenesUrls) {
+    public ProductoDto(Long id, String nombre, Categoria categoria, Integer stock, Double precio, String descripcion, ArrayList<String> imagenesUrls) {
         this.id = id;
         this.nombre = nombre;
         this.categoria = categoria;
         this.stock = stock;
         this.precio = precio;
+        this.descripcion = descripcion;
         this.imagenesUrls = imagenesUrls;
     }
 
@@ -88,6 +90,14 @@ public class ProductoDto {
 
     public void setImagenesUrls(ArrayList<String> imagenesUrls) {
         this.imagenesUrls = imagenesUrls;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public void convertImagenesToUrls(List<Imagen> imagenes) {
