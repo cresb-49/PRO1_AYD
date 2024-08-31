@@ -1,8 +1,11 @@
 package com.ayd1.APIecommerce.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,11 +35,21 @@ public class CategoriaController {
         }
     }
 
+    @GetMapping("/categorias")
+    public ResponseEntity<?> getCategorias() {
+        try {
+            List<Categoria> listaCategorias = categoriaService.getCategorias();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK",listaCategorias,null,null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
+        }
+    }
+
     @PostMapping("/categoria/private/crearCategoria")
     public ResponseEntity<?> crearCategoria(@RequestBody Categoria nuevaCategoria) {
         try {
             Categoria categoria = categoriaService.createCategoria(nuevaCategoria);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", null,
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", categoria,
                     null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
@@ -44,16 +57,26 @@ public class CategoriaController {
     }
 
     @PatchMapping("/categoria/private/updateCategoria")
-    public ResponseEntity<?> actualizarCategoria(@RequestBody Long id, Categoria editCategoria) {
+    public ResponseEntity<?> actualizarCategoria(@RequestBody Categoria editCategoria) {
         try {
-            Categoria okCategoria = categoriaService.updateCategoria(id, editCategoria);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-            okCategoria,
+            Categoria actualCategoria = categoriaService.updateCategoria(editCategoria);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoria actualizada",
+            actualCategoria,
             null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     e.getMessage(),
                     null, null, null).sendResponse();
+        }
+    }
+
+    @DeleteMapping("/categoria/private/eliminarCategoria/{id}")
+    public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
+        try {
+            String eliminacionCategoria = categoriaService.deleteCategoria(id);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoría eliminada con éxito",eliminacionCategoria,null,null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
     }
 }
