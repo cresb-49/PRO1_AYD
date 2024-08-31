@@ -34,7 +34,7 @@ public class ProductoController {
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
                 content = @Content)
     })
-    @GetMapping("/productos")
+    @GetMapping("/productos/public/getProductos")
     public ResponseEntity<?> getProdutos() {
         try {
             List<ProductoDto> respuesta = productoService.getProductos();
@@ -53,7 +53,7 @@ public class ProductoController {
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
                 content = @Content)
     })
-    @GetMapping("/producto/{id}")
+    @GetMapping("/producto/public/getProducto/{id}")
     public ResponseEntity<?> getProducto(@Parameter(description = "ID del producto a buscar", required = true) @PathVariable Long id) {
         try {
             ProductoDto respuesta = productoService.getProductoDto(id);
@@ -72,7 +72,7 @@ public class ProductoController {
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
                 content = @Content)
     })
-    @PostMapping("/producto/private/crearProducto")
+    @PostMapping("/producto/protected/crearProducto")
     public ResponseEntity<?> crearProducto(
             @Parameter(description = "Detalles del producto a crear", required = true)
             @ModelAttribute Producto crear,
@@ -118,7 +118,7 @@ public class ProductoController {
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
                 content = @Content)
     })
-    @PostMapping("/producto/private/actualizarImgProd")
+    @PostMapping("/producto/protected/actualizarImgProd")
     public ResponseEntity<?> actualizarImgProducto(
             @Parameter(description = "ID del producto cuyas imágenes se van a actualizar", required = true)
             @RequestParam("id") Long id,

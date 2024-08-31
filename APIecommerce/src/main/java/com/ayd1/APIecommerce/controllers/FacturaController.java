@@ -44,7 +44,7 @@ public class FacturaController {
         @ApiResponse(responseCode = "200", description = "Contraseña recuperada exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PostMapping("/facturacion/public/generarCompra")
+    @PostMapping("/facturacion/cliente/generarCompra")
     public ResponseEntity<?> registrarVenta(@RequestBody VentaRequest ventaRequest) {
         try {
             String respuesta = facturaService.guardarVenta(ventaRequest);

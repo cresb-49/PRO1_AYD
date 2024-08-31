@@ -29,7 +29,7 @@ public class ImagenController {
     @Autowired
     private ImagenService imagenService;
 
-    @GetMapping("/imagenes/getImage/{id}")
+    @GetMapping("/imagenes/public/getImage/{id}")
     @ResponseBody
     public ResponseEntity<?> getImage(@PathVariable Long id) throws Exception {
 

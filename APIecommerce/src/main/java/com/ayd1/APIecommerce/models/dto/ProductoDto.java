@@ -104,7 +104,8 @@ public class ProductoDto {
         ArrayList<String> urls = new ArrayList<>();
         //por cada imagen construir la url
         for (Imagen item : imagenes) {
-            String url = String.format("http//:localhost:8080/api/imagenes/getImage/%s",
+            String url = String.format(
+                    "http://localhost:8080/api/imagenes/public/getImage/%s",
                     item.getId());
             urls.add(url);//anadir la url a las urls
         }
