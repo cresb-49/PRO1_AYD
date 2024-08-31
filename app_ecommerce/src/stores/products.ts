@@ -106,13 +106,17 @@ export const useProductStore = defineStore('products', {
       formData.append("nombre", nombre);
       formData.append("stock", stock as unknown as string);
       formData.append("precio", precio as unknown as string);
+      formData.append("habilitado", "true");
+      
+      console.log(formData)
 
       const { data, error } = await useCustomFetch<any>(
-        'api/categoria/private/crearProducto',
+        'api/producto/private/crearProducto',
         {
           method: 'POST',
           body: formData
-        }
+        },
+        true
       )
 
       // Error Handling

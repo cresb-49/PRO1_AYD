@@ -3,9 +3,13 @@ import { createFetch, useFetch, type UseFetchOptions } from '@vueuse/core'
 
 export function useCustomFetch<T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  multipart = false,
 ) {
 
+  if (multipart) {
+    return useCustomFetchPartialMultipart<T>(url, options).json()
+  }
   return useCustomFetchPartial<T>(url, options).json()
 }
 
@@ -23,6 +27,25 @@ const useCustomFetchPartial = createFetch({
       : {
         ...options.headers,
         'Content-Type': 'application/json'
+      }
+
+      return { options }
+    },
+  },
+})
+
+const useCustomFetchPartialMultipart = createFetch({
+  baseUrl: import.meta.env.VITE_API_BASE_URL,
+  options: {
+    async beforeFetch({ options }) {
+      const userAuth = useCookies().cookies.get('user-token')
+      options.headers = userAuth 
+      ? {
+        ...options.headers,
+        Authorization: `Bearer ${userAuth}`,
+      } 
+      : {
+        ...options.headers,
       }
 
       return { options }

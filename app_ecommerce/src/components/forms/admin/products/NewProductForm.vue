@@ -36,6 +36,15 @@
             hide-details
             prepend-icon="mdi-cash"
           ></v-text-field>
+            <v-text-field
+            v-model="stock"
+            label="Stock Inicial"
+            density="compact"
+            type="number"
+            variant="outlined"
+            hide-details
+            prepend-icon="mdi-cash"
+          ></v-text-field>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -66,6 +75,7 @@ const emits = defineEmits(['create'])
 const nombreProducto = ref('')
 const categoria = ref()
 const precio = ref(0)
+const stock = ref(0)
 const uploadImageForm = ref(null)
 
 const { categories } = storeToRefs(useCategoryStore())
@@ -75,6 +85,7 @@ function crear() {
     nombre: nombreProducto.value.trim(),
     categoria: categoria.value,
     precio: precio.value,
+    stock: stock.value,
     imagenes: uploadImageForm.value.images
   }
   emits('create', newAttributes)
