@@ -5,9 +5,11 @@
 package com.ayd1.APIecommerce.config;
 
 import com.ayd1.APIecommerce.models.Categoria;
+import com.ayd1.APIecommerce.models.EstadoEnvio;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
+import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.UsuarioService;
@@ -32,6 +34,8 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     @Autowired
     private CategoriaRepository categoriaRepository;
     @Autowired
+    private EstadoEnvioRepository estadoEnvioRepository;
+    @Autowired
     private UsuarioService usuarioService;
 
     public Rol insertarRol(Rol rol) throws Exception {
@@ -41,6 +45,19 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
                 return opRol.get();
             }
             return this.rolRepository.save(rol);
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
+    }
+
+    public EstadoEnvio insertarEstadoEnvio(EstadoEnvio estadoEnvio) throws Exception {
+        try {
+            Optional<EstadoEnvio> opRol
+                    = this.estadoEnvioRepository.findOneByNombre(estadoEnvio.getNombre());
+            if (opRol.isPresent()) {
+                return opRol.get();
+            }
+            return this.estadoEnvioRepository.save(estadoEnvio);
         } catch (Exception e) {
             throw new Exception("Error");
         }
@@ -69,6 +86,9 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             Categoria categoria = new Categoria("Hogar");
             this.insertarCategoria(categoria);
 
+            EstadoEnvio estadoEnvio = new EstadoEnvio("PENDIENTE");
+            this.insertarEstadoEnvio(estadoEnvio);
+            
             //sider usuario Admin
             Usuario admin = new Usuario("admin", "admin",
                     "admin@admin", null,

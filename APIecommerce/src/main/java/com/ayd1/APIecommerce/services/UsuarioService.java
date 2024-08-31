@@ -186,6 +186,10 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
     public LoginDto iniciarSesion(Usuario log) throws Exception {
         try {
+            //validamos la password
+            this.validarAtributo(log, "email");
+            //validamos la password
+            this.validarAtributo(log, "password");
             Optional<Usuario> busquedaUsuario = usuarioRepository.
                     findByEmail(log.getEmail());
 
