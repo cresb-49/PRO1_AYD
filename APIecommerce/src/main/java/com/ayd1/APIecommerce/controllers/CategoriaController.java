@@ -25,7 +25,7 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-    @GetMapping("/categoria/{id}")
+    @GetMapping("/categoria/public/{id}")
     public ResponseEntity<?> getCategoria(@PathVariable Long id) {
         try {
             Object data = categoriaService.getCategoria(id);
@@ -35,7 +35,7 @@ public class CategoriaController {
         }
     }
 
-    @GetMapping("/categorias")
+    @GetMapping("/categoria/public/getCategorias")
     public ResponseEntity<?> getCategorias() {
         try {
             List<Categoria> listaCategorias = categoriaService.getCategorias();
@@ -45,7 +45,7 @@ public class CategoriaController {
         }
     }
 
-    @PostMapping("/categoria/private/crearCategoria")
+    @PostMapping("/categoria/protected/crearCategoria")
     public ResponseEntity<?> crearCategoria(@RequestBody Categoria nuevaCategoria) {
         try {
             Categoria categoria = categoriaService.createCategoria(nuevaCategoria);
@@ -56,7 +56,7 @@ public class CategoriaController {
         }
     }
 
-    @PatchMapping("/categoria/private/updateCategoria")
+    @PatchMapping("/categoria/protected/updateCategoria")
     public ResponseEntity<?> actualizarCategoria(@RequestBody Categoria editCategoria) {
         try {
             Categoria actualCategoria = categoriaService.updateCategoria(editCategoria);
@@ -70,7 +70,7 @@ public class CategoriaController {
         }
     }
 
-    @DeleteMapping("/categoria/private/eliminarCategoria/{id}")
+    @DeleteMapping("/categoria/protected/eliminarCategoria/{id}")
     public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
         try {
             String eliminacionCategoria = categoriaService.deleteCategoria(id);

@@ -39,7 +39,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    @GetMapping("/usuario/{id}")
+    @GetMapping("/usuario/protected/{id}")
     public ResponseEntity<?> getUsuario(@PathVariable Long id) {
         try {
             Object data = usuarioService.getUsuario(id);
@@ -54,7 +54,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Correo enviado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PostMapping("/usuario/public/recuperarPasswordMail")
+    @PostMapping("/usuario/private/all/recuperarPasswordMail")
     public ResponseEntity<?> enviarMailDeRecuperacion(
             @Parameter(
                     description = "ID del producto a buscar",
@@ -75,7 +75,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Contraseña recuperada exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PatchMapping("/usuario/public/recuperarPassword")
+    @PatchMapping("/usuario/private/all/recuperarPassword")
     public ResponseEntity<?> recuperarPassword(@RequestBody PasswordChange requestBody) {
         try {
             String respuesta = usuarioService.recuperarPassword(requestBody);
@@ -90,7 +90,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Contraseña cambiada exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PatchMapping("/usuario/public/cambioPassword")
+    @PatchMapping("/usuario/private/all/cambioPassword")
     public ResponseEntity<?> cambiarPassword(
             @Parameter(
                     description = "ID del producto a buscar",
@@ -184,7 +184,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Perfil encontrado"),
         @ApiResponse(responseCode = "400", description = "ID no válido")
     })
-    @GetMapping("/usuario/public/perfil/{id}")
+    @GetMapping("/usuario/private/perfil/{id}")
     public ResponseEntity<?> getPerfil(@PathVariable Long id) {
         try {
             Usuario usuario = usuarioService.getUsuario(id);
@@ -199,7 +199,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Usuario eliminado exitosamente"),
         @ApiResponse(responseCode = "400", description = "ID con formato inválido")
     })
-    @DeleteMapping("/usuario/public/eliminarUsuario/{id}")
+    @DeleteMapping("/usuario/protected/eliminarUsuario/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -218,7 +218,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"),
         @ApiResponse(responseCode = "400", description = "ID con formato inválido")
     })
-    @PatchMapping("/usuario/public/updateUsuario")
+    @PatchMapping("/usuario/private/all/updateUsuario")
     public ResponseEntity<?> actualizarUsuarioParcial(@RequestBody Usuario updates) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
