@@ -61,6 +61,24 @@ const router = createRouter({
       meta: {title: 'Admin Categorias-Add', layout: DefaultLayout},
       component: () => import('../views/admin/categorias/CategoriasAddView.vue')
     },
+    {
+      path: '/admin/productos',
+      name: 'admin-productos',
+      meta: {title: 'Admin Productos', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosView.vue')
+    },
+    {
+      path: '/admin/productos/edit/:id',
+      name: 'admin-productos-editar',
+      meta: {title: 'Admin Categorias-Edit', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosEditView.vue')
+    },
+    {
+      path: '/admin/productos/add',
+      name: 'admin-productos-agregar',
+      meta: {title: 'Admin Productos-Add', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosAddView.vue')
+    },
   ]
 })
 

@@ -31,9 +31,9 @@
             variant="tonal"
             width="100%"
             :loading="loading"
-            @click="crear"
+            @click="update"
           >
-            Crear
+            Guardar
           </v-btn>
         </v-col>
       </v-row>
@@ -42,27 +42,40 @@
 </template>
 <script setup lang="ts">
 import { useCategoryStore } from '@/stores/categories';
+import { type Category } from '@/stores/categories';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { ref, type PropType } from 'vue';
 
   const props = defineProps({
     loading: {
       type: Boolean,
       default: false
+    },
+    category_id: {
+      type: Number,
+      required: true
     }
   })
-  const emits = defineEmits(['create'])
+  const emits = defineEmits(['update'])
   
   const nombreCategoria = ref('')
   const categoriaPadre = ref()
   
   const {categories} = storeToRefs(useCategoryStore())
+  const {fetchCategory} = useCategoryStore()
   
-  function crear() {
+  fetchCategory(props.category_id).then(r => r.data.value.data as Category).then(c => {
+    nombreCategoria.value = c.nombre;
+    categoriaPadre.value = c.padre;
+  });
+  
+  function update() {
     const newAttributes = {
+      id: props.category_id,
       nombre: nombreCategoria.value.trim(),
       categoriaPadre: categoriaPadre.value
     }
-    emits('create', newAttributes)
+    emits('update', newAttributes)
   }
+  
 </script>
