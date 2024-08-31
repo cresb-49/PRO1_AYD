@@ -48,7 +48,6 @@ export const useProductStore = defineStore('products', {
           method: 'GET',
         }
       )
-
       
       this.products = data.value.data;
 
@@ -108,8 +107,6 @@ export const useProductStore = defineStore('products', {
       formData.append("precio", precio as unknown as string);
       formData.append("habilitado", "true");
       
-      console.log(formData)
-
       const { data, error } = await useCustomFetch<any>(
         'api/producto/private/crearProducto',
         {

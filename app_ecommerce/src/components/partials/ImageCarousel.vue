@@ -4,7 +4,7 @@
       v-for="(image, index) in images"
       :key="index"
       width="1000"
-      :src="is_base64_mode ? image : base64Images[index]"
+      :src="is_direct_src ? image : base64Images[index]"
       aspect-ratio="1"
       cover
     >
@@ -19,7 +19,7 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  is_base64_mode: {
+  is_direct_src: {
     type: Boolean,
     default: false
   }
@@ -31,7 +31,7 @@ const controlActiveIndex = ref(0)
 watchEffect(() => {
   base64Images.value = []
 
-  if (!props.is_base64_mode) {
+  if (!props.is_direct_src) {
     props.images.forEach((image, index) => {
       const reader = new FileReader()
       reader.readAsDataURL(image as Blob)

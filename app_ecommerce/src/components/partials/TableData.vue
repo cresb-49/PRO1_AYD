@@ -11,7 +11,7 @@
         <tbody>
             <tr v-for="row in data" :key="row[data_key as unknown as number]">
                 <td v-for="column in columns" :key="column.propertyName">
-                    {{ row[column.propertyName as unknown as number] }}
+                    {{ accessRowByPropertyName(row, column.propertyName) }}
                 </td>
                 <td v-if="actions.length > 0">
                     <v-btn v-for="action in actions" 
@@ -46,16 +46,21 @@ const props = defineProps({
     actions: { type: Array<Action>, default: [] }
 })
 
+function accessRowByPropertyName(row: any, propertyName: string) {
+    let properties = propertyName.split('.');
+    properties.forEach(actual_property => {
+        row = row[actual_property]
+    });
+    return row
+}
+
 //Reeplaza parametros del path con propiedades del objeto
 function replaceParameterPath(row: any, path: string) {
     //Recorre todas las propiedades de la data
     if (props.data.length === 0) {
         return path;
     } else {
-        const prueba = props.data[0];
-        Object.keys(prueba).forEach(propiedad => {
-            console.log('propiedad');
-            console.log(propiedad);
+        Object.keys(row).forEach(propiedad => {
             path = path.replace(`:${propiedad}`, row[propiedad]);
         });
         return path

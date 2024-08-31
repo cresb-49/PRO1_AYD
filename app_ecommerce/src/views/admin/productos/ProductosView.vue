@@ -36,8 +36,11 @@ import { useProductStore } from "@/stores/products";
   const columns = [
     {name: 'Id', propertyName: 'id'},
     {name: 'Nombre', propertyName: 'nombre'},
+    {name: 'Precio', propertyName: 'precio'},
+    {name: 'Stock', propertyName: 'stock'},
+    {name: 'Categoria', propertyName: 'categoria.nombre'},
   ]
-  const actionsTable = [{name: 'Editar', path: '/admin/productos/edit/:id'}, {name: 'Eliminar', onClick: consoleLog}]
+  const actionsTable = [{name: 'Editar', path: '/admin/productos/edit/:nombre'}, {name: 'Eliminar', onClick: consoleLog}]
 
   fetchAllProducts();
 </script>
