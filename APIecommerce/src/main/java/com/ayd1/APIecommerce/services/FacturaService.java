@@ -58,23 +58,45 @@ public class FacturaService extends Service {
         //validamos elobjeto
         this.validar(ventaRequest);
 
-        //construir la venta
-        Venta venta = this.construirVenta(ventaRequest);
-        Venta save2 = this.ventaRepository.save(venta);
+        /*la venta volatil es la creacion de la venta con datos iniciales, 
+        se utiiza para que exista una referencia en la bd y en spring a la cual apuntar
+        con los distintos objetos que se crearan luego
+         */
+        Venta ventaVolatil = new Venta(0.00,
+                ventaRequest.getProductos().size());
+        /*la venta volatil2 se utilizara para guardar el desgloce de la factura
+        y el valor total real de la factura
+         */
+        Venta ventaVolatil2 = this.ventaRepository.save(ventaVolatil);
+        //validar la creacion de la venta
+        if (ventaVolatil2.getId() <= 0) {
+            throw new Exception("No se pudo generar la factura");
+        }
+
+        ArrayList<LineaVenta> desglose = this.crearDesgloce(ventaVolatil2, ventaRequest);
+        Double total = this.calcularTotal(desglose);
+
+        //anadimos las propiedades de la venta
+        ventaVolatil2.setValorTotal(total);
+        ventaVolatil2.setLineaVentas(desglose);
+        /*
+        la venta resultante despues de las actualizaciones anteriores se utiizara para
+        crear los datos de la factura y el envio
+         */
+        Venta venta = this.ventaRepository.save(ventaVolatil2);
 
         //validar la creacion de la venta
-        if (save2.getId() <= 0) {
-            throw new Exception("No se pudo generar la venta");
+        if (venta.getId() <= 0) {
+            throw new Exception("No se pudo generar la factura");
         }
-        
+
         //hacemos las restas en el stock
         ArrayList<Producto> productos = this.hacerRestasEnStock(ventaRequest);
         //guardar las restas
-
+        List<Producto> saveAll = this.productoRepository.saveAll(productos);
         //crear la data de la facturacion
         DatosFacturacion datosFactuacion = this.crearDatosFacturacion(ventaRequest,
                 venta);
-
         //guardar los datos de facturacion
         this.datosFacturacionRepository.save(datosFactuacion);
 
@@ -82,8 +104,8 @@ public class FacturaService extends Service {
             throw new Exception("No se pudieron generar los datos de facturacion.");
         }
 
-        //Crear el envio de ser necesario
-        if (ventaRequest.getRetiroEnTienda() != true) {
+        //Crear el envio de ser necesario 
+        if (ventaRequest.getRetiroEnTienda() == false) {
             Envio envio = this.crearEnvio(venta);
             Envio saveEnvio = this.envioRepository.save(envio);
             if (saveEnvio.getId() <= 0) {
@@ -94,21 +116,6 @@ public class FacturaService extends Service {
         /* Envio envio = this.guardarEnvio(venta, ventaRequest);
         //mandamos a crear el documento de la factura*/
         return "Se creo la venta con exito.";
-    }
-
-    private Venta construirVenta(VentaRequest ventaRequest) throws Exception {
-        //creamos la instancia de a venta
-        Venta venta = new Venta();
-
-        ArrayList<LineaVenta> desglose = this.crearDesgloce(venta, ventaRequest);
-        Double total = this.calcularTotal(desglose);
-
-        //anadimos las propiedades de la venta
-        venta.setCantidadProductos(ventaRequest.getProductos().size());
-        venta.setValorTotal(total);
-        venta.setLineaVentas(desglose);
-
-        return venta;
     }
 
     private ArrayList<LineaVenta> crearDesgloce(Venta venta, VentaRequest ventaRequest) throws Exception {
