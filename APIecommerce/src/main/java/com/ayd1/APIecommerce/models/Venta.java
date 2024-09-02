@@ -8,7 +8,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import org.hibernate.annotations.Cascade;
@@ -30,10 +33,22 @@ public class Venta extends Auditor {
     @Min(value = 1, message = "El cantidad debe tener como valor mínimo 1.")
     private Integer cantidadProductos;
 
-    @OneToMany(mappedBy = "venta", orphanRemoval = true)
+    @OneToMany(mappedBy = "venta", orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
     @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private List<LineaVenta> lineaVentas;
+
+    @OneToOne(mappedBy = "venta", fetch = FetchType.EAGER)
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name = "factura", nullable = false, unique = true)
+    @JsonIgnore
+    private DatosFacturacion datosFacturacion;
+
+    @OneToOne(mappedBy = "venta")
+    @Cascade(CascadeType.ALL)
+    @JoinColumn(name = "envio", nullable = true, unique = true)
+    @JsonIgnore
+    private Envio envio;
 
     public Venta() {
     }
@@ -69,6 +84,22 @@ public class Venta extends Auditor {
 
     public void setLineaVentas(List<LineaVenta> lineaVentas) {
         this.lineaVentas = lineaVentas;
+    }
+
+    public DatosFacturacion getDatosFacturacion() {
+        return datosFacturacion;
+    }
+
+    public void setDatosFacturacion(DatosFacturacion datosFacturacion) {
+        this.datosFacturacion = datosFacturacion;
+    }
+
+    public Envio getEnvio() {
+        return envio;
+    }
+
+    public void setEnvio(Envio envio) {
+        this.envio = envio;
     }
 
 }

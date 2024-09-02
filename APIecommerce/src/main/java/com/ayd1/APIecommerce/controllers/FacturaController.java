@@ -18,7 +18,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,15 +43,19 @@ public class FacturaController {
             = "Resgistra una venta en el sistema, automaticmante genera la factura automaticamente"
             + " al igual que la linea de venta.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Contraseña recuperada exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+        @ApiResponse(responseCode = "200", description = "Se realiza la venta"),
+        @ApiResponse(responseCode = "400", description = "Error en cualquier parte de la venta")
     })
     @PostMapping("/facturacion/cliente/generarCompra")
     public ResponseEntity<?> registrarVenta(@RequestBody VentaRequest ventaRequest) {
         try {
-            String respuesta = facturaService.guardarVenta(ventaRequest);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-                    respuesta, null, null).sendResponse();
+            byte[] factura = facturaService.guardarVenta(ventaRequest);
+            // Configuramos los headers de la respuesta
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("inline", "Factura.pdf");
+            // Devolvemos el PDF en la respuesta HTTP
+            return new ResponseEntity<>(factura, headers, HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,

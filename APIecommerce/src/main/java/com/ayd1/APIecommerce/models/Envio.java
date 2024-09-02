@@ -22,13 +22,13 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "envio")
 public class Envio extends Auditor {
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne
     @JoinColumn(name = "venta_id", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Venta venta;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "estado_envio", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "estado_envio", nullable = false, unique = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private EstadoEnvio estadoEnvio;
 

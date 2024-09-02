@@ -46,7 +46,6 @@ public class DatosFacturacion extends Auditor {
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "usuario", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private Usuario usuario;
 
     public DatosFacturacion(String nit, String nombre, Venta venta, Usuario usuario) {

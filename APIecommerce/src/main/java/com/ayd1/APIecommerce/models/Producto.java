@@ -37,7 +37,7 @@ public class Producto extends Auditor {
     @Size(min = 1, max = 250, message = "El nombre del producto debe tener entre 1 y 250 caracteres.")
     private String nombre;
 
-    @Column(name = "descripcion", length = 250, unique = false)
+    @Column(name = "descripcion", columnDefinition = "LONGTEXT")
     private String descripcion;
 
     @ManyToOne//indicador de relacion muchos a uno
@@ -148,6 +148,14 @@ public class Producto extends Auditor {
 
     public void setLineaVentas(List<LineaVenta> lineaVentas) {
         this.lineaVentas = lineaVentas;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
 }
