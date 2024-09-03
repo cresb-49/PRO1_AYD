@@ -88,6 +88,30 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         return producto;
     }
 
+    /**
+     * Retorna todos los productos que tengan 5 o menos exsitencias.
+     *
+     * @return
+     * @throws Exception
+     */
+    public List<ProductoDto> getProductosConBajaExistencia() throws Exception {
+        List<Producto> productos = productoRepository.findAll();
+
+        if (productos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Producto> productosConBajaExistencia = productos.stream()
+                .filter(producto -> producto.getStock() <= 5)
+                .filter(producto -> producto.getDeletedAt() == null)
+                .collect(Collectors.toList());
+
+        List<ProductoDto> productosDto
+                = ProductoMapper.INSTANCE.productosToProductoDtos(productosConBajaExistencia);
+
+        return productosDto;
+    }
+
     @Transactional
     public ProductoDto createProducto(Producto producto, List<MultipartFile> imagenes) throws Exception {
         //validamos el producto   

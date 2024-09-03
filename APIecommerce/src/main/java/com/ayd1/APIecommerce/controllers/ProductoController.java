@@ -28,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api")
@@ -160,6 +161,27 @@ public class ProductoController {
         try {
             String confirmacion = this.productoService.eliminarProducto(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @Operation(summary = "Devuelve todos los productos con 5 o menos esxistencias",
+            description = "")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Listado de productos",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ProductoDto.class))}),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                content = @Content)
+    })
+    @PostMapping("/producto/protected/actualizarImgProd")
+    public ResponseEntity<?> getStockBajo() {
+        try {
+            List<ProductoDto> respuesta = this.productoService.
+                    getProductosConBajaExistencia();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
