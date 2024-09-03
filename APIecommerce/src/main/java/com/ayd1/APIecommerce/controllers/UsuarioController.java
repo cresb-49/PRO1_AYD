@@ -5,6 +5,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,8 +21,6 @@ import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -45,7 +45,7 @@ public class UsuarioController {
             Object data = usuarioService.getUsuario(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -66,7 +66,7 @@ public class UsuarioController {
             String mensaje = usuarioService.enviarMailDeRecuperacion(correoElectronico);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", mensaje, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -81,7 +81,7 @@ public class UsuarioController {
             String respuesta = usuarioService.recuperarPassword(requestBody);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -104,7 +104,7 @@ public class UsuarioController {
             String respuesta = usuarioService.cambiarPassword(requestBody, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -125,7 +125,7 @@ public class UsuarioController {
             LoginDto respuesta = usuarioService.iniciarSesion(login);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -140,8 +140,7 @@ public class UsuarioController {
             LoginDto respuesta = usuarioService.crearUsuario(crear, "USUARIO");
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -158,7 +157,7 @@ public class UsuarioController {
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -175,7 +174,7 @@ public class UsuarioController {
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -190,7 +189,7 @@ public class UsuarioController {
             Usuario usuario = usuarioService.getUsuario(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", usuario, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -207,9 +206,9 @@ public class UsuarioController {
             String confirmacion = usuarioService.eliminarUsuario(id, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Id con formato invalido", null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Id con formato invalido", null, null, ex.getMessage()).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -226,9 +225,11 @@ public class UsuarioController {
             Usuario confirmacion = usuarioService.updateUsuario(updates, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Id con formato invalido", null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
+                    "Id con formato invalido",
+                    null, null, ex.getMessage()).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 }
