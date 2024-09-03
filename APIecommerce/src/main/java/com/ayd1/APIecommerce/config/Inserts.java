@@ -5,10 +5,14 @@
 package com.ayd1.APIecommerce.config;
 
 import com.ayd1.APIecommerce.models.Categoria;
+import com.ayd1.APIecommerce.models.EstadoEnvio;
 import com.ayd1.APIecommerce.models.Rol;
+import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
+import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
+import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import java.util.ArrayList;
@@ -32,6 +36,10 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     @Autowired
     private CategoriaRepository categoriaRepository;
     @Autowired
+    private TiendaConfigReporitory tiendaConfigReporitory;
+    @Autowired
+    private EstadoEnvioRepository estadoEnvioRepository;
+    @Autowired
     private UsuarioService usuarioService;
 
     public Rol insertarRol(Rol rol) throws Exception {
@@ -41,6 +49,19 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
                 return opRol.get();
             }
             return this.rolRepository.save(rol);
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
+    }
+
+    public EstadoEnvio insertarEstadoEnvio(EstadoEnvio estadoEnvio) throws Exception {
+        try {
+            Optional<EstadoEnvio> opRol
+                    = this.estadoEnvioRepository.findOneByNombre(estadoEnvio.getNombre());
+            if (opRol.isPresent()) {
+                return opRol.get();
+            }
+            return this.estadoEnvioRepository.save(estadoEnvio);
         } catch (Exception e) {
             throw new Exception("Error");
         }
@@ -58,6 +79,19 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
         }
     }
 
+    public TiendaConfig insertarTiendaConfig(TiendaConfig config) throws Exception {
+        try {
+            Optional<TiendaConfig> op
+                    = this.tiendaConfigReporitory.findFirstByOrderByIdAsc();
+            if (op.isPresent()) {
+                return op.get();
+            }
+            return this.tiendaConfigReporitory.save(config);
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
+    }
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
@@ -69,6 +103,15 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             Categoria categoria = new Categoria("Hogar");
             this.insertarCategoria(categoria);
 
+            EstadoEnvio estadoEnvio = new EstadoEnvio("PENDIENTE");
+            this.insertarEstadoEnvio(estadoEnvio);
+
+            //IMAGEN DEFAULT DE LA TIENDA
+            byte[] img = getClass().getResourceAsStream("/img/logo.png").readAllBytes();
+
+            TiendaConfig tiendaConfig
+                    = new TiendaConfig("TiendaAyD1", img);
+            this.insertarTiendaConfig(tiendaConfig);
             //sider usuario Admin
             Usuario admin = new Usuario("admin", "admin",
                     "admin@admin", null,

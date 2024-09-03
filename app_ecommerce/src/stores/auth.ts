@@ -91,8 +91,12 @@ export const useAuthStore = defineStore('auth', {
         const regularAuthStore = useRegularAuthStore()
         return regularAuthStore.user
       } else {
+        const regularAuthStore = useRegularAuthStore()
+        return regularAuthStore.user
+        /*
         const staffAuthStore = useStaffAuthStore()
         return staffAuthStore.user
+        */
       }
     }
   }

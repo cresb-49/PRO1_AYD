@@ -27,15 +27,17 @@ public class ProductoDto {
 
     private Double precio;
 
+    private String descripcion;
+
     private ArrayList<String> imagenesUrls;
 
-    public ProductoDto(Long id, String nombre, Categoria categoria, Integer stock,
-            Double precio, ArrayList<String> imagenesUrls) {
+    public ProductoDto(Long id, String nombre, Categoria categoria, Integer stock, Double precio, String descripcion, ArrayList<String> imagenesUrls) {
         this.id = id;
         this.nombre = nombre;
         this.categoria = categoria;
         this.stock = stock;
         this.precio = precio;
+        this.descripcion = descripcion;
         this.imagenesUrls = imagenesUrls;
     }
 
@@ -90,11 +92,20 @@ public class ProductoDto {
         this.imagenesUrls = imagenesUrls;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
     public void convertImagenesToUrls(List<Imagen> imagenes) {
         ArrayList<String> urls = new ArrayList<>();
         //por cada imagen construir la url
         for (Imagen item : imagenes) {
-            String url = String.format("http//:localhost:8080/api/imagenes/getImage/%s",
+            String url = String.format(
+                    "http://localhost:8080/api/imagenes/public/getImage/%s",
                     item.getId());
             urls.add(url);//anadir la url a las urls
         }

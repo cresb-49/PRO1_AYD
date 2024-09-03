@@ -25,7 +25,7 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-    @GetMapping("/categoria/{id}")
+    @GetMapping("/categoria/public/{id}")
     public ResponseEntity<?> getCategoria(@PathVariable Long id) {
         try {
             Object data = categoriaService.getCategoria(id);
@@ -35,7 +35,7 @@ public class CategoriaController {
         }
     }
 
-    @GetMapping("/categorias")
+    @GetMapping("/categoria/public/getCategorias")
     public ResponseEntity<?> getCategorias() {
         try {
             List<Categoria> listaCategorias = categoriaService.getCategorias();
@@ -45,7 +45,7 @@ public class CategoriaController {
         }
     }
 
-    @PostMapping("/categoria/private/crearCategoria")
+    @PostMapping("/categoria/protected/crearCategoria")
     public ResponseEntity<?> crearCategoria(@RequestBody Categoria nuevaCategoria) {
         try {
             Categoria categoria = categoriaService.createCategoria(nuevaCategoria);
@@ -56,22 +56,23 @@ public class CategoriaController {
         }
     }
 
-    @PatchMapping("/categoria/private/updateCategoria")
-    public ResponseEntity<?> actualizarCategoria(@RequestBody Long id, Categoria editCategoria) {
+    @PatchMapping("/categoria/protected/updateCategoria")
+    public ResponseEntity<?> actualizarCategoria(@RequestBody Categoria editCategoria) {
         try {
-            Categoria okCategoria = categoriaService.updateCategoria(id, editCategoria);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-            okCategoria,
+            Categoria actualCategoria = categoriaService.updateCategoria(editCategoria);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoria actualizada",
+            actualCategoria,
             null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,"Error",null, null, e.getMessage()).sendResponse();
         }
     }
 
-    @DeleteMapping("/categoria/private/eliminarCategoria")
-    public ResponseEntity<?> eliminarCategoria() {
+    @DeleteMapping("/categoria/protected/eliminarCategoria/{id}")
+    public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
         try {
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",null,null,null).sendResponse();
+            String eliminacionCategoria = categoriaService.deleteCategoria(id);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoría eliminada con éxito",eliminacionCategoria,null,null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }

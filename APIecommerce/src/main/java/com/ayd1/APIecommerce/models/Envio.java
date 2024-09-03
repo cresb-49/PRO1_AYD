@@ -6,8 +6,10 @@ package com.ayd1.APIecommerce.models;
 
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -20,13 +22,13 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "envio")
 public class Envio extends Auditor {
 
-    @ManyToOne//indicador de relacion muchos a uno
-    @JoinColumn(name = "venta", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @OneToOne
+    @JoinColumn(name = "venta_id", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Venta venta;
 
-    @ManyToOne//indicador de relacion muchos a uno
-    @JoinColumn(name = "estado_envio", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @ManyToOne
+    @JoinColumn(name = "estado_envio", nullable = false, unique = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private EstadoEnvio estadoEnvio;
 

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +22,11 @@ import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("api")
 public class UsuarioController {
@@ -30,7 +34,12 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping("/usuario/{id}")
+    @Operation(summary = "Obtener usuario por ID", description = "Obtiene la información del usuario basado en el ID proporcionado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario encontrado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @GetMapping("/usuario/protected/{id}")
     public ResponseEntity<?> getUsuario(@PathVariable Long id) {
         try {
             Object data = usuarioService.getUsuario(id);
@@ -40,150 +49,181 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/usuario")
-    public ResponseEntity<?> postMethodName(@RequestBody String entity) {
-        return new ApiBaseTransformer(HttpStatus.OK, "OK", null, null, null).sendResponse();
-    }
-
-    @PutMapping("usuario/{id}")
-    public ResponseEntity<?> putMethodName(@PathVariable String id, @RequestBody String entity) {
-        return new ApiBaseTransformer(HttpStatus.OK, "OK", null, null, null).sendResponse();
-    }
-
-    @DeleteMapping("usuario/{id}")
-    public ResponseEntity<?> deleteMethodName(@PathVariable String id) {
-        return new ApiBaseTransformer(HttpStatus.OK, "OK", null, null, null).sendResponse();
-    }
-
-    @PostMapping("/usuario/public/recuperarPasswordMail")
-    public ResponseEntity<?> enviarMailDeRecuperacion(@RequestBody Map<String, Object> requestBody) {
-
+    @Operation(summary = "Enviar correo de recuperación de contraseña", description = "Envía un correo de recuperación de contraseña al usuario basado en la dirección de correo electrónico proporcionada.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Correo enviado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
+    @PostMapping("/usuario/private/all/recuperarPasswordMail")
+    public ResponseEntity<?> enviarMailDeRecuperacion(
+            @Parameter(
+                    description = "ID del producto a buscar",
+                    required = true,
+                    example = "{correoElectronico:\"xd\"}"
+            ) @RequestBody Map<String, Object> requestBody) {
         try {
             String correoElectronico = (String) requestBody.get("correoElectronico");
             String mensaje = usuarioService.enviarMailDeRecuperacion(correoElectronico);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", mensaje,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", mensaje, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
-
     }
 
-    @PatchMapping("/usuario/public/recuperarPassword")
+    @Operation(summary = "Recuperar contraseña", description = "Recupera la contraseña del usuario utilizando el código de recuperación y nueva contraseña.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Contraseña recuperada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
+    @PatchMapping("/usuario/private/all/recuperarPassword")
     public ResponseEntity<?> recuperarPassword(@RequestBody PasswordChange requestBody) {
         try {
             String respuesta = usuarioService.recuperarPassword(requestBody);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
-    @PatchMapping("/usuario/public/cambioPassword")
-    public ResponseEntity<?> cambiarPassword(@RequestBody Usuario requestBody) {
+    @Operation(summary = "Cambiar contraseña", description = "Permite al usuario cambiar su contraseña actual.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Contraseña cambiada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
+    @PatchMapping("/usuario/private/all/cambioPassword")
+    public ResponseEntity<?> cambiarPassword(
+            @Parameter(
+                    description = "ID del producto a buscar",
+                    required = true,
+                    example = "{id:1,password:\"xd\"}"
+            )
+            @RequestBody Usuario requestBody) {
         try {
-            // Obtener el usuario autenticado del contexto de seguridad o del token JWT
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String emailUsuarioAutenticado = authentication.getName();
             String respuesta = usuarioService.cambiarPassword(requestBody, emailUsuarioAutenticado);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
+    @Operation(summary = "Iniciar sesión", description = "Permite a un usuario iniciar sesión en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Inicio de sesión exitoso"),
+        @ApiResponse(responseCode = "400", description = "Credenciales incorrectas")
+    })
     @PostMapping("/usuario/public/login")
-    public ResponseEntity<?> login(@RequestBody Usuario login) {
+    public ResponseEntity<?> login(
+            @Parameter(
+                    description = "ID del producto a buscar",
+                    required = true,
+                    example = "{email:\"nose@nose\",password:\"xd\"}"
+            )
+            @RequestBody Usuario login) {
         try {
             LoginDto respuesta = usuarioService.iniciarSesion(login);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
+    @Operation(summary = "Crear usuario", description = "Crea un nuevo usuario en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
     @PostMapping("/usuario/public/crearUsuario")
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario crear) {
         try {
             LoginDto respuesta = usuarioService.crearUsuario(crear, "USUARIO");
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
+    @Operation(summary = "Crear administrador", description = "Crea un nuevo administrador en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Administrador creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
     @PostMapping("/usuario/private/admin/crearAdministrador")
     public ResponseEntity<?> crearAdministrador(@RequestBody Usuario crear) {
         try {
             String rol = "ADMIN";
             LoginDto respuesta = usuarioService.crearUsuario(crear, rol);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
+    @Operation(summary = "Crear ayudante", description = "Crea un nuevo ayudante en el sistema.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ayudante creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+    })
     @PostMapping("/usuario/private/admin/crearAyudante")
     public ResponseEntity<?> crearAyudante(@RequestBody Usuario crear) {
         try {
             String rol = "AYUDANTE";
             LoginDto respuesta = usuarioService.crearUsuario(crear, rol);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
-    @GetMapping("/usuario/public/perfil/{id}")
+    @Operation(summary = "Obtener perfil de usuario", description = "Obtiene el perfil del usuario basado en el ID proporcionado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Perfil encontrado"),
+        @ApiResponse(responseCode = "400", description = "ID no válido")
+    })
+    @GetMapping("/usuario/private/perfil/{id}")
     public ResponseEntity<?> getPerfil(@PathVariable Long id) {
         try {
             Usuario usuario = usuarioService.getUsuario(id);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-                    usuario,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", usuario, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
-    @DeleteMapping("/usuario/public/eliminarUsuario/{id}")
+    @Operation(summary = "Eliminar usuario", description = "Elimina un usuario basado en el ID proporcionado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario eliminado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "ID con formato inválido")
+    })
+    @DeleteMapping("/usuario/protected/eliminarUsuario/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         try {
-            // Obtener el usuario autenticado del contexto de seguridad o del token JWT
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String emailUsuarioAutenticado = authentication.getName();
             String confirmacion = usuarioService.eliminarUsuario(id, emailUsuarioAutenticado);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-                    confirmacion,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
-                    "Id con formato invalido",
-                    null, null, ex.getMessage()).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Id con formato invalido", null, null, ex.getMessage()).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
-    @PatchMapping("/usuario/public/updateUsuario")
-    public ResponseEntity<?> actualizarUsuarioParcial(
-            @RequestBody Usuario updates) {
+    @Operation(summary = "Actualizar usuario parcialmente", description = "Actualiza parcialmente la información del usuario basado en los datos proporcionados.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "ID con formato inválido")
+    })
+    @PatchMapping("/usuario/private/all/updateUsuario")
+    public ResponseEntity<?> actualizarUsuarioParcial(@RequestBody Usuario updates) {
         try {
-            // Obtener el usuario autenticado del contexto de seguridad o del token JWT
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String emailUsuarioAutenticado = authentication.getName();
             Usuario confirmacion = usuarioService.updateUsuario(updates, emailUsuarioAutenticado);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-                    confirmacion,
-                    null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
                     "Id con formato invalido",
@@ -192,17 +232,4 @@ public class UsuarioController {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
-
-    /*
-     * @PostMapping("/usuario/activarCuentaMail")
-     * public String enviarMailDeConfirmacion(@RequestBody String correoElectronico)
-     * {
-     * return estadoCuentaService.enviarCorreoDeActivacion(correoElectronico);
-     * }
-     * 
-     * @PostMapping("/usuario/activarCuenta")
-     * public String activarCuenta(@RequestBody String codigo) {
-     * return estadoCuentaService.activarCuenta(codigo);
-     * }
-     */
 }
