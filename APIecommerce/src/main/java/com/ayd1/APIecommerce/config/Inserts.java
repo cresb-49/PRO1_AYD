@@ -110,7 +110,8 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             byte[] img = getClass().getResourceAsStream("/img/logo.png").readAllBytes();
 
             TiendaConfig tiendaConfig
-                    = new TiendaConfig("TiendaAyD1", img);
+                    = new TiendaConfig("TiendaAyD1", img, 12.00,
+                            "2da calle XXX-XXX-XX Quetgo");
             this.insertarTiendaConfig(tiendaConfig);
             //sider usuario Admin
             Usuario admin = new Usuario("admin", "admin",

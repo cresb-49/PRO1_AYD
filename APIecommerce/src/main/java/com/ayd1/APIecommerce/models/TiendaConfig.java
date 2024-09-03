@@ -33,13 +33,19 @@ public class TiendaConfig extends Auditor {
     @NotNull(message = "La imagen del producto no puede ser nula.")
     private byte[] imagenTienda;//imagen que debera indicar la herramienta seleccionada
 
+    private Double precioPagoContraEntrega;
+
+    private String direccionEmpresa;
+
     public TiendaConfig(Long id) {
         super(id);
     }
 
-    public TiendaConfig(String nombreTienda, byte[] imagenTienda) {
+    public TiendaConfig(String nombreTienda, byte[] imagenTienda, Double precioPagoContraEntrega, String direccionEmpresa) {
         this.nombreTienda = nombreTienda;
         this.imagenTienda = imagenTienda;
+        this.precioPagoContraEntrega = precioPagoContraEntrega;
+        this.direccionEmpresa = direccionEmpresa;
     }
 
     public TiendaConfig() {
@@ -59,6 +65,22 @@ public class TiendaConfig extends Auditor {
 
     public void setImagenTienda(byte[] imagenTienda) {
         this.imagenTienda = imagenTienda;
+    }
+
+    public Double getPrecioPagoContraEntrega() {
+        return precioPagoContraEntrega;
+    }
+
+    public void setPrecioPagoContraEntrega(Double precioPagoContraEntrega) {
+        this.precioPagoContraEntrega = precioPagoContraEntrega;
+    }
+
+    public String getDireccionEmpresa() {
+        return direccionEmpresa;
+    }
+
+    public void setDireccionEmpresa(String direccionEmpresa) {
+        this.direccionEmpresa = direccionEmpresa;
     }
 
 }

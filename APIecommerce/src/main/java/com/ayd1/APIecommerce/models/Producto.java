@@ -54,6 +54,11 @@ public class Producto extends Auditor {
     @Min(value = 0, message = "El precio debe tener como valor mínimo 0.")
     private Double precio;
 
+    @Column(name = "porcentaje_impuesto", nullable = false)
+    @Min(value = 0, message = "El procentaje de impuesto debe tener como valor mínimo 0.")
+    @NotNull(message = "El porcentaje de impuesto no puede ser nulo")
+    private Double porcentajeImpuesto;
+
     @Column(name = "habilitado", nullable = false)
     @NotNull(message = "El estado del producto no puede ser nulo")
     private Boolean habilitado;
@@ -73,12 +78,13 @@ public class Producto extends Auditor {
     public Producto() {
     }
 
-    public Producto(String nombre, String descripcion, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
+    public Producto(String nombre, String descripcion, Categoria categoria, Integer stock, Double precio, Double porcentajeImpuesto, Boolean habilitado) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.stock = stock;
         this.precio = precio;
+        this.porcentajeImpuesto = porcentajeImpuesto;
         this.habilitado = habilitado;
     }
 
@@ -156,6 +162,14 @@ public class Producto extends Auditor {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public Double getPorcentajeImpuesto() {
+        return porcentajeImpuesto;
+    }
+
+    public void setPorcentajeImpuesto(Double porcentajeImpuesto) {
+        this.porcentajeImpuesto = porcentajeImpuesto;
     }
 
 }

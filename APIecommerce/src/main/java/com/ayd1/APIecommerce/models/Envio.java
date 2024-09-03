@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -27,6 +28,9 @@ public class Envio extends Auditor {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Venta venta;
 
+    @Column(name = "direccion", nullable = true)
+    private String direccion;
+
     @ManyToOne
     @JoinColumn(name = "estado_envio", nullable = false, unique = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -34,10 +38,10 @@ public class Envio extends Auditor {
 
     private LocalDateTime entregadoAt;
 
-    public Envio(Venta venta, EstadoEnvio estadoEnvio, LocalDateTime entregadoAt) {
+    public Envio(Venta venta, String direccion, EstadoEnvio estadoEnvio) {
         this.venta = venta;
+        this.direccion = direccion;
         this.estadoEnvio = estadoEnvio;
-        this.entregadoAt = entregadoAt;
     }
 
     public Envio(Long id) {

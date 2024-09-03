@@ -29,6 +29,9 @@ public class Venta extends Auditor {
     @Min(value = 0, message = "El valor total debe tener como valor mínimo 0.")
     private Double valorTotal;
 
+    @Column(name = "cuota_pago_contra_entrega", nullable = false)
+    private Double cuotaPagContraEntrega;
+
     @Column(name = "cantidad_productos", nullable = false)
     @Min(value = 1, message = "El cantidad debe tener como valor mínimo 1.")
     private Integer cantidadProductos;
@@ -57,9 +60,18 @@ public class Venta extends Auditor {
         super(id);
     }
 
-    public Venta(Double valorTotal, Integer cantidadProductos) {
+    public Venta(Double valorTotal, Double cuotaPagContraEntrega, Integer cantidadProductos) {
         this.valorTotal = valorTotal;
+        this.cuotaPagContraEntrega = cuotaPagContraEntrega;
         this.cantidadProductos = cantidadProductos;
+    }
+
+    public Double getCuotaPagContraEntrega() {
+        return cuotaPagContraEntrega;
+    }
+
+    public void setCuotaPagContraEntrega(Double cuotaPagContraEntrega) {
+        this.cuotaPagContraEntrega = cuotaPagContraEntrega;
     }
 
     public Double getValorTotal() {
