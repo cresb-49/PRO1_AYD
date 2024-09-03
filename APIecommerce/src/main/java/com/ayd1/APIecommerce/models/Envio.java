@@ -24,7 +24,7 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Envio extends Auditor {
 
     @OneToOne
-    @JoinColumn(name = "venta_id", nullable = false, unique = true)
+    @JoinColumn(name = "venta", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Venta venta;
 
@@ -73,6 +73,14 @@ public class Envio extends Auditor {
 
     public void setEstadoEnvio(EstadoEnvio estadoEnvio) {
         this.estadoEnvio = estadoEnvio;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
 }

@@ -73,6 +73,16 @@ public class FacturaService extends Service {
         return ventaSearch.get();
     }
 
+    public byte[] getFactura(Long ventId) throws Exception {
+        Venta venta = this.getVenta(ventId);
+        DatosFacturacion datosFacturacion = venta.getDatosFacturacion();
+        List<LineaVenta> desgloce = venta.getLineaVentas();
+        
+        return this.facturaImprimible.init(venta,
+                datosFacturacion,
+                desgloce);
+    }
+
     @Transactional
     public byte[] guardarVenta(VentaRequest ventaRequest) throws Exception {
 
