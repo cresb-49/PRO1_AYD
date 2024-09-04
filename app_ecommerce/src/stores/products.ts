@@ -41,7 +41,7 @@ export const useProductStore = defineStore('products', {
       this.loading = true
       
       const { data, error } = await useCustomFetch<any>(
-        'api/productos/',
+        'api/productos/public/getProductos',
         {
           method: 'GET',
         }
@@ -68,7 +68,7 @@ export const useProductStore = defineStore('products', {
       this.loadingProduct = true
       
       const { data, error } = await useCustomFetch<any>(
-        `api/producto/${product_id}`,
+        `api/producto/public/getProducto/${product_id}`,
         {
           method: 'GET',
         }
@@ -106,7 +106,7 @@ export const useProductStore = defineStore('products', {
       formData.append("habilitado", "true");
       
       const { data, error } = await useCustomFetch<any>(
-        'api/producto/private/crearProducto',
+        'api/producto/protected/crearProducto',
         {
           method: 'POST',
           body: formData
@@ -142,7 +142,7 @@ export const useProductStore = defineStore('products', {
       payload.habilitado = true
 
       const { data, error } = await useCustomFetch<any>(
-        'api/producto/private/actualizarProducto',
+        'api/producto/protected/actualizarProducto',
         {
           method: 'PATCH',
           body: JSON.stringify(payload)
