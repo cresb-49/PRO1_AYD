@@ -1,14 +1,7 @@
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import { defineStore } from 'pinia'
-import { useSnackbarStore } from './snackbar'
+import { useSnackbarStore, SnackbarType } from './snackbar'
 import { convertError } from '@/utils/error-converter'
-
-export enum SnackbarType {
-  SUCCESS,
-  ERROR,
-  WARNING,
-  MESSAGE
-}
 
 export type CreationPayload = {
   categoria: number
@@ -21,7 +14,10 @@ export type CreationPayload = {
 export type UpdatePayload = {
   id: number,
   nombre: string,
-  padre?: number
+  categoria: number,
+  stock: number,
+  precio: number,
+  habilitado: boolean
 }
  
 export type Product = {
@@ -29,13 +25,15 @@ export type Product = {
   categoria: number
   nombre: string,
   stock: number,
-  precio: number
+  precio: number,
+  imagenesUrls?: Array<String>
 }
 
 export const useProductStore = defineStore('products', {
   state: () => ({
     products: new Array<Product>,
     loading: false,
+    loadingProduct: false,
     error: false
   }),
   actions: {
@@ -67,7 +65,7 @@ export const useProductStore = defineStore('products', {
       return { data, error: false }
     },
     async fetchProduct(product_id: number) {
-      this.loading = true
+      this.loadingProduct = true
       
       const { data, error } = await useCustomFetch<any>(
         `api/producto/${product_id}`,
@@ -88,7 +86,7 @@ export const useProductStore = defineStore('products', {
       }
       // Success
       // Return the data and error
-      this.loading = false
+      this.loadingProduct = false
       return { data, error: false }
     },
     async createProduct(payload: CreationPayload) {
@@ -141,9 +139,10 @@ export const useProductStore = defineStore('products', {
     },
     async updateProduct(payload: UpdatePayload) {
       this.loading = true
+      payload.habilitado = true
 
       const { data, error } = await useCustomFetch<any>(
-        'api/categoria/private/actualizarProducto',
+        'api/producto/private/actualizarProducto',
         {
           method: 'PATCH',
           body: JSON.stringify(payload)
