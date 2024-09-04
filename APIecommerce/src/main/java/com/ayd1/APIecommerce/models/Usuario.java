@@ -52,13 +52,17 @@ public class Usuario extends Auditor {
     @NotBlank(message = "La password del cliente no puede estar vacía.")
     @NotNull(message = "La password del cliente no puede ser nula.")
     @Size(min = 1, max = 250, message = "El email del cliente debe tener entre 1 y 250 caracteres.")
+    @JsonIgnore
     private String password;
 
     @Column(name = "codigo_activacion", columnDefinition = "LONGTEXT")
+    @JsonIgnore
     private String codigoActivacion;
     @Column(name = "codigo_recuperacion", columnDefinition = "LONGTEXT")
+    @JsonIgnore
     private String codigoRecuperacion;
     @Column(name = "estado_activacion", nullable = false)
+    @JsonIgnore
     private boolean estadoActivacion;
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)

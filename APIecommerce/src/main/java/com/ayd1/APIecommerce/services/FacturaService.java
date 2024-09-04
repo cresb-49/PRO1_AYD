@@ -9,6 +9,7 @@ import com.ayd1.APIecommerce.models.Envio;
 import com.ayd1.APIecommerce.models.EstadoEnvio;
 import com.ayd1.APIecommerce.models.LineaVenta;
 import com.ayd1.APIecommerce.models.Producto;
+import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.Venta;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
@@ -20,6 +21,7 @@ import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import com.ayd1.APIecommerce.repositories.LineaVentaRepository;
 import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.repositories.VentaRepository;
+import com.ayd1.APIecommerce.services.reportes.imprimibles.FacturaImprimible;
 import com.ayd1.APIecommerce.tools.mappers.ProductoMapper;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,70 +53,112 @@ public class FacturaService extends Service {
     private EstadoEnvioRepository estadoEnvioRepository;
     @Autowired
     private ProductoRepository productoRepository;
+    @Autowired
+    private TiendaConfigService tiendaConfigService;
+
+    @Autowired
+    private FacturaImprimible facturaImprimible;
+
+    public Venta getVenta(Long id) throws Exception {
+        if (id == null || id <= 0) {
+            throw new Exception("Id invalido.");
+        }
+
+        Optional<Venta> ventaSearch = this.ventaRepository.findById(id);
+
+        if (ventaSearch.isEmpty()) {
+            throw new Exception("Venta no encontrada.");
+        }
+
+        return ventaSearch.get();
+    }
+
+    public byte[] getFactura(Long ventId) throws Exception {
+        Venta venta = this.getVenta(ventId);
+        DatosFacturacion datosFacturacion = venta.getDatosFacturacion();
+        List<LineaVenta> desgloce = venta.getLineaVentas();
+        
+        return this.facturaImprimible.init(venta,
+                datosFacturacion,
+                desgloce);
+    }
 
     @Transactional
-    public String guardarVenta(VentaRequest ventaRequest) throws Exception {
+    public byte[] guardarVenta(VentaRequest ventaRequest) throws Exception {
+
         //validamos elobjeto
         this.validar(ventaRequest);
-        //construir la venta
-        Venta venta = this.construirVenta(ventaRequest);
-        //obtener los datos de factuacion
-        DatosFacturacion factura = this.guardarDatosFactuacion(ventaRequest, venta);
-        /* Envio envio = this.guardarEnvio(venta, ventaRequest);
-        //mandamos a crear el documento de la factura*/
-        return "Se creo la venta con exito.";
-    }
 
-    @Transactional
-    private Venta construirVenta(VentaRequest ventaRequest) throws Exception {
-        //creamos la instancia de a venta
-        Venta venta = new Venta();
-        //anadimos las propiedades de la venta
-        venta.setCantidadProductos(ventaRequest.getProductos().size());
-        venta.setValorTotal(0.00);
+        /*la venta volatil es la creacion de la venta con datos iniciales, 
+        se utiiza para que exista una referencia en la bd y en spring a la cual apuntar
+        con los distintos objetos que se crearan luego
+         */
+        Venta venta = new Venta(0.00, 0.00,
+                ventaRequest.getProductos().size());
+        /*la venta volatil2 se utilizara para guardar el desgloce de la factura
+        y el valor total real de la factura
+         */
+        Venta save = this.ventaRepository.save(venta);
 
-        Venta saveVenta = this.ventaRepository.save(venta);
-
-        //validar la creacion de la venta
-        if (saveVenta.getId() <= 0) {
-            throw new Exception("No se pudo generar la venta");
+        //validar la creacion de la venta 
+        if (save.getId() <= 0) {
+            throw new Exception("No se pudo generar la factura");
         }
 
-        ArrayList<LineaVenta> desglose = this.crearDesgloce(saveVenta, ventaRequest);
+        ArrayList<LineaVenta> desglose = this.crearDesgloce(save, ventaRequest);
         Double total = this.calcularTotal(desglose);
-        //anadimos las propiedades de la venta
-        venta.setCantidadProductos(ventaRequest.getProductos().size());
-        venta.setValorTotal(total);
-        venta.setLineaVentas(desglose);
+        Double cuotaPagoContraEntrega = 0.00;
 
-        Venta save2 = this.ventaRepository.save(saveVenta);
-
-        //validar la creacion de la venta
-        if (save2.getId() <= 0) {
-            throw new Exception("No se pudo generar la venta");
+        //si el pago contra entrega esta activado entonces debemos subir a la cuota
+        if (ventaRequest.getPagoContraEntrega() && !ventaRequest.getRetiroEnTienda()) {
+            //traer las configs del sistema
+            TiendaConfig tiendaConfig = this.tiendaConfigService.getTiendaConfig();
+            cuotaPagoContraEntrega = tiendaConfig.getPrecioPagoContraEntrega();
         }
 
-        return save2;
+        //anadimos las propiedades de la venta
+        save.setValorTotal(total + cuotaPagoContraEntrega);
+        save.setLineaVentas(desglose);
+        save.setCuotaPagContraEntrega(cuotaPagoContraEntrega);
+
+        //actualizar
+        this.ventaRepository.save(save);
+
+        //hacemos las restas en el stock
+        ArrayList<Producto> productos = this.hacerRestasEnStock(ventaRequest);
+        //guardar las restas
+        this.productoRepository.saveAll(productos);
+
+        //crear la data de la facturacion
+        DatosFacturacion datosFactuacion = this.crearDatosFacturacion(ventaRequest,
+                save);
+        //guardar los datos de facturacion
+        this.datosFacturacionRepository.save(datosFactuacion);
+
+        if (datosFactuacion.getId() <= 0) {
+            throw new Exception("No se pudieron generar los datos de facturacion.");
+        }
+
+        //Crear el envio de ser necesario 
+        if (ventaRequest.getRetiroEnTienda() == false) {
+            Envio envio = this.crearEnvio(save, ventaRequest.getDireccion());
+            Envio saveEnvio = this.envioRepository.save(envio);
+            if (saveEnvio.getId() <= 0) {
+                throw new Exception("No se pudo generar el envio.");
+            }
+        }
+        return this.facturaImprimible.init(save,
+                datosFactuacion,
+                desglose);
     }
 
-    @Transactional
-    private ArrayList<LineaVenta> crearDesgloce(Venta venta,
-            VentaRequest ventaRequest) throws Exception {
+    private ArrayList<LineaVenta> crearDesgloce(Venta venta, VentaRequest ventaRequest) throws Exception {
         ArrayList<LineaVenta> desglose = new ArrayList<>();
         //por cada uno de los productos realizar un calculo del total, crear las lineas de ventas
         for (ProductoVentaRequest productosRequest : ventaRequest.getProductos()) {
             this.validar(productosRequest);
             //nos aseguramos que el producto exista
             Producto producto = this.productoService.getProducto(productosRequest.getId());
-            //verificamos la disponibilidad del producto, de no haber stock se rechaza la venta
-            if (producto.getStock() < productosRequest.getCantidad()) {
-                throw new Exception("No hay suficiente Stock del producto " + producto.getNombre());
-            }
-            //restamos el stock con la cantidad
-            producto.setStock(producto.getStock()
-                    - productosRequest.getCantidad().intValue());
-            //actualizamos el stock del producto
-            this.productoRepository.save(producto);
             //creamos la linea de venta del producto
             LineaVenta lineaVenta = new LineaVenta(producto, venta,
                     producto.getPrecio(),
@@ -123,6 +167,29 @@ public class FacturaService extends Service {
             desglose.add(lineaVenta);
         }
         return desglose;
+    }
+
+    private ArrayList<Producto> hacerRestasEnStock(VentaRequest ventaRequest) throws Exception {
+        ArrayList<Producto> productos = new ArrayList<>();
+
+        //por cada uno de los productos realizar un calculo del total, crear las lineas de ventas
+        for (ProductoVentaRequest productosRequest : ventaRequest.getProductos()) {
+            //nos aseguramos que el producto exista
+            Producto producto = this.productoService.getProducto(productosRequest.getId());
+
+            //verificamos la disponibilidad del producto, de no haber stock se rechaza la venta
+            if (producto.getStock() < productosRequest.getCantidad()) {
+                throw new Exception("No hay suficiente Stock del producto \""
+                        + producto.getNombre() + "\"");
+            }
+
+            //restamos el stock con la cantidad
+            producto.setStock(producto.getStock()
+                    - productosRequest.getCantidad().intValue());
+
+            productos.add(producto);
+        }
+        return productos;
     }
 
     private Double calcularTotal(ArrayList<LineaVenta> desgloce) {
@@ -134,21 +201,6 @@ public class FacturaService extends Service {
         return total;
     }
 
-    @Transactional
-    private DatosFacturacion guardarDatosFactuacion(VentaRequest ventaRequest,
-            Venta venta) throws Exception {
-        //generar datos de factuacion
-        DatosFacturacion datosFactuacion = this.crearDatosFacturacion(ventaRequest,
-                venta);
-        //guardar los datos de facturacion
-        this.datosFacturacionRepository.save(datosFactuacion);
-
-        if (datosFactuacion.getId() <= 0) {
-            throw new Exception("No se pudieron generar los datos de facturacion.");
-        }
-        return datosFactuacion;
-    }
-
     private DatosFacturacion crearDatosFacturacion(VentaRequest ventaRequest,
             Venta venta) throws Exception {
         //traemos el usuario que va a comprar
@@ -156,8 +208,16 @@ public class FacturaService extends Service {
                 ventaRequest.getIdCompradador()
         );
 
-        //verificar si se requiere nit
-        String nit = ventaRequest.getConsumidorFinal() ? "CF" : usuarioEncontrado.getNit();
+        String nit = "";
+
+        if (ventaRequest.getConsumidorFinal()) {
+            nit = "CF";
+        } else {
+            if (usuarioEncontrado.getNit() == null) {
+                throw new Exception("No haz ingresado un nit.");
+            }
+            nit = usuarioEncontrado.getNit();
+        }
 
         return new DatosFacturacion(
                 nit,
@@ -168,25 +228,7 @@ public class FacturaService extends Service {
                 usuarioEncontrado);
     }
 
-    @Transactional
-    private Envio guardarEnvio(Venta venta, VentaRequest ventaRequest)
-            throws Exception {
-        //Crear el estado del envio si es requerido
-        if (ventaRequest.getRetiroEnTienda() == true) {
-            return null;
-        }
-        Envio envio = this.crearEnvio(venta);
-
-        Envio saveEnvio = this.envioRepository.save(envio);
-
-        if (saveEnvio.getId() <= 0) {
-            throw new Exception("No se pudo generar el envio.");
-        }
-
-        return saveEnvio;
-    }
-
-    private Envio crearEnvio(Venta venta) throws Exception {
+    private Envio crearEnvio(Venta venta, String direccion) throws Exception {
         //mandamos a traer el estado "pendiente"
         Optional<EstadoEnvio> busquedaEstadoEnvio
                 = this.estadoEnvioRepository.findOneByNombre("PENDIENTE");
@@ -195,6 +237,6 @@ public class FacturaService extends Service {
         }
         EstadoEnvio estadoEnvio = busquedaEstadoEnvio.get();
         //mandamos a traer el estado del envio
-        return new Envio(venta, estadoEnvio, null);
+        return new Envio(venta, direccion, estadoEnvio);
     }
 }

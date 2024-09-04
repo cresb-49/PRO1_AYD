@@ -39,14 +39,14 @@ public class DatosFacturacion extends Auditor {
     private String nombre;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "venta_id", nullable = false, unique = true)
+    @JoinColumn(name = "venta", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private Venta venta;
 
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "usuario", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private Usuario usuario;
 
     public DatosFacturacion(String nit, String nombre, Venta venta, Usuario usuario) {

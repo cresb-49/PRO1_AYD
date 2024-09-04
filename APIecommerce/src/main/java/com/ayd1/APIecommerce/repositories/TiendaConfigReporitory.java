@@ -4,9 +4,8 @@
  */
 package com.ayd1.APIecommerce.repositories;
 
-import com.ayd1.APIecommerce.models.Envio;
-import com.ayd1.APIecommerce.models.EstadoEnvio;
-import java.util.List;
+import com.ayd1.APIecommerce.models.TiendaConfig;
+import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,10 +14,7 @@ import org.springframework.stereotype.Repository;
  * @author Luis Monterroso
  */
 @Repository
-public interface EnvioRepository extends CrudRepository<Envio, Long> {
+public interface TiendaConfigReporitory extends CrudRepository<TiendaConfig, Long> {
 
-    @Override
-    public List<Envio> findAll();
-
-    public List<Envio> findAllByEstadoEnvio_Nombre(String nombre);
+    Optional<TiendaConfig> findFirstByOrderByIdAsc();
 }

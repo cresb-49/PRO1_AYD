@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,7 +38,7 @@ public class Producto extends Auditor {
     @Size(min = 1, max = 250, message = "El nombre del producto debe tener entre 1 y 250 caracteres.")
     private String nombre;
 
-    @Column(name = "descripcion", length = 250, unique = false)
+    @Column(name = "descripcion", columnDefinition = "LONGTEXT")
     private String descripcion;
 
     @ManyToOne//indicador de relacion muchos a uno
@@ -54,31 +55,40 @@ public class Producto extends Auditor {
     @Min(value = 0, message = "El precio debe tener como valor mínimo 0.")
     private Double precio;
 
+    @Column(name = "porcentaje_impuesto", nullable = false)
+    @Min(value = 0, message = "El procentaje de impuesto debe tener como valor mínimo 0.")
+    @NotNull(message = "El porcentaje de impuesto no puede ser nulo")
+    private Double porcentajeImpuesto;
+
     @Column(name = "habilitado", nullable = false)
     @NotNull(message = "El estado del producto no puede ser nulo")
     private Boolean habilitado;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonIgnore
     private List<MovimientoStock> movimientos;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonIgnore
     private List<LineaVenta> lineaVentas;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
+    @JsonIgnore
     private List<Imagen> imagenes;
 
     public Producto() {
     }
 
-    public Producto(String nombre, String descripcion, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
+    public Producto(String nombre, String descripcion, Categoria categoria, Integer stock, Double precio, Double porcentajeImpuesto, Boolean habilitado) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.categoria = categoria;
         this.stock = stock;
         this.precio = precio;
+        this.porcentajeImpuesto = porcentajeImpuesto;
         this.habilitado = habilitado;
     }
 
@@ -148,6 +158,22 @@ public class Producto extends Auditor {
 
     public void setLineaVentas(List<LineaVenta> lineaVentas) {
         this.lineaVentas = lineaVentas;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Double getPorcentajeImpuesto() {
+        return porcentajeImpuesto;
+    }
+
+    public void setPorcentajeImpuesto(Double porcentajeImpuesto) {
+        this.porcentajeImpuesto = porcentajeImpuesto;
     }
 
 }

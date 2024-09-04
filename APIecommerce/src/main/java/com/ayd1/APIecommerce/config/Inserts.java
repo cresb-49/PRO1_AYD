@@ -7,10 +7,12 @@ package com.ayd1.APIecommerce.config;
 import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.EstadoEnvio;
 import com.ayd1.APIecommerce.models.Rol;
+import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
+import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     private RolRepository rolRepository;
     @Autowired
     private CategoriaRepository categoriaRepository;
+    @Autowired
+    private TiendaConfigReporitory tiendaConfigReporitory;
     @Autowired
     private EstadoEnvioRepository estadoEnvioRepository;
     @Autowired
@@ -75,6 +79,20 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
         }
     }
 
+    public TiendaConfig insertarTiendaConfig(TiendaConfig config) throws Exception {
+        try {
+            TiendaConfig conf
+                    = this.tiendaConfigReporitory.findFirstByOrderByIdAsc().orElse(null);
+            if (conf == null) {
+                return this.tiendaConfigReporitory.save(config);
+            }
+            return conf;
+
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
+    }
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
@@ -86,9 +104,22 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             Categoria categoria = new Categoria("Hogar");
             this.insertarCategoria(categoria);
 
+            /**
+             * Estados de envio
+             */
             EstadoEnvio estadoEnvio = new EstadoEnvio("PENDIENTE");
             this.insertarEstadoEnvio(estadoEnvio);
-            
+            EstadoEnvio estadoEnvio2 = new EstadoEnvio("ENTREGADO");
+            this.insertarEstadoEnvio(estadoEnvio2);
+
+            //IMAGEN DEFAULT DE LA TIENDA
+            byte[] img = getClass().getResourceAsStream("/img/logo.png").readAllBytes();
+
+            TiendaConfig tiendaConfig
+                    = new TiendaConfig("TiendaAyD1", img, 12.00,
+                            "2da calle XXX-XXX-XX Quetgo",
+                            "image/png");
+            this.insertarTiendaConfig(tiendaConfig);
             //sider usuario Admin
             Usuario admin = new Usuario("admin", "admin",
                     "admin@admin", null,

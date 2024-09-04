@@ -25,38 +25,38 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-    @GetMapping("/categoria/{id}")
+    @GetMapping("/categoria/public/{id}")
     public ResponseEntity<?> getCategoria(@PathVariable Long id) {
         try {
             Object data = categoriaService.getCategoria(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null,null,null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, "Error", null,null,e.getMessage()).sendResponse();
         }
     }
 
-    @GetMapping("/categorias")
+    @GetMapping("/categoria/public/getCategorias")
     public ResponseEntity<?> getCategorias() {
         try {
             List<Categoria> listaCategorias = categoriaService.getCategorias();
             return new ApiBaseTransformer(HttpStatus.OK, "OK",listaCategorias,null,null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }
     }
 
-    @PostMapping("/categoria/private/crearCategoria")
+    @PostMapping("/categoria/protected/crearCategoria")
     public ResponseEntity<?> crearCategoria(@RequestBody Categoria nuevaCategoria) {
         try {
             Categoria categoria = categoriaService.createCategoria(nuevaCategoria);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", categoria,
                     null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }
     }
 
-    @PatchMapping("/categoria/private/updateCategoria")
+    @PatchMapping("/categoria/protected/updateCategoria")
     public ResponseEntity<?> actualizarCategoria(@RequestBody Categoria editCategoria) {
         try {
             Categoria actualCategoria = categoriaService.updateCategoria(editCategoria);
@@ -64,19 +64,17 @@ public class CategoriaController {
             actualCategoria,
             null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
-                    e.getMessage(),
-                    null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,"Error",null, null, e.getMessage()).sendResponse();
         }
     }
 
-    @DeleteMapping("/categoria/private/eliminarCategoria/{id}")
+    @DeleteMapping("/categoria/protected/eliminarCategoria/{id}")
     public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
         try {
             String eliminacionCategoria = categoriaService.deleteCategoria(id);
             return new ApiBaseTransformer(HttpStatus.OK, "Categoría eliminada con éxito",eliminacionCategoria,null,null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }
     }
 }
