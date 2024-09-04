@@ -30,6 +30,7 @@ public class Categoria extends Auditor {
 
     @ManyToOne
     @JoinColumn(name = "id_padre")
+    @JsonIgnore
     private Categoria padre;
 
     @Column(name = "nombre", length = 250, unique = true)

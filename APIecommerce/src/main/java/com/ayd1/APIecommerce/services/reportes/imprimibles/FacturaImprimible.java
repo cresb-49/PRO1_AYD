@@ -62,11 +62,15 @@ public class FacturaImprimible extends ConstructorImprimible {
         parametrosReporte.put("total", "Q." + venta.getValorTotal());
         parametrosReporte.put("nombreComprador",
                 datosFacturacion.getNombre());
+        parametrosReporte.put("cuota_pago_entrega",
+                "Q." + venta.getCuotaPagContraEntrega());
         parametrosReporte.put("fecha", "Fecha: "
                 + this.manejadorDeFecha.parsearFechaYHoraAFormatoRegional(
                         venta.getCreatedAt()));
         parametrosReporte.put("noItems",
                 desgloce.size() + " Items");
+        parametrosReporte.put("nit",
+                datosFacturacion.getNit());
         return parametrosReporte;
     }
 
@@ -75,10 +79,12 @@ public class FacturaImprimible extends ConstructorImprimible {
         for (LineaVenta item : desgloce) {
             DesgloceDto dto = new DesgloceDto(
                     item.getCantidad(),
-                    "Q" + item.getPrecio(),
+                    "Q." + item.getPrecio(),
                     item.getProducto().getNombre(),
                     item.getProducto().getDescripcion(),
-                    "Q" + item.getCantidad() * item.getPrecio()
+                    "Q." + item.getCantidad() * item.getPrecio(),
+                    "Q." + ((item.getProducto().getPorcentajeImpuesto() / 100)
+                    * item.getPrecio())
             );
 
             desgloceDtos.add(dto);

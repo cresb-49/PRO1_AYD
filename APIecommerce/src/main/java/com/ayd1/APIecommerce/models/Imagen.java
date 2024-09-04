@@ -79,7 +79,10 @@ public class Imagen extends Auditor {
     }
 
     public String getExtension() {
-        return this.mimeType.split("/")[1];
+        if (this.mimeType.split("/")[1] != null) {
+            return this.mimeType.split("/")[1];
+        }
+        return "png";
     }
 
 }

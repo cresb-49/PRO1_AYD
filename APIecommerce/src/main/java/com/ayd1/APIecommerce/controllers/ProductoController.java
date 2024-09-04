@@ -24,6 +24,7 @@ import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,9 +42,17 @@ public class ProductoController {
         @ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente",
                 content = {
                     @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ProductoDto.class))}),
+                            array = @ArraySchema(
+                                    schema = @Schema(
+                                            implementation = ProductoDto.class
+                                    )
+                            )
+                    )
+                }
+        ),
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
-                content = @Content)
+                content = @Content
+        )
     })
     @GetMapping("/productos/public/getProductos")
     public ResponseEntity<?> getProdutos() {
@@ -160,6 +169,31 @@ public class ProductoController {
         try {
             String confirmacion = this.productoService.eliminarProducto(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @Operation(summary = "Devuelve todos los productos con 5 o menos esxistencias",
+            description = "")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Listado de productos",
+                content = @Content(mediaType = "application/json",
+                        array = @ArraySchema(
+                                schema = @Schema(
+                                        implementation = ProductoDto.class
+                                )
+                        )
+                )),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                content = @Content)
+    })
+    @GetMapping("/producto/protected/getStockBajo")
+    public ResponseEntity<?> getStockBajo() {
+        try {
+            List<ProductoDto> respuesta = this.productoService.
+                    getProductosConBajaExistencia();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }

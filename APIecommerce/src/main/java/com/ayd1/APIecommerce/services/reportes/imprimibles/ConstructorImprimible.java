@@ -5,7 +5,6 @@
 package com.ayd1.APIecommerce.services.reportes.imprimibles;
 
 import com.ayd1.APIecommerce.models.TiendaConfig;
-import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
 import com.ayd1.APIecommerce.services.TiendaConfigService;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -27,7 +26,7 @@ import org.springframework.stereotype.Component;
 public abstract class ConstructorImprimible {
 
     @Autowired
-    private TiendaConfigService tiendaConfigService;
+    protected TiendaConfigService tiendaConfigService;
 
     /**
      * Adjunta informacion a un reporte previamente compilado
@@ -40,6 +39,7 @@ public abstract class ConstructorImprimible {
     protected byte[] generarReporte(String reportePath, Map parametros) throws Exception {
         //mandamos a traer la configuracion de la tienda y agregamos el logo y le nombre a los parametros
         TiendaConfig tiendaConfig = this.tiendaConfigService.getTiendaConfig();
+        parametros.put("direccion_tienda", tiendaConfig.getDireccionEmpresa());
         parametros.put("nombre_tienda", tiendaConfig.getNombreTienda());
         parametros.put("imagen_tienda",
                 new ByteArrayInputStream(tiendaConfig.getImagenTienda()));
