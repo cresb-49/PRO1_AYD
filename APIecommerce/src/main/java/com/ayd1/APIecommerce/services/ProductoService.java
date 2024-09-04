@@ -1,5 +1,6 @@
 package com.ayd1.APIecommerce.services;
 
+import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.Imagen;
 import java.util.List;
 
@@ -229,5 +230,14 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
             return productoDto;
         }
         throw new Exception("No pudimos actualizar el prodcuto, inténtalo más tarde.");
+    }
+
+    public List<Producto> buscarPorCategoria(Categoria categoria) {
+        return productoRepository.findByCategoria(categoria);
+    }
+
+    // Método para buscar productos por nombre
+    public List<Producto> buscarPorNombre(String nombre) {
+        return productoRepository.findByNombreContaining(nombre);
     }
 }
