@@ -25,14 +25,6 @@ export type SignupPayload = {
   password: string
 }
 
-export type Profile = {
-  id: number
-  nombres: string
-  apellidos: string
-  created_at: Date
-  updated_at: Date
-}
-
 export type User = {
   id: number
   nombres: string

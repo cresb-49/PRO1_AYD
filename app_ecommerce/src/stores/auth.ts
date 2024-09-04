@@ -4,6 +4,7 @@ import { useRegularAuthStore } from './regular-auth'
 import { useStaffAuthStore } from './staff-auth'
 import { useRouter } from "vue-router";
 import { useCookies } from 'vue3-cookies';
+import { useCartStore } from './cart';
 
 type UserJwt = {
   id: number
@@ -35,11 +36,13 @@ export const useAuthStore = defineStore('auth', {
     logout() {
       const regularAuthStore = useRegularAuthStore()
       const staffAuthStore = useStaffAuthStore()
+      const cartStore = useCartStore()
       useCookies().cookies.remove('user-token');
       useCookies().cookies.remove('roleuser');
       // Clear the user in the respective store
       if (regularAuthStore.user) {
         regularAuthStore.clear()
+        cartStore.$reset()
       } else {
         staffAuthStore.clear()
       }
