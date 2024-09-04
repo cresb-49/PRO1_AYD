@@ -1,14 +1,7 @@
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import { defineStore } from 'pinia'
-import { useSnackbarStore } from './snackbar'
+import { useSnackbarStore, SnackbarType } from './snackbar'
 import { convertError } from '@/utils/error-converter'
-
-export enum SnackbarType {
-  SUCCESS,
-  ERROR,
-  WARNING,
-  MESSAGE
-}
 
 export type CreationPayload = {
   nombre: string,

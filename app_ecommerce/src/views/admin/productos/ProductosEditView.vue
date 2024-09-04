@@ -1,34 +1,39 @@
 <template>
   <main>
     <header class="mb-4">
-      <h1 class="mb-4">Categorias - Editar</h1>
-      <v-btn prepend-icon="mdi-arrow-left" to="/admin/categorias" class="mt-3">
+      <h1 class="mb-4">Productos - Editar</h1>
+      <v-btn prepend-icon="mdi-arrow-left" to="/admin/productos" class="mt-3">
         Regresar
       </v-btn>
     </header>
     <section class="edit-section">
-      <EditCategoryForm :category_id="(route.params.id as unknown as number)" @update="updateCategoria"/>
+      <EditProductForm :product_id="(route.params.id as unknown as number)" @update="updateProducto"/>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
-import EditCategoryForm from '@/components/forms/admin/categories/EditCategoryForm.vue';
+import EditProductForm from '@/components/forms/admin/products/EditProductForm.vue';
 import { useCategoryStore } from '@/stores/categories';
+import { useProductStore } from '@/stores/products';
 import { useRoute } from 'vue-router';
 
 const route = useRoute()
-const {fetchAllCategories, updateCategory} = useCategoryStore();
+const {fetchAllCategories} = useCategoryStore();
+const {updateProduct} = useProductStore();
 
 fetchAllCategories()
 
-async function updateCategoria(params: {id: number, nombre: string, padre?: number}) {
+async function updateProducto(params: {id: number, nombre: string, categoria: number, precio: number, stock: number}) {
   const newAttributes = {
     id: params.id,
     nombre: params.nombre,
-    padre: params.padre
+    categoria: params.categoria,
+    precio: params.precio,
+    stock: params.stock,
+    habilitado: true
   }
-  await updateCategory(newAttributes)
+  await updateProduct(newAttributes)
 }
 </script>
 

@@ -18,6 +18,17 @@
         </v-tooltip>
       </div>
       <div v-if="user && role === 'regular'" class="app-bar__user-info">
+        <v-tooltip text="Carrito" location="bottom">
+          <template #activator="{ props }">
+            <v-avatar
+              v-bind="props"
+              class="app-bar__avatar text-accent-4"
+              @click="$router.push('/carrito')"
+            >
+              <v-icon> mdi-cart-outline </v-icon>
+            </v-avatar>
+          </template>
+        </v-tooltip>
         <!-- If user is logged in -->
         <v-tooltip text="Mi perfil" location="bottom">
           <template #activator="{ props }">
@@ -43,6 +54,20 @@
       </div>
       <div v-if="user && role !== 'regular'" class="app-bar__user-info">
         <!-- Dashboard action (regular and admin) -->
+        <v-tooltip text="Mi perfil" location="bottom">
+          <template #activator="{ props }">
+            <v-avatar
+              v-bind="props"
+              class="app-bar__avatar text-accent-4"
+              @click="$router.push('/perfil')"
+            >
+              <strong>
+                {{ loggedUser?.nombres[0]
+                }}{{ loggedUser?.apellidos[0] }}
+              </strong>
+            </v-avatar>
+          </template>
+        </v-tooltip>
         <v-tooltip text="Administración" location="bottom">
           <template #activator="{ props }">
             <v-avatar
