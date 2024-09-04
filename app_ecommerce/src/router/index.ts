@@ -79,6 +79,18 @@ const router = createRouter({
       meta: {title: 'Admin Productos-Add', layout: DefaultLayout},
       component: () => import('../views/admin/productos/ProductosAddView.vue')
     },
+    {
+      path: '/producto/:id',
+      name: 'detalle-producto',
+      meta: {title: 'Detalle Producto', layout: DefaultLayout},
+      component: () => import('../views/ProductDetailView.vue')
+    },
+    {
+      path: '/carrito',
+      name: 'carrito',
+      meta: {title: 'Carrito', layout: DefaultLayout},
+      component: () => import('../views/profile/CartView.vue')
+    },
   ]
 })
 

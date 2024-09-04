@@ -19,7 +19,6 @@
             <v-select
               v-model="categoria"
               label="Categoria"
-              clearable
               :disabled="loading"
               prepend-icon="mdi-tournament"
               :items="categories"
@@ -43,7 +42,8 @@
             type="number"
             variant="outlined"
             hide-details
-            prepend-icon="mdi-cash"
+            prepend-icon="mdi-abacus"
+            class="mt-4"
           ></v-text-field>
           </v-form>
         </v-card-text>
