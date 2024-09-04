@@ -41,6 +41,7 @@ public class DatosFacturacion extends Auditor {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "venta", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private Venta venta;
 
     @ManyToOne//indicador de relacion muchos a uno

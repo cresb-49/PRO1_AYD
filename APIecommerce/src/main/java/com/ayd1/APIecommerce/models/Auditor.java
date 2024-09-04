@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -15,7 +16,6 @@ import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 /**
  *
@@ -32,13 +32,16 @@ public class Auditor {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
+    @JsonIgnore
     private Instant createdAt;
 
     @LastModifiedDate
     @Column(name = "update_at")
+    @JsonIgnore
     private Instant updateAt;
 
     @Column(name = "deleted_at")
+    @JsonIgnore
     private Instant deletedAt;
 
     public Auditor(Long id) {

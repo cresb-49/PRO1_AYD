@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -26,25 +25,21 @@ import org.hibernate.annotations.CascadeType;
 public class Venta extends Auditor {
 
     @Column(name = "valor_total", nullable = false)
-    @Min(value = 0, message = "El valor total debe tener como valor mínimo 0.")
     private Double valorTotal;
 
     @Column(name = "cuota_pago_contra_entrega", nullable = false)
     private Double cuotaPagContraEntrega;
 
     @Column(name = "cantidad_productos", nullable = false)
-    @Min(value = 1, message = "El cantidad debe tener como valor mínimo 1.")
     private Integer cantidadProductos;
 
     @OneToMany(mappedBy = "venta", orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
-    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private List<LineaVenta> lineaVentas;
 
     @OneToOne(mappedBy = "venta", fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
     @JoinColumn(name = "factura", nullable = false, unique = true)
-    @JsonIgnore
     private DatosFacturacion datosFacturacion;
 
     @OneToOne(mappedBy = "venta")

@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -30,22 +31,33 @@ public class TiendaConfig extends Auditor {
 
     @Column(name = "imagen_tienda", nullable = false, length = Integer.MAX_VALUE)
     @Lob
-    @NotNull(message = "La imagen del producto no puede ser nula.")
-    private byte[] imagenTienda;//imagen que debera indicar la herramienta seleccionada
+    private byte[] imagenTienda;
 
+    @NotNull(message = "El precio del pago contra entrega de la tienda no puede ser nulo")
+    @Min(value = 0, message = "El precio del pago contra entrega de la tienda "
+            + "debe tener un valor minimo de 0.")
     private Double precioPagoContraEntrega;
 
+    @Column(length = 250)
+    @NotBlank(message = "La direccion de la tienda no puede estar vacía.")
+    @NotNull(message = "La direccion de la tienda no puede ser nula.")
+    @Size(min = 1, max = 250, message = "La direccion de la tienda debe tener entre 1 y 250 caracteres.")
     private String direccionEmpresa;
+
+    @Column(length = 250)
+    private String mimeTypeImg;
 
     public TiendaConfig(Long id) {
         super(id);
     }
 
-    public TiendaConfig(String nombreTienda, byte[] imagenTienda, Double precioPagoContraEntrega, String direccionEmpresa) {
+    public TiendaConfig(String nombreTienda, byte[] imagenTienda,
+            Double precioPagoContraEntrega, String direccionEmpresa, String mimeTypeImg) {
         this.nombreTienda = nombreTienda;
         this.imagenTienda = imagenTienda;
         this.precioPagoContraEntrega = precioPagoContraEntrega;
         this.direccionEmpresa = direccionEmpresa;
+        this.mimeTypeImg = mimeTypeImg;
     }
 
     public TiendaConfig() {
@@ -83,4 +95,18 @@ public class TiendaConfig extends Auditor {
         this.direccionEmpresa = direccionEmpresa;
     }
 
+    public String getMimeTypeImg() {
+        return mimeTypeImg;
+    }
+
+    public void setMimeTypeImg(String mimeTypeImg) {
+        this.mimeTypeImg = mimeTypeImg;
+    }
+
+    public String getExtension() {
+        if (this.mimeTypeImg.split("/")[1] != null) {
+            return this.mimeTypeImg.split("/")[1];
+        }
+        return "png";
+    }
 }
