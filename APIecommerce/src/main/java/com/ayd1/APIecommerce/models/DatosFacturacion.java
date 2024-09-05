@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,7 +42,7 @@ public class DatosFacturacion extends Auditor {
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "venta", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Venta venta;
 
     @ManyToOne//indicador de relacion muchos a uno

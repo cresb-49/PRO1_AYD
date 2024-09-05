@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+
 /**
  *
  * @author Luis Monterroso
@@ -29,7 +31,7 @@ public class LineaVenta extends Auditor {
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "venta", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Venta venta;
 
     @Column(name = "precio", nullable = false)
