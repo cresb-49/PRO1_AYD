@@ -52,7 +52,7 @@ public class Usuario extends Auditor {
     @NotBlank(message = "La password del cliente no puede estar vacía.")
     @NotNull(message = "La password del cliente no puede ser nula.")
     @Size(min = 1, max = 250, message = "El email del cliente debe tener entre 1 y 250 caracteres.")
-    @JsonIgnore
+ 
     private String password;
 
     @Column(name = "codigo_activacion", columnDefinition = "LONGTEXT")
