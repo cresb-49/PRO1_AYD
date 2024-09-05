@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
@@ -32,16 +33,16 @@ public class Auditor {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Instant createdAt;
 
     @LastModifiedDate
     @Column(name = "update_at")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Instant updateAt;
 
     @Column(name = "deleted_at")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Instant deletedAt;
 
     public Auditor(Long id) {

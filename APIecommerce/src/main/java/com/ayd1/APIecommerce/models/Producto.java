@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -66,17 +67,17 @@ public class Producto extends Auditor {
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<MovimientoStock> movimientos;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<LineaVenta> lineaVentas;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Imagen> imagenes;
 
     public Producto() {

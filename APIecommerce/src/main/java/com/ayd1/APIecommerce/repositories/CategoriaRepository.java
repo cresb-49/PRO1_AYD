@@ -9,4 +9,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface CategoriaRepository extends CrudRepository<Categoria, Long> {
 
     public Optional<Categoria> findOneByNombre(String nombre);
+
+    public boolean existsByNombre(String nombre);
+
+    public boolean existsByNombreAndIdNot(String nombre, Long id);
 }
