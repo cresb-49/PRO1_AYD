@@ -5,20 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.Producto;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
+import com.ayd1.APIecommerce.services.CategoriaService;
 import com.ayd1.APIecommerce.services.ProductoService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 
@@ -36,6 +29,9 @@ public class ProductoController {
 
     @Autowired
     private ProductoService productoService;
+
+    @Autowired
+    private CategoriaService categoriaService;
 
     @Operation(summary = "Obtener todos los productos", description = "Devuelve una lista de todos los productos disponibles.")
     @ApiResponses(value = {
@@ -196,6 +192,34 @@ public class ProductoController {
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @GetMapping("/producto/public/categoria/{id}")
+    public ResponseEntity<?> buscarPorCategoria(@PathVariable Long id) throws Exception {
+        
+        try {
+            Categoria categoria = categoriaService.getCategoria(id);
+            List<Producto> productos = productoService.buscarPorCategoria(categoria);
+            if (productos.isEmpty()) {
+                throw new IllegalArgumentException("Sin resultados en la búsqueda");
+            }
+            return new ApiBaseTransformer(HttpStatus.OK, "Lista de productos encontrados", productos, null, null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
+        }
+    }
+
+    @GetMapping("/producto/public/nombre/{nombre}")
+    public ResponseEntity<?> buscarPorNombre(@PathVariable String nombre) {
+        try {
+            List<Producto> productos = productoService.buscarPorNombre(nombre);
+            if (productos.isEmpty()) {
+                throw new IllegalArgumentException("Lista de productos vacía");
+            }
+            return new ApiBaseTransformer(HttpStatus.OK, "Lista de productos encontrados", productos, null, null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
     }
 }
