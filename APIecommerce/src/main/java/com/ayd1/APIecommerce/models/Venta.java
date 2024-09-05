@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,7 +46,7 @@ public class Venta extends Auditor {
     @OneToOne(mappedBy = "venta")
     @Cascade(CascadeType.ALL)
     @JoinColumn(name = "envio", nullable = true, unique = true)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Envio envio;
 
     public Venta() {
