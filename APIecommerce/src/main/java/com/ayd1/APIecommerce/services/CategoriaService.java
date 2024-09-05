@@ -19,21 +19,21 @@ public class CategoriaService extends Service {
     private CategoriaRepository categoriaRepository;
 
     public List<Categoria> getCategorias() throws Exception {
-        
+
         List<Categoria> listaCategorias = (List<Categoria>) categoriaRepository.findAll();
-        
+
         if (listaCategorias == null) {
-            throw new Exception("No se encontró ninguna categoría");    
+            throw new Exception("No se encontró ninguna categoría");
         }
         return listaCategorias;
     }
 
     public Categoria getCategoria(Long id) throws Exception {
-        
+
         Categoria categoria = categoriaRepository.findById(id).orElse(null);
-        
+
         if (categoria == null) {
-            throw new Exception("Categoria no encontrada");    
+            throw new Exception("Categoria no encontrada");
         }
 
         if (categoria.getDeletedAt() != null) {
@@ -44,31 +44,43 @@ public class CategoriaService extends Service {
     }
 
     @Transactional
-    public Categoria createCategoria(Categoria categoria) {
+    public Categoria createCategoria(Categoria categoria) throws Exception {
+        this.validar(categoria);
+
+        if (this.categoriaRepository.existsByNombre(categoria.getNombre())) {
+            throw new Exception("Ya hay una categoria con el mismo nombre.");
+        }
+
         return categoriaRepository.save(categoria);
     }
 
     @Transactional
     public Categoria updateCategoria(Categoria categoria) throws Exception {
-        
-        if (categoria.getId() == null || categoria.getId() <=0) {
+
+        if (categoria.getId() == null || categoria.getId() <= 0) {
             throw new Exception("Id invalido");
         }
 
-        Optional<Categoria> categoriaExistente = categoriaRepository.findById(categoria.getId());
+        Categoria categoriaSearch
+                = categoriaRepository.findById(categoria.getId()).orElse(null);
 
-        if (categoriaExistente.isEmpty()) {
+        if (categoriaSearch == null) {
             throw new Exception("No se encontró la categoría para actualizar.");
         }
 
-        Categoria categoriaValida =  categoriaExistente.get();
-
-        if (categoriaValida.getDeletedAt() != null) {
-            throw new Exception("Categoria ya eliminada");
+        if (categoria.getPadre() != null
+                && categoria.getPadre().getId() != null
+                && categoriaSearch.getId().longValue() == categoria.getPadre().getId().longValue()) {
+            throw new Exception("La categoria padre no puede ser la misma que la hija.");
         }
 
-        categoria.setProductos(categoriaValida.getProductos());
-   
+        if (this.categoriaRepository.existsByNombreAndIdNot(categoria.getNombre(),
+                categoriaSearch.getId())) {
+            throw new Exception("Ya existe una categoria con el mismo nombre.");
+        }
+
+        categoria.setProductos(categoriaSearch.getProductos());
+
         Categoria categoriaActualizada = this.categoriaRepository.save(categoria);
 
         if (categoriaActualizada.getId() > 0) {
@@ -76,11 +88,11 @@ public class CategoriaService extends Service {
         }
         throw new Exception("No se pudo actualizar la categoría");
     }
-    
+
     @Transactional
     public String deleteCategoria(Long id) throws Exception {
-        
-        if (id==null || id<=0) {
+
+        if (id == null || id <= 0) {
             throw new Exception("Id inválido");
         }
 

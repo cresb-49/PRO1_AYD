@@ -5,7 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -52,25 +52,23 @@ public class Usuario extends Auditor {
     @NotBlank(message = "La password del cliente no puede estar vacía.")
     @NotNull(message = "La password del cliente no puede ser nula.")
     @Size(min = 1, max = 250, message = "El email del cliente debe tener entre 1 y 250 caracteres.")
- 
     private String password;
 
     @Column(name = "codigo_activacion", columnDefinition = "LONGTEXT")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String codigoActivacion;
     @Column(name = "codigo_recuperacion", columnDefinition = "LONGTEXT")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String codigoRecuperacion;
     @Column(name = "estado_activacion", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private boolean estadoActivacion;
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
-    // @JsonManagedReference
     private List<UsuarioRol> roles;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<DatosFacturacion> facturas;
 
     /**

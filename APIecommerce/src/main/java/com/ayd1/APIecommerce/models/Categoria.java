@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,7 +31,6 @@ public class Categoria extends Auditor {
 
     @ManyToOne
     @JoinColumn(name = "id_padre")
-    @JsonIgnore
     private Categoria padre;
 
     @Column(name = "nombre", length = 250, unique = true)
@@ -41,7 +41,7 @@ public class Categoria extends Auditor {
 
     @OneToMany(mappedBy = "categoria", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Producto> productos;
 
     public Categoria(Categoria padre, String nombre) {
