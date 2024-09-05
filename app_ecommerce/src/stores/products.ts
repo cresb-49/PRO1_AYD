@@ -26,7 +26,7 @@ export type Product = {
   nombre: string,
   stock: number,
   precio: number,
-  imagenesUrls?: Array<String>
+  imagenesUrls?: string[]
 }
 
 export const useProductStore = defineStore('products', {
