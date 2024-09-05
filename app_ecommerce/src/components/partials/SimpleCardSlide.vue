@@ -1,7 +1,7 @@
 <template>
     <PartialSlide :components="cards" :titulo="titulo">
         <template v-slot:default="{ component }">
-            <v-card class="mr-2" style="aspect-ratio: 1;">
+            <v-card class="mr-2" style="aspect-ratio: 1;" :to="component.path">
                 <v-img height="150px" :src="component.imageSrc" cover></v-img>
                 <v-card-title>
                     {{ component.text }}
@@ -25,6 +25,6 @@ defineProps({
     titulo: {
         type: String,
         required: true
-    }
+    },
 })
 </script>

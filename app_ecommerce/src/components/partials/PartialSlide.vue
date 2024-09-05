@@ -3,7 +3,6 @@
     <h2>{{ titulo }}</h2>
       <v-slide-group
         show-arrows
-        style="justify-content: center;"
       >
         <v-slide-group-item
           v-for="(component, index) in components" :key="index"
@@ -22,6 +21,6 @@
         titulo: {
             type: String,
             required: true
-        }
+        },
     })
 </script>

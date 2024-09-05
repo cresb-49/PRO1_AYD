@@ -31,7 +31,7 @@ export const useCategoryStore = defineStore('categories', {
       this.loading = true
       
       const { data, error } = await useCustomFetch<any>(
-        'api/categorias/',
+        'api/categoria/public/getCategorias',
         {
           method: 'GET',
         }

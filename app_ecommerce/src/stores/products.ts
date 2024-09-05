@@ -8,6 +8,7 @@ export type CreationPayload = {
   nombre: string,
   stock: number,
   precio: number,
+  impuesto: number,
   imagenes: Array<File>
 }
 
@@ -90,7 +91,7 @@ export const useProductStore = defineStore('products', {
       return { data, error: false }
     },
     async createProduct(payload: CreationPayload) {
-      const {categoria, nombre, stock, precio, imagenes} = payload
+      const {categoria, nombre, stock, precio, impuesto, imagenes} = payload
       this.loading = true
       
       const formData = new FormData();
@@ -103,6 +104,7 @@ export const useProductStore = defineStore('products', {
       formData.append("nombre", nombre);
       formData.append("stock", stock as unknown as string);
       formData.append("precio", precio as unknown as string);
+      formData.append("porcentaje_impuesto", impuesto as unknown as string);
       formData.append("habilitado", "true");
       
       const { data, error } = await useCustomFetch<any>(
