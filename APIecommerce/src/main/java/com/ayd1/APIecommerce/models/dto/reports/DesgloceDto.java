@@ -17,21 +17,21 @@ public class DesgloceDto {
     private String precio;
     private String producto;
     private String descripcion;
+    private String impuesto;
     private String total;
 
     public DesgloceDto(Integer cantidad, String precio, String producto, String descripcion,
-            String total) {
+            String total, String impuesto) {
         this.cantidad = cantidad;
         this.precio = precio;
         this.producto = producto;
-        this.descripcion = descripcion;
+        this.descripcion = descripcion == null ? "" : descripcion;
         this.total = total;
+        this.impuesto = impuesto;
     }
 
     public DesgloceDto() {
     }
-    
-    
 
     public Integer getCantidad() {
         return cantidad;
@@ -72,6 +72,14 @@ public class DesgloceDto {
 
     public void setTotal(String total) {
         this.total = total;
+    }
+
+    public String getImpuesto() {
+        return impuesto;
+    }
+
+    public void setImpuesto(String impuesto) {
+        this.impuesto = impuesto;
     }
 
 }

@@ -1,15 +1,12 @@
 package com.ayd1.APIecommerce.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.Producto;
@@ -17,9 +14,14 @@ import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.services.CategoriaService;
 import com.ayd1.APIecommerce.services.ProductoService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping("/api")
@@ -36,9 +38,17 @@ public class ProductoController {
         @ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente",
                 content = {
                     @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ProductoDto.class))}),
+                            array = @ArraySchema(
+                                    schema = @Schema(
+                                            implementation = ProductoDto.class
+                                    )
+                            )
+                    )
+                }
+        ),
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
-                content = @Content)
+                content = @Content
+        )
     })
     @GetMapping("/productos/public/getProductos")
     public ResponseEntity<?> getProdutos() {
@@ -46,7 +56,7 @@ public class ProductoController {
             List<ProductoDto> respuesta = productoService.getProductos();
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -65,7 +75,7 @@ public class ProductoController {
             ProductoDto respuesta = productoService.getProductoDto(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -88,8 +98,7 @@ public class ProductoController {
             ProductoDto respuesta = productoService.createProducto(crear, files);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -110,8 +119,7 @@ public class ProductoController {
             ProductoDto respuesta = productoService.updateProducto(actualizar);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -137,8 +145,7 @@ public class ProductoController {
             ProductoDto respuesta = productoService.actualizarImagenes(id, files);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -159,7 +166,32 @@ public class ProductoController {
             String confirmacion = this.productoService.eliminarProducto(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (Exception ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, ex.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @Operation(summary = "Devuelve todos los productos con 5 o menos esxistencias",
+            description = "")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Listado de productos",
+                content = @Content(mediaType = "application/json",
+                        array = @ArraySchema(
+                                schema = @Schema(
+                                        implementation = ProductoDto.class
+                                )
+                        )
+                )),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                content = @Content)
+    })
+    @GetMapping("/producto/protected/getStockBajo")
+    public ResponseEntity<?> getStockBajo() {
+        try {
+            List<ProductoDto> respuesta = this.productoService.
+                    getProductosConBajaExistencia();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
     }
 

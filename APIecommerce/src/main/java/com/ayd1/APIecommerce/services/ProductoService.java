@@ -46,6 +46,36 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retorna todos los productos que tengan 5 o menos exsitencias.
+     *
+     * @return
+     * @throws Exception
+     */
+    public List<ProductoDto> getProductosConBajaExistencia() throws Exception {
+        List<Producto> productos = productoRepository.findAll();
+
+        if (productos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Producto> productosConBajaExistencia = productos.stream()
+                .filter(producto -> producto.getStock() <= 5)
+                .filter(producto -> producto.getDeletedAt() == null)
+                .collect(Collectors.toList());
+
+        List<ProductoDto> productosDto
+                = productosConBajaExistencia.stream()
+                        .map(producto -> {
+                            ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
+                            // Aquí conviertes las imágenes a URLs o nombres de archivos
+                            productoDto.convertImagenesToUrls(producto.getImagenes());
+                            return productoDto;
+                        })
+                        .collect(Collectors.toList());
+        return productosDto;
+    }
+
     public ProductoDto getProductoDto(Long id) throws Exception {
         if (id == null || id < 0) {
             throw new Exception("Id inválido.");
@@ -236,7 +266,6 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         return productoRepository.findByCategoria(categoria);
     }
 
-    // Método para buscar productos por nombre
     public List<Producto> buscarPorNombre(String nombre) {
         return productoRepository.findByNombreContaining(nombre);
     }

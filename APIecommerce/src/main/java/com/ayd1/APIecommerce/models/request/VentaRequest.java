@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models.request;
 
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -23,12 +24,19 @@ public class VentaRequest {
     private List<ProductoVentaRequest> productos;
     @NotNull(message = "El tipo de retiro no puede estar vacio.")
     private Boolean retiroEnTienda;
+    @NotNull(message = "El pago contra entrega no puede estar nulo.")
+    private Boolean pagoContraEntrega;
+    @NotNull(message = "La direccion no debe estar nula.")
+    @NotBlank(message = "La direccion no debe estar en blanco.")
+    private String direccion;
 
-    public VentaRequest(Long idCompradador, Boolean consumidorFinal, List<ProductoVentaRequest> productos, Boolean retiroEnTienda) {
+    public VentaRequest(Long idCompradador, Boolean consumidorFinal, List<ProductoVentaRequest> productos, Boolean retiroEnTienda, Boolean pagoContraEntrega, String direccion) {
         this.idCompradador = idCompradador;
         this.consumidorFinal = consumidorFinal;
         this.productos = productos;
         this.retiroEnTienda = retiroEnTienda;
+        this.pagoContraEntrega = pagoContraEntrega;
+        this.direccion = direccion;
     }
 
     public VentaRequest() {
@@ -64,6 +72,22 @@ public class VentaRequest {
 
     public void setRetiroEnTienda(Boolean retiroEnTienda) {
         this.retiroEnTienda = retiroEnTienda;
+    }
+
+    public Boolean getPagoContraEntrega() {
+        return pagoContraEntrega;
+    }
+
+    public void setPagoContraEntrega(Boolean pagoContraEntrega) {
+        this.pagoContraEntrega = pagoContraEntrega;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
     }
 
 }
