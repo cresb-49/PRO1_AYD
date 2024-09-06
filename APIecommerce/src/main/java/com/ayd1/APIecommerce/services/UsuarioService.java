@@ -1,8 +1,18 @@
 package com.ayd1.APIecommerce.services;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.ayd1.APIecommerce.models.Rol;
@@ -16,16 +26,6 @@ import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
 import com.ayd1.APIecommerce.services.tools.MailService;
 import com.ayd1.APIecommerce.tools.Encriptador;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
-import javax.transaction.Transactional;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Service
 public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
@@ -185,6 +185,44 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     }
 
     public LoginDto iniciarSesion(Usuario log) throws Exception {
+        try {
+            //validamos la password
+            this.validarAtributo(log, "email");
+            //validamos la password
+            this.validarAtributo(log, "password");
+            Optional<Usuario> busquedaUsuario = usuarioRepository.
+                    findByEmail(log.getEmail());
+
+            if (busquedaUsuario.isEmpty()) {
+                throw new Exception("Correo electronico incorrecto.");
+            }
+
+            Usuario usuario = busquedaUsuario.get();
+
+            //si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese usuario
+            if (usuario.getDeletedAt() != null) {
+                throw new Exception("Usuario ya ha sido eliminado.");
+            }
+
+            authenticationManager.authenticate(
+                    //autenticar el usuario con la contrasenia encriptada
+                    new UsernamePasswordAuthenticationToken(log.getEmail(),
+                            log.getPassword()));
+
+            //cargamos el usuario por el nombre
+            UserDetails userDetails
+                    = authenticationService.loadUserByUsername(
+                            log.getEmail());
+            //generar el token
+            String jwt = jwtGenerator.generateToken(userDetails);
+            return new LoginDto(usuario, jwt);//devolver la respuesta 
+
+        } catch (AuthenticationException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public LoginDto login2FT(Usuario log) throws Exception {
         try {
             //validamos la password
             this.validarAtributo(log, "email");

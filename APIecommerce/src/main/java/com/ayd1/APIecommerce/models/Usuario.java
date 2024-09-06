@@ -4,9 +4,8 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,9 +14,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
@@ -70,6 +73,13 @@ public class Usuario extends Auditor {
     @Cascade(CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<DatosFacturacion> facturas;
+
+    @Column(name = "two_factor_code", length=5)
+    private String twoFactorCode;
+
+    @Column(name = "two_factor_enabled", nullable=false)
+    @ColumnDefault("false")
+    private boolean twoFactorEnabled;
 
     /**
      * Creacion y modificacion
@@ -179,4 +189,19 @@ public class Usuario extends Auditor {
         this.facturas = facturas;
     }
 
+    public String getTwoFactorCode() {
+        return twoFactorCode;
+    }
+
+    public void setTwoFactorCode(String twoFactorCode) {
+        this.twoFactorCode = twoFactorCode;
+    }
+
+    public boolean isTwoFactorEnabled() {
+        return twoFactorEnabled;
+    }
+
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) {
+        this.twoFactorEnabled = twoFactorEnabled;
+    }
 }
