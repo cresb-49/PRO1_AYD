@@ -54,7 +54,7 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -79,7 +79,7 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -104,7 +104,7 @@ export const useProductStore = defineStore('products', {
       formData.append("nombre", nombre);
       formData.append("stock", stock as unknown as string);
       formData.append("precio", precio as unknown as string);
-      formData.append("porcentaje_impuesto", impuesto as unknown as string);
+      formData.append("porcentajeImpuesto", impuesto as unknown as string);
       formData.append("habilitado", "true");
       
       const { data, error } = await useCustomFetch<any>(
@@ -120,7 +120,7 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -155,7 +155,7 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false

@@ -43,6 +43,8 @@
             variant="outlined"
             hide-details
             prepend-icon="mdi-cash"
+            append-inner-icon="mdi-percent"
+            class="mt-4"
           ></v-text-field>
             <v-text-field
             v-model="stock"

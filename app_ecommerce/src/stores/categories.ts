@@ -44,7 +44,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -69,7 +69,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -97,7 +97,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -131,7 +131,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
