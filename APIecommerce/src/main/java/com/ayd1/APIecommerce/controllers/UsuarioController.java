@@ -175,7 +175,7 @@ public class UsuarioController {
         @Parameter(
                 description = "Valida el token de autenticación de dos factores",
                 required = true,
-                example = "{email:\"nose@nose\",twoFactorCode:\"67858\"}"
+                example = "{email:\"user@email.com\",twoFactorCode:\"67858\"}"
         )
         @RequestBody Usuario login) {
         try {

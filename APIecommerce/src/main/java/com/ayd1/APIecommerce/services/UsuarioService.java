@@ -227,7 +227,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             //validamos la password
             this.validarAtributo(log, "email");
             //validamos la password
-            this.validarAtributo(log, "password");
+            this.validarAtributo(log, "twoFactorCode");
             Optional<Usuario> busquedaUsuario = usuarioRepository.
                     findByEmail(log.getEmail());
 
@@ -242,10 +242,21 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
                 throw new Exception("Usuario ya ha sido eliminado.");
             }
 
+            if(usuario.isTwoFactorEnabled()){
+                if(usuario.getTwoFactorCode().isEmpty()){
+                    throw new Exception("Medio de autenticación no disponible.");
+                }
+            }
+
+            // Verificamos que el cliente tenga el mismo código de autenticación
+            if (!usuario.getTwoFactorCode().equals(log.getTwoFactorCode())) {
+                throw new Exception("Código de autenticación incorrecto.");
+            }
+
             authenticationManager.authenticate(
                     //autenticar el usuario con la contrasenia encriptada
                     new UsernamePasswordAuthenticationToken(log.getEmail(),
-                            log.getPassword()));
+                            log.getTwoFactorCode()));
 
             //cargamos el usuario por el nombre
             UserDetails userDetails
