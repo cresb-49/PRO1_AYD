@@ -42,15 +42,21 @@ public class LineaVenta extends Auditor {
     @Min(value = 1, message = "La cantidad debe tener como valor mínimo 1.")
     private Integer cantidad;
 
+    @Column(nullable = false)
+    @Min(value = 1, message = "La cantidad debe tener como valor mínimo 1.")
+    private Double impuestoPagado;
+
     public LineaVenta(Long id) {
         super(id);
     }
 
-    public LineaVenta(Producto producto, Venta venta, Double precio, Integer cantidad) {
+    public LineaVenta(Producto producto, Venta venta, Double precio,
+            Integer cantidad, Double impuestoPagado) {
         this.producto = producto;
         this.venta = venta;
         this.precio = precio;
         this.cantidad = cantidad;
+        this.impuestoPagado = impuestoPagado;
     }
 
     public LineaVenta() {
@@ -86,6 +92,14 @@ public class LineaVenta extends Auditor {
 
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public Double getImpuestoPagado() {
+        return impuestoPagado;
+    }
+
+    public void setImpuestoPagado(Double impuestoPagado) {
+        this.impuestoPagado = impuestoPagado;
     }
 
 }
