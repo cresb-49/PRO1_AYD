@@ -33,6 +33,7 @@ export type Product = {
 export const useProductStore = defineStore('products', {
   state: () => ({
     products: new Array<Product>,
+    productsLowStock: new Array<Product>,
     loading: false,
     loadingProduct: false,
     error: false
@@ -65,7 +66,59 @@ export const useProductStore = defineStore('products', {
       this.loading = false
       return { data, error: false }
     },
+    async fetchWithLowStock() {
+      this.loading = true
+      
+      const { data, error } = await useCustomFetch<any>(
+        'api/producto/protected/getStockBajo',
+        {
+          method: 'GET',
+        }
+      )
+      
+      this.productsLowStock = data.value.data;
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
+    },
     async fetchProduct(product_id: number) {
+      this.loadingProduct = true
+      
+      const { data, error } = await useCustomFetch<any>(
+        `api/producto/public/getProducto/${product_id}`,
+        {
+          method: 'GET',
+        }
+      )
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loadingProduct = false
+      return { data, error: false }
+    },
+    async addStockProduct(product_id: number) {
       this.loadingProduct = true
       
       const { data, error } = await useCustomFetch<any>(
