@@ -25,10 +25,11 @@ import TableData from "../../../components/partials/TableData.vue";
 import { storeToRefs } from "pinia";
 import { useProductStore } from "@/stores/products";
 
-  const {fetchAllProducts, fetchWithLowStock} = useProductStore();
+  const {fetchAllProducts, fetchWithLowStock, addUnitProducts} = useProductStore();
   const {products, productsLowStock} = storeToRefs(useProductStore());
   
-  const consoleLog = (i: number) => {
+  const agregarUnidad = (product_id: number) => {
+    addUnitProducts(product_id);
   }
   
   const columns = [
@@ -37,7 +38,7 @@ import { useProductStore } from "@/stores/products";
     {name: 'Stock', propertyName: 'stock'},
     {name: 'Categoria', propertyName: 'categoria.nombre'},
   ]
-  const actionsTable = [{name: 'Agregar Unidad', onClick: consoleLog}]
+  const actionsTable = [{name: 'Agregar Unidad', onClick: agregarUnidad}]
 
   fetchWithLowStock();
   fetchAllProducts();
