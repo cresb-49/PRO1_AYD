@@ -31,7 +31,11 @@ public class ProductoDto {
 
     private ArrayList<String> imagenesUrls;
 
-    public ProductoDto(Long id, String nombre, Categoria categoria, Integer stock, Double precio, String descripcion, ArrayList<String> imagenesUrls) {
+    private Double porcentajeImpuesto;
+
+    private Boolean habilitado;
+
+    public ProductoDto(Long id, String nombre, Categoria categoria, Integer stock, Double precio, String descripcion, ArrayList<String> imagenesUrls, Double porcentajeImpuesto, Boolean habilitado) {
         this.id = id;
         this.nombre = nombre;
         this.categoria = categoria;
@@ -39,6 +43,8 @@ public class ProductoDto {
         this.precio = precio;
         this.descripcion = descripcion;
         this.imagenesUrls = imagenesUrls;
+        this.porcentajeImpuesto = porcentajeImpuesto;
+        this.habilitado = habilitado;
     }
 
     public ProductoDto() {
@@ -94,6 +100,22 @@ public class ProductoDto {
 
     public String getDescripcion() {
         return descripcion;
+    }
+    
+    public void setPorcentajeImpuesto(Double porcentajeImpuesto) {
+        this.porcentajeImpuesto = porcentajeImpuesto;
+    }
+    
+    public Double getPorcentajeImpuesto() {
+        return porcentajeImpuesto;
+    }
+
+    public void setHabilitado(Boolean habilitado) {
+        this.habilitado = habilitado;
+    }
+    
+    public Boolean getHabilitado() {
+        return habilitado;
     }
 
     public void setDescripcion(String descripcion) {
