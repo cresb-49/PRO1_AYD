@@ -25,14 +25,6 @@ export type SignupPayload = {
   password: string
 }
 
-export type Profile = {
-  id: number
-  nombres: string
-  apellidos: string
-  created_at: Date
-  updated_at: Date
-}
-
 export type User = {
   id: number
   nombres: string
@@ -83,7 +75,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -147,7 +139,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -186,7 +178,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.loading = true
       // const snackbarStore = useSnackbarStore()
 
-      const { data } = await useCustomFetch<User>(`api/usuario/public/perfil/${this.user!.id}`,
+      const { data } = await useCustomFetch<User>(`api/usuario/private/perfil/${this.user!.id}`,
         {method: 'GET'}
       )
       if (data.value) {
@@ -206,7 +198,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       const user_id = this.user!.id
       
       //Si se envia el password se envia solo esta a actualizar, caso contrario se actualizan los demas campos del usuario
-      const url_api_update = payload.password ? 'api/usuario/public/cambioPassword' : 'api/usuario/public/updateUsuario'
+      const url_api_update = payload.password ? 'api/usuario/private/all/cambioPassword' : 'api/usuario/private/all/updateUsuario'
       const { data, error } = await useCustomFetch<User>(url_api_update, {
         method: 'PATCH',
         body: JSON.stringify({id: user_id, ...payload})

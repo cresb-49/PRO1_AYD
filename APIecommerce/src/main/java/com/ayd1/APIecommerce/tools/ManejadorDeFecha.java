@@ -27,14 +27,22 @@ public class ManejadorDeFecha {
      */
     public String parsearFechaYHoraAFormatoRegional(Instant instante) {
         if (instante == null) { // si la fecha es nula retornamos vacío
-            return "";
+            return "Error";
         }
         /* Convertimos Instant a LocalDateTime utilizando la zona horaria del sistema */
         LocalDateTime fechaLocal = LocalDateTime.ofInstant(instante,
                 ZoneId.systemDefault());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String fechaFormateada = fechaLocal.format(formatter);
         return fechaFormateada;
+    }
+
+    public Instant convertStringToInstant(String dateString) {
+        // Convertir el string a LocalDate
+        LocalDate localDate = LocalDate.parse(dateString);
+
+        // Convertir LocalDate a Instant usando la zona horaria del sistema
+        return localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
     }
 
 }

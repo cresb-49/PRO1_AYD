@@ -5,9 +5,10 @@
 package com.ayd1.APIecommerce.controllers;
 
 import com.ayd1.APIecommerce.models.Imagen;
-import com.ayd1.APIecommerce.repositories.ImagenRepository;
 import com.ayd1.APIecommerce.services.ImagenService;
-import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class ImagenController {
     @Autowired
     private ImagenService imagenService;
 
+    @Operation(summary = "Obtiene la imagen de un producto", description
+            = "Obtiene la imagen de un producto segun el id de la imagen.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Se realiza la venta"),
+        @ApiResponse(responseCode = "400", description = "Error en cualquier parte de la venta")
+    })
     @GetMapping("/imagenes/public/getImage/{id}")
     @ResponseBody
     public ResponseEntity<?> getImage(@PathVariable Long id) throws Exception {
@@ -38,7 +45,8 @@ public class ImagenController {
 
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-Type", respuesta.getMimeType()); // O ajusta según el tipo de imagen
-            headers.add("Content-Disposition", "inline; filename=image." + respuesta.getExtension());
+            headers.add("Content-Disposition", "inline; filename=image."
+                    + respuesta.getExtension());
             return new ResponseEntity<>(respuesta.getImagen(), headers, HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();

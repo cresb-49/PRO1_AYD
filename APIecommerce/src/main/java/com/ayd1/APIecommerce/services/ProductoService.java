@@ -1,5 +1,6 @@
 package com.ayd1.APIecommerce.services;
 
+import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.Imagen;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import com.ayd1.APIecommerce.models.Producto;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
+import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.tools.mappers.ProductoMapper;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
@@ -32,6 +34,8 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
 
     @Autowired
     private ProductoRepository productoRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     public List<ProductoDto> getProductos() {
         List<Producto> findAll = productoRepository.findAll();
@@ -43,6 +47,36 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                     return productoDto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Retorna todos los productos que tengan 5 o menos exsitencias.
+     *
+     * @return
+     * @throws Exception
+     */
+    public List<ProductoDto> getProductosConBajaExistencia() throws Exception {
+        List<Producto> productos = productoRepository.findAll();
+
+        if (productos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Producto> productosConBajaExistencia = productos.stream()
+                .filter(producto -> producto.getStock() <= 5)
+                .filter(producto -> producto.getDeletedAt() == null)
+                .collect(Collectors.toList());
+
+        List<ProductoDto> productosDto
+                = productosConBajaExistencia.stream()
+                        .map(producto -> {
+                            ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
+                            // Aquí conviertes las imágenes a URLs o nombres de archivos
+                            productoDto.convertImagenesToUrls(producto.getImagenes());
+                            return productoDto;
+                        })
+                        .collect(Collectors.toList());
+        return productosDto;
     }
 
     public ProductoDto getProductoDto(Long id) throws Exception {
@@ -229,5 +263,41 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
             return productoDto;
         }
         throw new Exception("No pudimos actualizar el prodcuto, inténtalo más tarde.");
+    }
+
+    /**
+     * Obtiene todos los productos que pertenecen a una categoria o a alguna de
+     * las categorias hijas de la misma.
+     *
+     * @param categoria
+     * @return
+     */
+    public List<Producto> buscarPorCategoria(Categoria categoria) {
+        // Obtener todas las categorías relacionadas
+        List<Categoria> categoriasDescendientes = obtenerCategoriasDescendientes(categoria);
+        // Buscar productos por las categorías obtenidas
+        return productoRepository.findByCategoriaIn(categoriasDescendientes);
+    }
+
+    /**
+     * Busca todos los decendientes de la categoria padre
+     *
+     * @param categoria
+     * @return
+     */
+    private List<Categoria> obtenerCategoriasDescendientes(Categoria categoria) {
+        List<Categoria> categoriasDescendientes = new ArrayList<>();
+        categoriasDescendientes.add(categoria); // Agrega la categoría actual
+
+        // Obtener las categorías hijas
+        List<Categoria> categoriasHijas = this.categoriaRepository.findByPadre(categoria);
+        for (Categoria hija : categoriasHijas) {
+            categoriasDescendientes.addAll(obtenerCategoriasDescendientes(hija)); // Recursivamente agrega las hijas
+        }
+        return categoriasDescendientes;
+    }
+
+    public List<Producto> buscarPorNombre(String nombre) {
+        return productoRepository.findByNombreContaining(nombre);
     }
 }

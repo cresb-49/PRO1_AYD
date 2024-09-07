@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Min;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -26,28 +26,30 @@ import org.hibernate.annotations.CascadeType;
 public class Venta extends Auditor {
 
     @Column(name = "valor_total", nullable = false)
-    @Min(value = 0, message = "El valor total debe tener como valor mínimo 0.")
     private Double valorTotal;
 
+    @Column(nullable = false)
+    private Double totalImpuestosPagados;
+
+    @Column(name = "cuota_pago_contra_entrega", nullable = false)
+    private Double cuotaPagContraEntrega;
+
     @Column(name = "cantidad_productos", nullable = false)
-    @Min(value = 1, message = "El cantidad debe tener como valor mínimo 1.")
     private Integer cantidadProductos;
 
     @OneToMany(mappedBy = "venta", orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
-    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private List<LineaVenta> lineaVentas;
 
     @OneToOne(mappedBy = "venta", fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
     @JoinColumn(name = "factura", nullable = false, unique = true)
-    @JsonIgnore
     private DatosFacturacion datosFacturacion;
 
     @OneToOne(mappedBy = "venta")
     @Cascade(CascadeType.ALL)
     @JoinColumn(name = "envio", nullable = true, unique = true)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Envio envio;
 
     public Venta() {
@@ -57,9 +59,21 @@ public class Venta extends Auditor {
         super(id);
     }
 
-    public Venta(Double valorTotal, Integer cantidadProductos) {
+    public Venta(Double valorTotal, Double cuotaPagContraEntrega, Integer cantidadProductos,
+            Double totalImpuestosPagados) {
         this.valorTotal = valorTotal;
+        this.cuotaPagContraEntrega = cuotaPagContraEntrega;
         this.cantidadProductos = cantidadProductos;
+        this.totalImpuestosPagados = totalImpuestosPagados;
+
+    }
+
+    public Double getCuotaPagContraEntrega() {
+        return cuotaPagContraEntrega;
+    }
+
+    public void setCuotaPagContraEntrega(Double cuotaPagContraEntrega) {
+        this.cuotaPagContraEntrega = cuotaPagContraEntrega;
     }
 
     public Double getValorTotal() {
@@ -100,6 +114,14 @@ public class Venta extends Auditor {
 
     public void setEnvio(Envio envio) {
         this.envio = envio;
+    }
+
+    public Double getTotalImpuestosPagados() {
+        return totalImpuestosPagados;
+    }
+
+    public void setTotalImpuestosPagados(Double totalImpuestosPagados) {
+        this.totalImpuestosPagados = totalImpuestosPagados;
     }
 
 }

@@ -31,7 +31,7 @@ export const useCategoryStore = defineStore('categories', {
       this.loading = true
       
       const { data, error } = await useCustomFetch<any>(
-        'api/categorias/',
+        'api/categoria/public/getCategorias',
         {
           method: 'GET',
         }
@@ -44,7 +44,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -69,7 +69,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -86,7 +86,7 @@ export const useCategoryStore = defineStore('categories', {
       this.loading = true
 
       const { data, error } = await useCustomFetch<any>(
-        'api/categoria/private/crearCategoria',
+        'api/categoria/protected/crearCategoria',
         {
           method: 'POST',
           body: JSON.stringify(payload)
@@ -97,7 +97,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -117,12 +117,10 @@ export const useCategoryStore = defineStore('categories', {
       return { data, error: false }
     },
     async updateCategory(payload: UpdatePayload) {
-      console.log('payload actual');
-      console.log(payload);
       this.loading = true
 
       const { data, error } = await useCustomFetch<any>(
-        'api/categoria/private/updateCategoria',
+        'api/categoria/protected/updateCategoria',
         {
           method: 'PATCH',
           body: JSON.stringify(payload)
@@ -133,7 +131,7 @@ export const useCategoryStore = defineStore('categories', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false

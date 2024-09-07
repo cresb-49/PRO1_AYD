@@ -81,12 +81,13 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
 
     public TiendaConfig insertarTiendaConfig(TiendaConfig config) throws Exception {
         try {
-            Optional<TiendaConfig> op
-                    = this.tiendaConfigReporitory.findFirstByOrderByIdAsc();
-            if (op.isPresent()) {
-                return op.get();
+            TiendaConfig conf
+                    = this.tiendaConfigReporitory.findFirstByOrderByIdAsc().orElse(null);
+            if (conf == null) {
+                return this.tiendaConfigReporitory.save(config);
             }
-            return this.tiendaConfigReporitory.save(config);
+            return conf;
+
         } catch (Exception e) {
             throw new Exception("Error");
         }
@@ -103,14 +104,21 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             Categoria categoria = new Categoria("Hogar");
             this.insertarCategoria(categoria);
 
+            /**
+             * Estados de envio
+             */
             EstadoEnvio estadoEnvio = new EstadoEnvio("PENDIENTE");
             this.insertarEstadoEnvio(estadoEnvio);
+            EstadoEnvio estadoEnvio2 = new EstadoEnvio("ENTREGADO");
+            this.insertarEstadoEnvio(estadoEnvio2);
 
             //IMAGEN DEFAULT DE LA TIENDA
             byte[] img = getClass().getResourceAsStream("/img/logo.png").readAllBytes();
 
             TiendaConfig tiendaConfig
-                    = new TiendaConfig("TiendaAyD1", img);
+                    = new TiendaConfig("TiendaAyD1", img, 12.00,
+                            "2da calle XXX-XXX-XX Quetgo",
+                            "image/png");
             this.insertarTiendaConfig(tiendaConfig);
             //sider usuario Admin
             Usuario admin = new Usuario("admin", "admin",
