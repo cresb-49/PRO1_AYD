@@ -2,7 +2,7 @@
   <main>
     <header class="mb-4">
       <h1 class="mb-4">Producto</h1>
-      <v-btn prepend-icon="mdi-arrow-left" to="/admin/productos" class="mt-3">
+      <v-btn prepend-icon="mdi-arrow-left" @click="$router.go(-1)" class="mt-3">
         Regresar
       </v-btn>
     </header>

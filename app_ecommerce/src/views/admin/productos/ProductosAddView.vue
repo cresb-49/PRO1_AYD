@@ -25,7 +25,8 @@ const {createProduct} = productStore;
 
 const router = useRouter();
 
-async function crearProducto(parameters: {categoria: number, nombre: string, stock: number, precio: number, imagenes: Array<File>}) {
+async function crearProducto(parameters: {categoria: number, nombre: string, stock: number, impuesto: number, precio: number, imagenes: Array<File>}) {
+console.log('aqui esta esto')
   const {error} = await createProduct(parameters)
   if (error === false) {
     router.push('/admin/productos');

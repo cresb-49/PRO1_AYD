@@ -80,6 +80,30 @@ const router = createRouter({
       component: () => import('../views/admin/productos/ProductosAddView.vue')
     },
     {
+      path: '/admin/inventario',
+      name: 'admin-inventario',
+      meta: {title: 'Admin Inventario', layout: DefaultLayout},
+      component: () => import('../views/admin/inventario/InventarioView.vue')
+    },
+    {
+      path: '/admin/usuarios',
+      name: 'admin-usuarios',
+      meta: {title: 'Admin Usuarios', layout: DefaultLayout},
+      component: () => import('../views/admin/usuarios/UsuariosView.vue')
+    },
+    {
+      path: '/admin/productos/edit/:id',
+      name: 'admin-productos-editar',
+      meta: {title: 'Admin Categorias-Edit', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosEditView.vue')
+    },
+    {
+      path: '/admin/productos/add',
+      name: 'admin-productos-agregar',
+      meta: {title: 'Admin Productos-Add', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosAddView.vue')
+    },
+    {
       path: '/producto/:id',
       name: 'detalle-producto',
       meta: {title: 'Detalle Producto', layout: DefaultLayout},

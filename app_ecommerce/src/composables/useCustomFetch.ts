@@ -16,6 +16,11 @@ export function useCustomFetch<T>(
 const useCustomFetchPartial = createFetch({
   baseUrl: import.meta.env.VITE_API_BASE_URL,
   options: {
+    updateDataOnError: true,
+    onFetchError(ctx) {
+      ctx.error = ctx.data.error as string
+      return ctx
+    },
     async beforeFetch({ options }) {
       const userAuth = useCookies().cookies.get('user-token')
       options.headers = userAuth 

@@ -2,6 +2,7 @@ import { useCustomFetch } from '@/composables/useCustomFetch'
 import { defineStore } from 'pinia'
 import { useSnackbarStore, SnackbarType } from './snackbar'
 import { convertError } from '@/utils/error-converter'
+import type { User } from './regular-auth'
 
 export type CreationPayload = {
   nombre: string,
@@ -20,25 +21,24 @@ export type Category = {
   padre?: number
 }
 
-export const useCategoryStore = defineStore('categories', {
+export const useUserStore = defineStore('users', {
   state: () => ({
-    categories: new Array<Category>,
+    users: new Array<User>,
     loading: false,
     error: false
   }),
   actions: {
-    async fetchAllCategories() {
+    async fetchAllUsers() {
       this.loading = true
       
       const { data, error } = await useCustomFetch<any>(
-        'api/categoria/public/getCategorias',
+        'api/usuario/private/getUsuarios',
         {
           method: 'GET',
         }
       )
 
-      
-      this.categories = data.value.data;
+      this.users = data.value.data;
 
       // Error Handling
       if (error.value) {
@@ -53,6 +53,8 @@ export const useCategoryStore = defineStore('categories', {
       // Success
       // Return the data and error
       this.loading = false
+      console.log('usuarios')
+      console.log(data.value.data)
       return { data, error: false }
     },
     async fetchCategory(category_id: number) {

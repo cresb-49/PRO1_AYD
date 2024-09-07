@@ -36,6 +36,17 @@
             prepend-icon="mdi-cash"
           ></v-text-field>
             <v-text-field
+            v-model="impuesto"
+            label="Impuesto"
+            density="compact"
+            type="number"
+            variant="outlined"
+            hide-details
+            prepend-icon="mdi-cash"
+            append-inner-icon="mdi-percent"
+            class="mt-4"
+          ></v-text-field>
+            <v-text-field
             v-model="stock"
             label="Stock Inicial"
             density="compact"
@@ -75,6 +86,7 @@ const emits = defineEmits(['create'])
 const nombreProducto = ref('')
 const categoria = ref()
 const precio = ref(0)
+const impuesto = ref(0)
 const stock = ref(0)
 const uploadImageForm = ref(null)
 
@@ -85,8 +97,9 @@ function crear() {
     nombre: nombreProducto.value.trim(),
     categoria: categoria.value,
     precio: precio.value,
+    impuesto: impuesto.value,
     stock: stock.value,
-    imagenes: uploadImageForm.value.images
+    imagenes: uploadImageForm.value!.images
   }
   emits('create', newAttributes)
 }

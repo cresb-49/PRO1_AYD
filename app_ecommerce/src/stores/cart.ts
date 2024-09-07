@@ -1,9 +1,16 @@
 import { defineStore } from 'pinia'
 import { useSnackbarStore, SnackbarType } from './snackbar'
+import { useProductStore, type Product } from './products';
 
 export type CartProduct = {
   id: number,
-  quantity: Number
+  quantity: number
+}
+
+export type CartInfo = {
+  id: number,
+  quantity: number,
+  info?: Product
 }
 
 function removeAtIndex<CartProduct>(array: CartProduct[], index: number): CartProduct[] {
@@ -16,10 +23,28 @@ function removeAtIndex<CartProduct>(array: CartProduct[], index: number): CartPr
 
 export const useCartStore = defineStore('cart', {
   state: () => ({
-    cart: [] as CartProduct[]
+    cart: [] as CartProduct[],
+    productsInfo: [] as (Product|null)[],
+    totalProducts: 0
   }),
   persist: true,
   actions: {
+    async fetchProductsCart() {
+      const {fetchProduct} = useProductStore()
+      this.totalProducts = 0
+      this.productsInfo = []
+      for (const productCart of this.cart) {
+        const {data, error} = await fetchProduct(productCart.id);
+        if (error.value) {
+          this.productsInfo.push(null);
+          continue
+        }
+        
+        const producto = data.value.data as Product
+        this.totalProducts += producto.precio
+        this.productsInfo.push(producto);
+      }
+    },
     addProduct(product: CartProduct) {
       //Revisa si el producto ya ha sido agregado al carrito
       if (this.isProductInCart(product.id)) {
@@ -72,6 +97,21 @@ export const useCartStore = defineStore('cart', {
   },
   getters: {
     productAmount: (state) => state.cart ? state.cart.keys.length : 0,
-    products: (state) => state.cart ? state.cart : []
+    products: (state) => {
+      if (!state.cart) {
+        return []
+      }
+      const products: Array<CartInfo> = []
+      for (let index = 0; index < state.cart.length; index++) {
+        const productCart = state.cart[index];
+        const productInfo = state.productsInfo[index];
+        products.push({
+          id: productCart.id,
+          quantity: productCart.quantity,
+          info: productInfo ?? undefined
+        });
+      }
+      return products;
+    }
   }
 })

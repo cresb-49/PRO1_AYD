@@ -8,6 +8,7 @@ export type CreationPayload = {
   nombre: string,
   stock: number,
   precio: number,
+  impuesto: number,
   imagenes: Array<File>
 }
 
@@ -26,12 +27,13 @@ export type Product = {
   nombre: string,
   stock: number,
   precio: number,
-  imagenesUrls?: Array<String>
+  imagenesUrls?: string[]
 }
 
 export const useProductStore = defineStore('products', {
   state: () => ({
     products: new Array<Product>,
+    productsLowStock: new Array<Product>,
     loading: false,
     loadingProduct: false,
     error: false
@@ -53,7 +55,34 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
+    },
+    async fetchWithLowStock() {
+      this.loading = true
+      
+      const { data, error } = await useCustomFetch<any>(
+        'api/producto/protected/getStockBajo',
+        {
+          method: 'GET',
+        }
+      )
+      
+      this.productsLowStock = data.value.data;
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -78,7 +107,32 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loadingProduct = false
+      return { data, error: false }
+    },
+    async addStockProduct(product_id: number) {
+      this.loadingProduct = true
+      
+      const { data, error } = await useCustomFetch<any>(
+        `api/producto/public/getProducto/${product_id}`,
+        {
+          method: 'GET',
+        }
+      )
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -90,7 +144,7 @@ export const useProductStore = defineStore('products', {
       return { data, error: false }
     },
     async createProduct(payload: CreationPayload) {
-      const {categoria, nombre, stock, precio, imagenes} = payload
+      const {categoria, nombre, stock, precio, impuesto, imagenes} = payload
       this.loading = true
       
       const formData = new FormData();
@@ -103,6 +157,7 @@ export const useProductStore = defineStore('products', {
       formData.append("nombre", nombre);
       formData.append("stock", stock as unknown as string);
       formData.append("precio", precio as unknown as string);
+      formData.append("porcentajeImpuesto", impuesto as unknown as string);
       formData.append("habilitado", "true");
       
       const { data, error } = await useCustomFetch<any>(
@@ -118,7 +173,7 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
@@ -153,7 +208,7 @@ export const useProductStore = defineStore('products', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
