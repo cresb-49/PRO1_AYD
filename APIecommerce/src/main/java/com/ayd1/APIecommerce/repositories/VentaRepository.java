@@ -5,6 +5,8 @@
 package com.ayd1.APIecommerce.repositories;
 
 import com.ayd1.APIecommerce.models.Venta;
+import java.time.Instant;
+import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -13,4 +15,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface VentaRepository extends CrudRepository<Venta, Long> {
 
+    public List<Venta> findAllByCreatedAtBetween(Instant fecha1, Instant fecha2);
 }
