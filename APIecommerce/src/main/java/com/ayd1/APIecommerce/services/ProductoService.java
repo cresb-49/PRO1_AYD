@@ -293,4 +293,8 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
     public List<Producto> buscarPorNombre(String nombre) {
         return productoRepository.findByNombreContaining(nombre);
     }
+
+    public List<Producto> buscarPorRangoDePrecio(Double precioMin, Double precioMax) {
+        return productoRepository.findByPrecioBetween(precioMin, precioMax);
+    }
 }
