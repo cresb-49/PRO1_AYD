@@ -74,7 +74,7 @@ public class Usuario extends Auditor {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<DatosFacturacion> facturas;
 
-    @Column(name = "two_factor_code", length=5)
+    @Column(name = "two_factor_code", length=250)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String twoFactorCode;
 

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
@@ -212,11 +213,29 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             // generar el token
             String jwt = jwtGenerator.generateToken(userDetails);
 
-            // Verificamos si el usuario tiene habilitado el 2FA
-            return new LoginDto(usuario,(usuario.isTwoFactorEnabled() ? null : jwt), usuario.isTwoFactorEnabled());
+            // Si el usuario tiene habilitado el 2FA, entonces se envía el código de
+            // autenticación
+            if (usuario.isTwoFactorEnabled()) {
+                // creamos el codigo de recuperacion
+                String codigoRecuperacion = generarCodigoRecuperacion();
+                String codigoRecuperacionEncriptado = Encriptador.encriptarPassword(codigoRecuperacion);
+                // actualizamos el codigo de recuperacion
+                usuario.setTwoFactorCode(codigoRecuperacionEncriptado);
+                // actualizamos en la bd
+                Usuario actualizacion = usuarioRepository.save(usuario);
+                mailService.enviarCorreoEnSegundoPlano(actualizacion.getEmail(),
+                        actualizacion.getTwoFactorCode(), 1);
+            }
+            return new LoginDto(usuario, (usuario.isTwoFactorEnabled() ? null : jwt), usuario.isTwoFactorEnabled());
         } catch (AuthenticationException ex) {
             throw new Exception(ex.getMessage());
         }
+    }
+
+    public String generarCodigoRecuperacion() {
+        Random random = new Random();
+        int codigoRecuperacion = 10000 + random.nextInt(90000);
+        return String.valueOf(codigoRecuperacion);
     }
 
     public LoginDto login2FT(Usuario log) throws Exception {
@@ -246,7 +265,9 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             }
 
             // Verificamos que el cliente tenga el mismo código de autenticación
-            if (!usuario.getTwoFactorCode().equals(log.getTwoFactorCode())) {
+            // Debemos de comparar encriptando el código de autenticación
+            String getTwoFactorCode = Encriptador.encriptarPassword(log.getTwoFactorCode());
+            if (!usuario.getTwoFactorCode().equals(getTwoFactorCode)) {
                 throw new Exception("Código de autenticación incorrecto.");
             }
 
