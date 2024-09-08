@@ -75,9 +75,11 @@ public class Usuario extends Auditor {
     private List<DatosFacturacion> facturas;
 
     @Column(name = "two_factor_code", length=5)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String twoFactorCode;
 
     @Column(name = "two_factor_enabled", nullable=false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ColumnDefault("false")
     private boolean twoFactorEnabled;
 
