@@ -54,6 +54,18 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         return usuarioRepository.findAll();
     }
 
+    public Usuario getByEmail(String email) {
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findByEmail(email);
+        if (busquedaUsuario.isEmpty()) {
+            throw new IllegalArgumentException("Usuario no encontrado.");
+        }
+        Usuario usuario = busquedaUsuario.get();
+        if (usuario.getDeletedAt() != null) {
+            throw new IllegalArgumentException("Usuario eliminado.");
+        }
+        return usuario;
+    }
+
     public Usuario getUsuario(Long id) throws Exception {
         if (id == null || id <= 0) {// si el correo esta en blanco entonces lanzmaos error
             throw new Exception("Id invalido.");
@@ -145,6 +157,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         usuario.setPassword(usuarioEncontrado.getPassword());
         usuario.setFacturas(usuarioEncontrado.getFacturas());
         usuario.setRoles(usuarioEncontrado.getRoles());
+        usuario.setPermisos(usuarioEncontrado.getPermisos());
         this.validar(usuario);
         Usuario usuarioUpdate = this.usuarioRepository.save(usuario);
         if (usuarioUpdate.getId() > 0) {
@@ -421,23 +434,35 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
      * @return
      */
     @Transactional
-    public boolean agregarRolUsuario(Usuario usuario, Rol rol) {
-        if (!this.usuarioRepository.existsByEmail(usuario.getEmail())) {
+    public Usuario agregarRolUsuario(Usuario usuario, Rol rol) throws Exception {
+        if(!this.usuarioRepository.existsByEmail(usuario.getEmail())){
             throw new IllegalArgumentException("El usuario no existe.");
         }
+        //Buscamos el usuario en la base de datos
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuario.getId());
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+        //Verificamos que el usuario no haya sido eliminado
+        if (busquedaUsuario.get().getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+        Usuario usuarioEncontrado = busquedaUsuario.get();
         // Creamos el rol
         UsuarioRol usuarioRol = new UsuarioRol(usuario, rol);
+        // Verificamos si el objeto ya tiene una lista de roles, si no la tiene, la creamos
+        usuario.keepOrphanRemoval(usuarioEncontrado);
+        if (usuario.getRoles() == null) {
+            usuario.setRoles(new ArrayList<>());
+        }
         // Verificamos si el rol ya existe
         if (usuario.getRoles().stream().anyMatch(r -> r.getRol().getId().equals(rol.getId()))) {
             throw new IllegalArgumentException("El rol ya ha sido asignado al usuario.");
         }
-        // Verificamos si el objeto ya tiene una lista de roles, si no la tiene, la creamos
-        if (usuario.getRoles() == null) {
-            usuario.setRoles(new ArrayList<>());
-        }
         // Agregamos el rol a la lista de roles del usuario
         usuario.getRoles().add(usuarioRol);
-        return true;
+        // Actualizamos el usuario
+        return this.usuarioRepository.save(usuario);
     }   
 
     /**
@@ -447,23 +472,36 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
      * @return
      */
     @Transactional
-    public boolean agregarPermisoUsuario(Usuario usuario, Permiso permiso){
+    public Usuario agregarPermisoUsuario(Usuario usuario, Permiso permiso) throws Exception{
         if(!this.usuarioRepository.existsByEmail(usuario.getEmail())){
             throw new IllegalArgumentException("El usuario no existe.");
         }
+        //Buscamos el usuario en la base de datos
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuario.getId());
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+        //Verificamos que el usuario no haya sido eliminado
+        if (busquedaUsuario.get().getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+        Usuario usuarioEncontrado = busquedaUsuario.get();
         // Creamos el permiso
-        UsuarioPermiso usuarioPermiso = new UsuarioPermiso(usuario, permiso);
-        //Verificamos si el permiso ya existe
+        UsuarioPermiso usuarioPermiso = new UsuarioPermiso(usuarioEncontrado, permiso);
+        // Verificamos si el objeto ya tiene una lista de permisos, si no la tiene, la inicializamos (sin reemplazar)
+        // Mantenemos las relaciones orphanRemoval = true para evistar inconsistencias en la base de datos
+        usuario.keepOrphanRemoval(usuarioEncontrado);
+        if(usuario.getPermisos() == null) {
+            usuario.setPermisos(new ArrayList<>());
+        }
+        // Verificamos si el permiso ya existe
         if(usuario.getPermisos().stream().anyMatch(p -> p.getPermiso().getId().equals(permiso.getId()))){
             throw new IllegalArgumentException("El permiso ya ha sido asignado al usuario.");
         }
-        //Verificamos si el objeto ya tiene una lista de permisos, si no la tiene, la creamos
-        if(usuario.getPermisos() == null){
-            usuario.setPermisos(new ArrayList<>());
-        }
-        //Agregamos el permiso a la lista de permisos del usuario
+        // Agregamos el permiso a la lista de permisos del usuario
         usuario.getPermisos().add(usuarioPermiso);
-        return true;
+        // Guardamos el usuario
+        return this.usuarioRepository.save(usuario);
     }
 
     private boolean verificarUsuarioJwt(Usuario usuarioTratar, String emailUsuarioAutenticado) throws Exception {

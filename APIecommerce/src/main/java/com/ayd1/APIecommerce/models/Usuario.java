@@ -217,4 +217,17 @@ public class Usuario extends Auditor {
     public void setTwoFactorEnabled(boolean twoFactorEnabled) {
         this.twoFactorEnabled = twoFactorEnabled;
     }
+
+    /**
+     * Metodo para mantener las relaciones de roles, permisos y facturas
+     * Para evitar que se eliminen al actualizar
+     * Se debe llamar antes de actualizar
+     * Se afectan todas las relaciones con orphanRemoval = true
+     * @param usuario
+     */
+    public void keepOrphanRemoval(Usuario usuario) {
+        this.roles = usuario.getRoles();
+        this.permisos = usuario.getPermisos();
+        this.facturas = usuario.getFacturas();
+    }
 }
