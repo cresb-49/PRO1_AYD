@@ -80,3 +80,22 @@ function sendEmail() {
   emits('sendEmail', emailData)
 }
 </script>
+
+<style scoped lang="scss">
+.nav-link {
+  &:hover {
+    color: #fb8c00 !important;
+  }
+  &:active {
+    color: #bf360c !important;
+  }
+  &--admin {
+    &:hover {
+      color: #ff6e40 !important;
+    }
+    &:active {
+      color: #bf360c !important;
+    }
+  }
+}
+</style>
