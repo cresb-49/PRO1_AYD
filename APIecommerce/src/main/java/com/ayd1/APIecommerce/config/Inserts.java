@@ -143,18 +143,21 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             this.usuarioService.crearUsuario(user1, rolUsuario);
 
             // Creacion de todos los permisos que tiene el sistema
-            // CREAR, BORRAR, MODIFICAR, REPORTES
+            // CREAR, BORRAR, MODIFICAR, REPORTES 
+            /*
             Permiso permiso_crear = this.insertarPermiso(new Permiso("CREAR"));
             Permiso permiso_borrar = this.insertarPermiso(new Permiso("BORRAR"));
             Permiso permiso_modificar = this.insertarPermiso(new Permiso("MODIFICAR"));
-            Permiso permiso_reportes =this.insertarPermiso( new Permiso("REPORTES"));
+            Permiso permiso_reportes =this.insertarPermiso( new Permiso("REPORTES"));*/
             // Asignacion de permisos a los usuarios
             // Obtenemos el usuario admin
             Usuario admin_user = this.usuarioService.getByEmail("admin@admin");
+            /*
             this.usuarioService.agregarPermisoUsuario(admin_user, permiso_crear);
             this.usuarioService.agregarPermisoUsuario(admin_user, permiso_borrar);
             this.usuarioService.agregarPermisoUsuario(admin_user, permiso_modificar);
             this.usuarioService.agregarPermisoUsuario(admin_user, permiso_reportes);
+             */
         } catch (Exception ex) {
             Logger.getLogger(Inserts.class.getName()).log(Level.SEVERE, null, ex);
         }
