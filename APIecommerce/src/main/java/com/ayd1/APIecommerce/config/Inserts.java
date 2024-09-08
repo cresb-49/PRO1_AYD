@@ -4,8 +4,18 @@
  */
 package com.ayd1.APIecommerce.config;
 
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+
 import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.EstadoEnvio;
+import com.ayd1.APIecommerce.models.Permiso;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
@@ -13,16 +23,7 @@ import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
-import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.UsuarioService;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
 
 /**
  *
@@ -49,6 +50,18 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
                 return opRol.get();
             }
             return this.rolRepository.save(rol);
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
+    }
+
+    public Permiso insertarPermiso(Permiso permiso) throws Exception {
+        try {
+            Optional<Permiso> opPermiso = this.permisoRepository.findOneByNombre(permiso.getNombre());
+            if (opPermiso.isPresent()) {
+                return opPermiso.get();
+            }
+            return this.permisoRepository.save(permiso);
         } catch (Exception e) {
             throw new Exception("Error");
         }
@@ -126,6 +139,15 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
                     "123",
                     null, null, false);
             this.usuarioService.crearUsuario(admin, rolAdmin);
+
+            //Creacion de todos los permisos que tiene el sistema
+            // CREAR, BORRAR, MODIFICAR, REPORTES
+            Permiso permiso_crear = new Permiso("CREAR");
+            Permiso permiso_borrar = new Permiso("BORRAR");
+            Permiso permiso_modificar = new Permiso("MODIFICAR");
+            Permiso permiso_reportes = new Permiso("REPORTES");
+
+
 
         } catch (Exception ex) {
             Logger.getLogger(Inserts.class.getName()).log(Level.SEVERE, null, ex);

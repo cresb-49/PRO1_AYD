@@ -71,6 +71,9 @@ public class Usuario extends Auditor {
     private List<UsuarioRol> roles;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    private List<UsuarioPermiso> permisos;
+    @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
+    @Cascade(CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<DatosFacturacion> facturas;
 
@@ -179,6 +182,14 @@ public class Usuario extends Auditor {
 
     public void setRoles(List<UsuarioRol> roles) {
         this.roles = roles;
+    }
+
+    public List<UsuarioPermiso> getPermisos() {
+        return permisos;
+    }
+    
+    public void setPermisos(List<UsuarioPermiso> permisos) {
+        this.permisos = permisos;
     }
 
     public List<DatosFacturacion> getFacturas() {
