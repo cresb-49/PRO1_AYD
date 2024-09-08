@@ -37,7 +37,7 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public List<ProductoDto> getProductos() {
+    public List<ProductoDto> getProductosDto() {
         List<Producto> findAll = productoRepository.findAll();
         return findAll.stream()
                 .map(producto -> {
@@ -47,6 +47,16 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                     return productoDto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtiene la lista de productos
+     *
+     * @return
+     */
+    public List<Producto> getProductos() {
+        List<Producto> findAll = productoRepository.findAll();
+        return findAll;
     }
 
     /**
