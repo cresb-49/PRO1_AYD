@@ -75,6 +75,17 @@
               <strong>Regresar a Login</strong>
             </v-btn>
           </span>
+          <span>
+            <v-btn
+              to="/"
+              class="px-0"
+              variant="plain"
+              :ripple="false"
+              prepend-icon="mdi-arrow-left"
+            >
+              <strong>Regresar al Homepage</strong>
+            </v-btn>
+          </span>
         </v-col>
       </v-row>
     </v-card-actions>
