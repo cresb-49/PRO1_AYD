@@ -4,8 +4,8 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,9 +14,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  *
@@ -67,8 +71,20 @@ public class Usuario extends Auditor {
     private List<UsuarioRol> roles;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    private List<UsuarioPermiso> permisos;
+    @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
+    @Cascade(CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<DatosFacturacion> facturas;
+
+    @Column(name = "two_factor_code", length=250)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String twoFactorCode;
+
+    @Column(name = "two_factor_enabled", nullable=false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ColumnDefault("false")
+    private boolean twoFactorEnabled;
 
     /**
      * Creacion y modificacion
@@ -170,6 +186,14 @@ public class Usuario extends Auditor {
         this.roles = roles;
     }
 
+    public List<UsuarioPermiso> getPermisos() {
+        return permisos;
+    }
+    
+    public void setPermisos(List<UsuarioPermiso> permisos) {
+        this.permisos = permisos;
+    }
+
     public List<DatosFacturacion> getFacturas() {
         return facturas;
     }
@@ -178,4 +202,32 @@ public class Usuario extends Auditor {
         this.facturas = facturas;
     }
 
+    public String getTwoFactorCode() {
+        return twoFactorCode;
+    }
+
+    public void setTwoFactorCode(String twoFactorCode) {
+        this.twoFactorCode = twoFactorCode;
+    }
+
+    public boolean isTwoFactorEnabled() {
+        return twoFactorEnabled;
+    }
+
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) {
+        this.twoFactorEnabled = twoFactorEnabled;
+    }
+
+    /**
+     * Metodo para mantener las relaciones de roles, permisos y facturas
+     * Para evitar que se eliminen al actualizar
+     * Se debe llamar antes de actualizar
+     * Se afectan todas las relaciones con orphanRemoval = true
+     * @param usuario
+     */
+    public void keepOrphanRemoval(Usuario usuario) {
+        this.roles = usuario.getRoles();
+        this.permisos = usuario.getPermisos();
+        this.facturas = usuario.getFacturas();
+    }
 }

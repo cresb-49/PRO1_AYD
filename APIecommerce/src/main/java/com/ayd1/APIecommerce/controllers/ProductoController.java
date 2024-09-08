@@ -53,7 +53,7 @@ public class ProductoController {
     @GetMapping("/productos/public/getProductos")
     public ResponseEntity<?> getProdutos() {
         try {
-            List<ProductoDto> respuesta = productoService.getProductos();
+            List<ProductoDto> respuesta = productoService.getProductosDto();
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();

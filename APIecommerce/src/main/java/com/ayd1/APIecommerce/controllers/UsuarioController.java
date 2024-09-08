@@ -1,5 +1,6 @@
 package com.ayd1.APIecommerce.controllers;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.List;
 
 @RestController
 @RequestMapping("api")
@@ -164,6 +164,22 @@ public class UsuarioController {
             @RequestBody Usuario login) {
         try {
             LoginDto respuesta = usuarioService.iniciarSesion(login);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @PostMapping("/usuario/public/validateTwoFactorToken")
+    public ResponseEntity<?> validateTwoFactorToken(
+        @Parameter(
+                description = "Valida el token de autenticación de dos factores",
+                required = true,
+                example = "{email:\"user@email.com\",twoFactorCode:\"67858\"}"
+        )
+        @RequestBody Usuario login) {
+        try {
+            LoginDto respuesta = usuarioService.login2FT(login);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();

@@ -4,16 +4,28 @@
  */
 package com.ayd1.APIecommerce.config;
 
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+
 import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.EstadoEnvio;
+import com.ayd1.APIecommerce.models.Permiso;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
+import com.ayd1.APIecommerce.repositories.PermisoRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
 import com.ayd1.APIecommerce.services.UsuarioService;
+<<<<<<< HEAD
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
+=======
+>>>>>>> 83672019e566f28b6bcafff9f33f066b1f2336b4
 
 /**
  *
@@ -31,6 +45,8 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private RolRepository rolRepository;
+    @Autowired
+    private PermisoRepository permisoRepository;
     @Autowired
     private CategoriaRepository categoriaRepository;
     @Autowired
@@ -52,10 +68,21 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
         }
     }
 
+    public Permiso insertarPermiso(Permiso permiso) throws Exception {
+        try {
+            Optional<Permiso> opPermiso = this.permisoRepository.findOneByNombre(permiso.getNombre());
+            if (opPermiso.isPresent()) {
+                return opPermiso.get();
+            }
+            return this.permisoRepository.save(permiso);
+        } catch (Exception e) {
+            throw new Exception("Error");
+        }
+    }
+
     public EstadoEnvio insertarEstadoEnvio(EstadoEnvio estadoEnvio) throws Exception {
         try {
-            Optional<EstadoEnvio> opRol
-                    = this.estadoEnvioRepository.findOneByNombre(estadoEnvio.getNombre());
+            Optional<EstadoEnvio> opRol = this.estadoEnvioRepository.findOneByNombre(estadoEnvio.getNombre());
             if (opRol.isPresent()) {
                 return opRol.get();
             }
@@ -79,8 +106,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
 
     public TiendaConfig insertarTiendaConfig(TiendaConfig config) throws Exception {
         try {
-            TiendaConfig conf
-                    = this.tiendaConfigReporitory.findFirstByOrderByIdAsc().orElse(null);
+            TiendaConfig conf = this.tiendaConfigReporitory.findFirstByOrderByIdAsc().orElse(null);
             if (conf == null) {
                 return this.tiendaConfigReporitory.save(config);
             }
@@ -94,10 +120,10 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
-            //siders roles
-            this.insertarRol(new Rol("USUARIO"));
+            // siders roles
+            Rol rolUsuario = this.insertarRol(new Rol("USUARIO"));
             Rol rolAdmin = this.insertarRol(new Rol("ADMIN"));
-            this.insertarRol(new Rol("AYUDANTE"));
+            Rol rolAyudante = this.insertarRol(new Rol("AYUDANTE"));
 
             Categoria categoria = new Categoria("Hogar");
             this.insertarCategoria(categoria);
@@ -110,21 +136,35 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             EstadoEnvio estadoEnvio2 = new EstadoEnvio("ENTREGADO");
             this.insertarEstadoEnvio(estadoEnvio2);
 
-            //IMAGEN DEFAULT DE LA TIENDA
+            // IMAGEN DEFAULT DE LA TIENDA
             byte[] img = getClass().getResourceAsStream("/img/logo.png").readAllBytes();
 
-            TiendaConfig tiendaConfig
-                    = new TiendaConfig("TiendaAyD1", img, 12.00,
-                            "2da calle XXX-XXX-XX Quetgo",
-                            "image/png");
+            TiendaConfig tiendaConfig = new TiendaConfig("TiendaAyD1", img, 12.00,
+                    "2da calle XXX-XXX-XX Quetgo",
+                    "image/png");
             this.insertarTiendaConfig(tiendaConfig);
-            //sider usuario Admin
+            // Seeder de usuarios del sistema
             Usuario admin = new Usuario("admin", "admin",
                     "admin@admin", null,
                     "123",
                     null, null, false);
+            Usuario user1 = new Usuario("Carlos", "Pac", "carlosbpac@gmail.com", null, "12345", null, null, false);
             this.usuarioService.crearUsuario(admin, rolAdmin);
+            this.usuarioService.crearUsuario(user1, rolUsuario);
 
+            // Creacion de todos los permisos que tiene el sistema
+            // CREAR, BORRAR, MODIFICAR, REPORTES
+            Permiso permiso_crear = this.insertarPermiso(new Permiso("CREAR"));
+            Permiso permiso_borrar = this.insertarPermiso(new Permiso("BORRAR"));
+            Permiso permiso_modificar = this.insertarPermiso(new Permiso("MODIFICAR"));
+            Permiso permiso_reportes =this.insertarPermiso( new Permiso("REPORTES"));
+            // Asignacion de permisos a los usuarios
+            // Obtenemos el usuario admin
+            Usuario admin_user = this.usuarioService.getByEmail("admin@admin");
+            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_crear);
+            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_borrar);
+            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_modificar);
+            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_reportes);
         } catch (Exception ex) {
             Logger.getLogger(Inserts.class.getName()).log(Level.SEVERE, null, ex);
         }
