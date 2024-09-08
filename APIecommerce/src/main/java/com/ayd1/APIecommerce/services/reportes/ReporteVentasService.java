@@ -6,18 +6,15 @@ package com.ayd1.APIecommerce.services.reportes;
 
 import com.ayd1.APIecommerce.models.LineaVenta;
 import com.ayd1.APIecommerce.models.Venta;
-import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.models.dto.reports.DesgloceDto;
 import com.ayd1.APIecommerce.models.dto.reports.ReporteVentasDto;
 import com.ayd1.APIecommerce.models.request.ReporteExportRequest;
 import com.ayd1.APIecommerce.models.request.ReporteRequest;
 import com.ayd1.APIecommerce.repositories.VentaRepository;
-import com.ayd1.APIecommerce.services.Service;
 import com.ayd1.APIecommerce.services.reportes.imprimibles.ReporteDeVentasImprimible;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
