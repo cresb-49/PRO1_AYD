@@ -69,19 +69,19 @@ public abstract class ConstructorReporteImprimible extends Service {
      * @return
      * @throws java.lang.Exception
      */
-    protected byte[] generarReporte(String reportePath, Map parametros,
+    protected byte[] exportarReporte(String reportePath, Map parametros,
             String tipoReporte) throws Exception {
         return switch (tipoReporte) {
             case "excel" ->
-                this.generarExcel(reportePath, parametros);
+                this.exportarExcel(reportePath, parametros);
             case "word" ->
-                this.generarWord(reportePath, parametros);
+                this.exportarWord(reportePath, parametros);
             default ->
-                this.generarPdf(reportePath, parametros);
+                this.exportarPdf(reportePath, parametros);
         };
     }
 
-    private byte[] generarPdf(String reportePath, Map parametros) throws Exception {
+    private byte[] exportarPdf(String reportePath, Map parametros) throws Exception {
         JasperPrint jasperPrint = this.calcarReporte(reportePath, parametros);
         // Exportamos el reporte a un ByteArrayOutputStream en lugar de un stream directo
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -90,7 +90,7 @@ public abstract class ConstructorReporteImprimible extends Service {
         return out.toByteArray();
     }
 
-    private byte[] generarExcel(String reportePath, Map<String, Object> parametros) throws Exception {
+    private byte[] exportarExcel(String reportePath, Map<String, Object> parametros) throws Exception {
         // Generamos el JasperPrint como lo haces para PDF
         JasperPrint jasperPrint = this.calcarReporte(reportePath, parametros);
 
@@ -115,7 +115,7 @@ public abstract class ConstructorReporteImprimible extends Service {
         return out.toByteArray();
     }
 
-    private byte[] generarWord(String reportePath, Map<String, Object> parametros) throws Exception {
+    private byte[] exportarWord(String reportePath, Map<String, Object> parametros) throws Exception {
         // Generamos el JasperPrint como lo haces para PDF o Excel
         JasperPrint jasperPrint = this.calcarReporte(reportePath, parametros);
 

@@ -27,7 +27,7 @@ public class ManejadorDeFecha {
      */
     public String parsearFechaYHoraAFormatoRegional(Instant instante) {
         if (instante == null) { // si la fecha es nula retornamos vacío
-            return "Error";
+            return "-";
         }
         /* Convertimos Instant a LocalDateTime utilizando la zona horaria del sistema */
         LocalDateTime fechaLocal = LocalDateTime.ofInstant(instante,
@@ -53,6 +53,9 @@ public class ManejadorDeFecha {
     }
 
     public Instant convertStringToInstant(String dateString) {
+        if (dateString == null) {
+            return null;
+        }
         // Convertir el string a LocalDate
         LocalDate localDate = LocalDate.parse(dateString);
 
