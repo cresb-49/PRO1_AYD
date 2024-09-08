@@ -41,7 +41,7 @@ const router = createRouter({
       path:'/two-factor',
       name: 'two-factor',
       meta: {title: 'Two Factor', layout: EmptyLayout},
-      component: () => import('../views/TwoFactorView}
+      component: () => import('../views/TwoFactorView.vue')
     },
     {
       path: '/password-reset',
