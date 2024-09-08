@@ -6,6 +6,17 @@
     <v-card-text>
       <v-form>
         <v-text-field
+          v-model="email_value"
+          label="Correo electrónico"
+          type="email"
+          required
+          :disabled="true"
+        >
+          <template #prepend>
+            <v-icon :icon="emailIcon" size="small" />
+          </template>
+        </v-text-field>
+        <v-text-field
           v-model="twoFactorCode"
           label="Token de autenticación"
           required
@@ -83,12 +94,17 @@ export default {
     showSignup: {
       type: Boolean,
       default: true
+    },
+    email: {
+      type: String,
+      default: ''
     }
   },
   emits: ['login'],
   data() {
     return {
-      twoFactorCode: ''
+      twoFactorCode: '',
+      email_value: this.email
     }
   },
   computed: {
@@ -105,6 +121,7 @@ export default {
   methods: {
     login() {
       const newCredentials = {
+        email: this.email,
         twoFactorCode: this.twoFactorCode.replace(/\s/g, '').trim()
       }
       this.$emit('login', newCredentials)

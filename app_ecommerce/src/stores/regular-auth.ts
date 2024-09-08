@@ -64,11 +64,10 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.loading = true
       this.error = null
 
-      console.log(payload)
-      const path =
-        payload.twoFactorCode !== undefined
-          ? 'api/usuario/public/validateTwoFactorToken'
-          : 'api/usuario/public/login'
+      const hasTwoFactorCode = payload.twoFactorCode !== undefined
+      const path = hasTwoFactorCode
+        ? 'api/usuario/public/validateTwoFactorToken'
+        : 'api/usuario/public/login'
 
       // Fetch the data from the API
       const { data, error } = await useCustomFetch<any>(path, {
@@ -89,37 +88,50 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       // Success
       // Set the user in the store
       this.user = data?.value?.data?.usuario ?? null
-      this.authenticated = true
+      const userHasTwoFactor = data?.value?.data?.hasTwoFactorCode ?? false
+      if (userHasTwoFactor && !hasTwoFactorCode) {
+        this.authenticated = false
+        useSnackbarStore().showSnackbar({
+          title: 'Se necesita autenticación de dos factores',
+          message: `Ingresa tu token ${this.user?.nombres} ${this.user?.apellidos}`,
+          type: SnackbarType.MESSAGE
+        })
+        // Return the data and error
+        this.loading = false
+        return { data, error: false, twoFactor: true }
+      } else {
+        this.authenticated = true
 
-      let roleuser = ''
-      switch (this.user?.roles[0].rol.id) {
-        case 1:
-          roleuser = 'regular'
-          break
-        case 2:
-          roleuser = 'admin'
-          break
-        case 3:
-          roleuser = 'helper'
-          break
-        default:
-          roleuser = 'regular'
-          break
+        let roleuser = ''
+        switch (this.user?.roles[0].rol.id) {
+          case 1:
+            roleuser = 'regular'
+            break
+          case 2:
+            roleuser = 'admin'
+            break
+          case 3:
+            roleuser = 'helper'
+            break
+          default:
+            roleuser = 'regular'
+            break
+        }
+        // Set cookies, user and role
+        useCookies().cookies.set('user-token', data?.value?.data?.jwt)
+        useCookies().cookies.set('roleuser', roleuser)
+        // Set the token and role in the auth store
+        authStore.login({ role: roleuser, token: data?.value?.data?.jwt ?? '' })
+        // Show success snackbar
+        useSnackbarStore().showSnackbar({
+          title: 'Session iniciada',
+          message: `Bienvenid@ ${this.user?.nombres} ${this.user?.apellidos}`,
+          type: SnackbarType.SUCCESS
+        })
+        // Return the data and error
+        this.loading = false
+        return { data, error: false, twoFactor: false }
       }
-      // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.data?.jwt)
-      useCookies().cookies.set('roleuser', roleuser)
-      // Set the token and role in the auth store
-      authStore.login({ role: roleuser, token: data?.value?.data?.jwt ?? '' })
-      // Show success snackbar
-      useSnackbarStore().showSnackbar({
-        title: 'Session iniciada',
-        message: `Bienvenid@ ${this.user?.nombres} ${this.user?.apellidos}`,
-        type: SnackbarType.SUCCESS
-      })
-      // Return the data and error
-      this.loading = false
-      return { data, error: false }
     },
     async signupUser(payload: SignupPayload) {
       const authStore = useAuthStore()
