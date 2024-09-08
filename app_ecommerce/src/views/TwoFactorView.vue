@@ -2,27 +2,36 @@
   <section class="login-page">
     <v-row justify="center" no-gutters>
       <v-col cols="11" sm="8" md="8" lg="5" xl="4">
-        <LoginForm :loading="loading" :admin="false" :show-signup="true" @login="login($event)" />
+        <TwoFactorForm
+          :loading="loading"
+          :admin="false"
+          :show-signup="false"
+          :email="email"
+          @login="login($event)"
+        />
       </v-col>
     </v-row>
   </section>
 </template>
+
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useRegularAuthStore } from '../stores/regular-auth'
-import LoginForm from '../components/forms/accounts/LoginForm.vue'
-import { useRouter } from 'vue-router'
+import { useRegularAuthStore } from '@/stores/regular-auth'
+import TwoFactorForm from '@/components/forms/accounts/TwoFactorForm.vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const regularAuthStore = useRegularAuthStore()
 const { loading, error } = storeToRefs(regularAuthStore)
 const { loginUser } = regularAuthStore
 const router = useRouter()
+const route = useRoute()
 
-async function login(credentials: { email: string; password: string }) {
-  const { error, twoFactor } = await loginUser(credentials)
-  if (twoFactor) {
-    router.push({ name: 'two-factor', query: { email: credentials.email } })
-  } else if (error === false) {
+// Access query parameters
+const email = route.query.email
+
+async function login(credentials: { email: email; twoFactorCode: string }) {
+  const { error } = await loginUser(credentials)
+  if (error === false) {
     router.push('/')
   }
 }

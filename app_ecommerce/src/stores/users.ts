@@ -1,7 +1,6 @@
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import { defineStore } from 'pinia'
 import { useSnackbarStore, SnackbarType } from './snackbar'
-import { convertError } from '@/utils/error-converter'
 import type { User } from './regular-auth'
 
 export type CreationPayload = {
@@ -57,7 +56,7 @@ export const useUserStore = defineStore('users', {
       console.log(data.value.data)
       return { data, error: false }
     },
-    async fetchCategory(category_id: number) {
+    async fetchUser(category_id: number) {
       this.loading = true
       
       const { data, error } = await useCustomFetch<any>(
@@ -82,7 +81,7 @@ export const useUserStore = defineStore('users', {
       this.loading = false
       return { data, error: false }
     },
-    async createCategory(payload: CreationPayload) {
+    async createUser(payload: CreationPayload) {
       console.log('payload actual');
       console.log(payload);
       this.loading = true
@@ -113,12 +112,12 @@ export const useUserStore = defineStore('users', {
         type: SnackbarType.SUCCESS
       })
       
-      await this.fetchAllCategories()
+      await this.fetchAllUsers()
       // Return the data and error
       this.loading = false
       return { data, error: false }
     },
-    async updateCategory(payload: UpdatePayload) {
+    async updateUser(payload: UpdatePayload) {
       this.loading = true
 
       const { data, error } = await useCustomFetch<any>(
@@ -147,7 +146,7 @@ export const useUserStore = defineStore('users', {
         type: SnackbarType.SUCCESS
       })
       
-      await this.fetchAllCategories()
+      await this.fetchAllUsers()
       // Return the data and error
       this.loading = false
       return { data, error: false }

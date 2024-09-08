@@ -20,6 +20,11 @@ export type UpdatePayload = {
   precio: number,
   habilitado: boolean
 }
+
+export type UpdateStockPayload = {
+  id: number,
+  newStock: number,
+}
  
 export type Product = {
   id: number,
@@ -118,13 +123,29 @@ export const useProductStore = defineStore('products', {
       this.loadingProduct = false
       return { data, error: false }
     },
-    async addStockProduct(product_id: number) {
-      this.loadingProduct = true
+    async addUnitProducts(product_id: number) {
+      this.loading = true
       
+      const {data: dataProduct, error: errorProduct} = await this.fetchProduct(product_id);
+      // Error Handling
+      if (errorProduct.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: errorProduct.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { dataProduct, error: errorProduct.value }
+      }
+      
+      const producto = dataProduct.value.data as Product;
+      producto.stock += 1;
+
       const { data, error } = await useCustomFetch<any>(
-        `api/producto/public/getProducto/${product_id}`,
+        'api/producto/private/actualizarProducto',
         {
-          method: 'GET',
+          method: 'PATCH',
+          body: JSON.stringify(producto)
         }
       )
 
@@ -139,8 +160,17 @@ export const useProductStore = defineStore('products', {
         return { data, error: error.value }
       }
       // Success
+      // Show success snackbar
+      useSnackbarStore().showSnackbar({
+        title: 'Actualizacion Exitosa',
+        message: `Stock Aumentado Exitosamente`,
+        type: SnackbarType.SUCCESS
+      })
+      
+      await this.fetchAllProducts()
+      await this.fetchWithLowStock()
       // Return the data and error
-      this.loadingProduct = false
+      this.loading = false
       return { data, error: false }
     },
     async createProduct(payload: CreationPayload) {
@@ -197,7 +227,7 @@ export const useProductStore = defineStore('products', {
       payload.habilitado = true
 
       const { data, error } = await useCustomFetch<any>(
-        'api/producto/protected/actualizarProducto',
+        'api/producto/private/actualizarProducto',
         {
           method: 'PATCH',
           body: JSON.stringify(payload)

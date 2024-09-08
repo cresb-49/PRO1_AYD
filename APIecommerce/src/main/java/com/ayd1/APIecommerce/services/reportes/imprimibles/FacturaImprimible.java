@@ -35,7 +35,7 @@ public class FacturaImprimible extends Reporte {
         //si pasaron las comporbaciones mandamos a traer los parametros
         Map<String, Object> parametrosReporte = this.construirFactura();
         //mandamos ha abrir el reporte
-        return this.generarReporte("FacturaAyD", parametrosReporte,
+        return this.exportarReporte("FacturaAyD", parametrosReporte,
                 "pdf");
     }
 

@@ -5,20 +5,13 @@ import com.ayd1.APIecommerce.models.Imagen;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.ayd1.APIecommerce.models.Producto;
-import com.ayd1.APIecommerce.models.Usuario;
-import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.tools.mappers.ProductoMapper;
-import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -37,7 +30,7 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public List<ProductoDto> getProductos() {
+    public List<ProductoDto> getProductosDto() {
         List<Producto> findAll = productoRepository.findAll();
         return findAll.stream()
                 .map(producto -> {
@@ -47,6 +40,16 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                     return productoDto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtiene la lista de productos
+     *
+     * @return
+     */
+    public List<Producto> getProductos() {
+        List<Producto> findAll = productoRepository.findAll();
+        return findAll;
     }
 
     /**
@@ -299,5 +302,9 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
 
     public List<Producto> buscarPorNombre(String nombre) {
         return productoRepository.findByNombreContaining(nombre);
+    }
+
+    public List<Producto> buscarPorRangoDePrecio(Double precioMin, Double precioMax) {
+        return productoRepository.findByPrecioBetween(precioMin, precioMax);
     }
 }
