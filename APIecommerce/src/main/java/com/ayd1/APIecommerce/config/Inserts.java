@@ -21,6 +21,7 @@ import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
+import com.ayd1.APIecommerce.repositories.PermisoRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
 import com.ayd1.APIecommerce.services.UsuarioService;
@@ -34,6 +35,8 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private RolRepository rolRepository;
+    @Autowired
+    private PermisoRepository permisoRepository;
     @Autowired
     private CategoriaRepository categoriaRepository;
     @Autowired
@@ -146,9 +149,15 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             Permiso permiso_borrar = new Permiso("BORRAR");
             Permiso permiso_modificar = new Permiso("MODIFICAR");
             Permiso permiso_reportes = new Permiso("REPORTES");
-
-
-
+            this.insertarPermiso(permiso_crear);
+            this.insertarPermiso(permiso_borrar);
+            this.insertarPermiso(permiso_modificar);
+            this.insertarPermiso(permiso_reportes);
+            // Asignacion de permisos a los usuarios
+            this.usuarioService.agregarPermisoUsuario(admin, permiso_crear);
+            this.usuarioService.agregarPermisoUsuario(admin, permiso_borrar);
+            this.usuarioService.agregarPermisoUsuario(admin, permiso_modificar);
+            this.usuarioService.agregarPermisoUsuario(admin, permiso_reportes);
         } catch (Exception ex) {
             Logger.getLogger(Inserts.class.getName()).log(Level.SEVERE, null, ex);
         }

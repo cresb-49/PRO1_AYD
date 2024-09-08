@@ -10,7 +10,6 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,8 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.ayd1.APIecommerce.models.Permiso;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.models.UsuarioPermiso;
 import com.ayd1.APIecommerce.models.UsuarioRol;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
@@ -411,6 +412,58 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             return new LoginDto(userCreado, jwt);
         }
         throw new Exception("No pudimos crear tu usuario, inténtalo más tarde.");
+    }
+
+    /**
+     * Agregar un rol a un usuario
+     * @param usuario
+     * @param rol
+     * @return
+     */
+    @Transactional
+    public boolean agregarRolUsuario(Usuario usuario, Rol rol) {
+        if (!this.usuarioRepository.existsByEmail(usuario.getEmail())) {
+            throw new IllegalArgumentException("El usuario no existe.");
+        }
+        // Creamos el rol
+        UsuarioRol usuarioRol = new UsuarioRol(usuario, rol);
+        // Verificamos si el rol ya existe
+        if (usuario.getRoles().stream().anyMatch(r -> r.getRol().getId().equals(rol.getId()))) {
+            throw new IllegalArgumentException("El rol ya ha sido asignado al usuario.");
+        }
+        // Verificamos si el objeto ya tiene una lista de roles, si no la tiene, la creamos
+        if (usuario.getRoles() == null) {
+            usuario.setRoles(new ArrayList<>());
+        }
+        // Agregamos el rol a la lista de roles del usuario
+        usuario.getRoles().add(usuarioRol);
+        return true;
+    }   
+
+    /**
+     * Agregar un permiso a un usuario
+     * @param usuario
+     * @param permiso
+     * @return
+     */
+    @Transactional
+    public boolean agregarPermisoUsuario(Usuario usuario, Permiso permiso){
+        if(!this.usuarioRepository.existsByEmail(usuario.getEmail())){
+            throw new IllegalArgumentException("El usuario no existe.");
+        }
+        // Creamos el permiso
+        UsuarioPermiso usuarioPermiso = new UsuarioPermiso(usuario, permiso);
+        //Verificamos si el permiso ya existe
+        if(usuario.getPermisos().stream().anyMatch(p -> p.getPermiso().getId().equals(permiso.getId()))){
+            throw new IllegalArgumentException("El permiso ya ha sido asignado al usuario.");
+        }
+        //Verificamos si el objeto ya tiene una lista de permisos, si no la tiene, la creamos
+        if(usuario.getPermisos() == null){
+            usuario.setPermisos(new ArrayList<>());
+        }
+        //Agregamos el permiso a la lista de permisos del usuario
+        usuario.getPermisos().add(usuarioPermiso);
+        return true;
     }
 
     private boolean verificarUsuarioJwt(Usuario usuarioTratar, String emailUsuarioAutenticado) throws Exception {
