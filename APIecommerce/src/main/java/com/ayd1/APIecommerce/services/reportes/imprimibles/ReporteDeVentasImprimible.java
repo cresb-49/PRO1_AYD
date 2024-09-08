@@ -27,7 +27,7 @@ public class ReporteDeVentasImprimible extends Reporte {
         //si pasaron las comporbaciones mandamos a traer los parametros
         Map<String, Object> parametrosReporte = this.construirReporteDeVentas();
         //mandamos ha abrir el reporte
-        return this.generarReporte("ReporteVentas", parametrosReporte,
+        return this.exportarReporte("ReporteVentas", parametrosReporte,
                 formatoExportar);
     }
 
