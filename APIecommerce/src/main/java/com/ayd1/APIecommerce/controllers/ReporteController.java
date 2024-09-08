@@ -4,11 +4,13 @@
  */
 package com.ayd1.APIecommerce.controllers;
 
+import com.ayd1.APIecommerce.models.dto.reports.ReporteClientesFrecuentesDto;
 import com.ayd1.APIecommerce.models.dto.reports.ReporteInventarioDto;
 import com.ayd1.APIecommerce.models.dto.reports.ReporteVentasDto;
 import com.ayd1.APIecommerce.models.request.ReporteExportRequest;
 import com.ayd1.APIecommerce.models.request.ReporteRequest;
 import com.ayd1.APIecommerce.services.Service;
+import com.ayd1.APIecommerce.services.reportes.ReporteClientesFrecuentesService;
 import com.ayd1.APIecommerce.services.reportes.ReporteInventarioService;
 import com.ayd1.APIecommerce.services.reportes.ReporteVentasService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
@@ -42,6 +44,8 @@ public class ReporteController {
     private ReporteVentasService reporteVentasService;
     @Autowired
     private ReporteInventarioService reporteInventarioService;
+    @Autowired
+    private ReporteClientesFrecuentesService reporteClientesFrecuentes;
 
     @Operation(summary = "El reporte de ventas en el formato especificado.",
             description = "Crea un reporte de ventas desde "
@@ -73,6 +77,11 @@ public class ReporteController {
                     reporte
                             = this.reporteInventarioService
                                     .exportarReporteInventario(reporteDails);
+                }
+                case "reporteClientesFrecuentes" -> {
+                    reporte
+                            = this.reporteClientesFrecuentes
+                                    .exportarReporteClientesFrecuentes(reporteDails);
                 }
                 default -> {
                     throw new AssertionError();
@@ -144,6 +153,31 @@ public class ReporteController {
     public ResponseEntity<?> generarReporteInventario() {
         try {
             ReporteInventarioDto respuesta = this.reporteInventarioService.generarReporteInventario();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @Operation(summary = "El reporte de clientes frecuentes.",
+            description = "Crea un reporte de los clientes mas frecuentes.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reporte creado exitosamente",
+                content = {
+                    @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ReporteClientesFrecuentesDto.class))
+                }),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                content = @Content)
+    })
+    @PostMapping("/generarReporteClientesFrecuentes")
+    public ResponseEntity<?> generarReporteClientesFrecuentes(
+            @Parameter(description = "Detalles del reporte a generar", required = true)
+            @RequestBody ReporteRequest reporteRequest) {
+        try {
+            ReporteClientesFrecuentesDto respuesta
+                    = this.reporteClientesFrecuentes.
+                            generarReporteClientesFrecuentes(reporteRequest);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
