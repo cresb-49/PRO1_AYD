@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
-import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;

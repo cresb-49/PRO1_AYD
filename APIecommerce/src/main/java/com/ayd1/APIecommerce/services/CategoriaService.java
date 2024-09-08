@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ayd1.APIecommerce.models.Categoria;
-import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 
 @org.springframework.stereotype.Service
