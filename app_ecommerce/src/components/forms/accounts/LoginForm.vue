@@ -54,7 +54,7 @@
         </v-col>
         <v-col cols="12">
           <span class="d-flex align-center">
-            <v-btn to="/sign-up" class="ml-1" variant="plain" :ripple="false">
+            <v-btn to="/password-reset" class="ml-1" variant="plain" :ripple="false">
               ¿Olvidaste tu contraseña?
             </v-btn>
           </span>

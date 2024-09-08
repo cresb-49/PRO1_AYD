@@ -1,5 +1,5 @@
 <template>
-    <v-card class="login-card pa-8">
+  <v-card class="login-card pa-8">
     <v-card-title>
       <h3 class="text-center mb-4">Recuperar contraseña</h3>
     </v-card-title>
@@ -18,7 +18,6 @@
         </v-text-field>
       </v-form>
     </v-card-text>
-
     <v-card-actions>
       <v-row>
         <v-col cols="12">
@@ -32,23 +31,52 @@
             Enviar correo
           </v-btn>
         </v-col>
+        <v-divider></v-divider>
+        <v-col cols="12">
+          <v-row>
+            <span>
+              <v-btn
+                to="/"
+                class="px-0"
+                variant="plain"
+                :ripple="false"
+                prepend-icon="mdi-arrow-left"
+              >
+                <strong>Regresar a Homepage</strong>
+              </v-btn>
+            </span>
+          </v-row>
+          <v-row>
+            <span>
+              <v-btn
+                to="/login"
+                class="px-0"
+                variant="plain"
+                :ripple="false"
+                prepend-icon="mdi-arrow-left"
+              >
+                <strong>Regresar a Iniciar sesión</strong>
+              </v-btn>
+            </span>
+          </v-row>
+        </v-col>
       </v-row>
     </v-card-actions>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-const email = ref("")
+const email = ref('')
 const loading = ref(false)
-const emits = defineEmits(["sendEmail"]) //Nombre del emit con "@""
+const emits = defineEmits(['sendEmail']) //Nombre del emit con "@""
 
-function sendEmail(){
-    //Funcion que emite un emit y envia el objeto emailData al view Padre
-    const emailData = {
-        email: email
-    }
-    emits("sendEmail", emailData)
+function sendEmail() {
+  //Funcion que emite un emit y envia el objeto emailData al view Padre
+  const emailData = {
+    email: email
+  }
+  emits('sendEmail', emailData)
 }
 </script>
