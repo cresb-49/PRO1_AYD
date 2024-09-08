@@ -36,5 +36,16 @@ public class Encriptador {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.encode(data);
     }
+    
+    /**
+     * Este metodo compara una contraseña sin encriptar con una contraseña encriptada
+     * @param passwordSinEncriptar
+     * @param passwordEncriptada
+     * @return
+     */
+    public static boolean compararPassword(String passwordSinEncriptar, String passwordEncriptada) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return passwordEncoder.matches(passwordSinEncriptar, passwordEncriptada);
+    }
 
 }

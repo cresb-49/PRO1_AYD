@@ -10,9 +10,12 @@ import java.util.UUID;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -223,8 +226,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
                 usuario.setTwoFactorCode(codigoRecuperacionEncriptado);
                 // actualizamos en la bd
                 Usuario actualizacion = usuarioRepository.save(usuario);
-                mailService.enviarCorreoEnSegundoPlano(actualizacion.getEmail(),
-                        actualizacion.getTwoFactorCode(), 1);
+                mailService.enviarCorreoEnSegundoPlano(actualizacion.getEmail(), codigoRecuperacion, 1);
             }
             return new LoginDto(usuario, (usuario.isTwoFactorEnabled() ? null : jwt), usuario.isTwoFactorEnabled());
         } catch (AuthenticationException ex) {
@@ -265,23 +267,23 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             }
 
             // Verificamos que el cliente tenga el mismo código de autenticación
-            // Debemos de comparar encriptando el código de autenticación
-            String getTwoFactorCode = Encriptador.encriptarPassword(log.getTwoFactorCode());
-            if (!usuario.getTwoFactorCode().equals(getTwoFactorCode)) {
+            if (!Encriptador.compararPassword(log.getTwoFactorCode(), usuario.getTwoFactorCode())) {
                 throw new Exception("Código de autenticación incorrecto.");
             }
 
-            authenticationManager.authenticate(
-                    // autenticar el usuario con la contrasenia encriptada
-                    new UsernamePasswordAuthenticationToken(log.getEmail(),
-                            log.getTwoFactorCode()));
+            // Autenticación manual del usuario (sin contraseña)
+            // Crear un token de autenticación preautenticado
+            Authentication auth = new UsernamePasswordAuthenticationToken(log.getEmail(), null);
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
-            // cargamos el usuario por el nombre
-            UserDetails userDetails = authenticationService.loadUserByUsername(
-                    log.getEmail());
-            // generar el token
+            // Cargar los detalles del usuario por nombre de usuario
+            UserDetails userDetails = authenticationService.loadUserByUsername(log.getEmail());
+
+            // Generar el token JWT
             String jwt = jwtGenerator.generateToken(userDetails);
-            return new LoginDto(usuario, jwt);// devolver la respuesta
+
+            // Devolver la respuesta con el usuario y el token
+            return new LoginDto(usuario, jwt);
 
         } catch (AuthenticationException ex) {
             throw new Exception(ex.getMessage());
