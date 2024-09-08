@@ -28,6 +28,9 @@ public class Venta extends Auditor {
     @Column(name = "valor_total", nullable = false)
     private Double valorTotal;
 
+    @Column(nullable = false)
+    private Double totalImpuestosPagados;
+
     @Column(name = "cuota_pago_contra_entrega", nullable = false)
     private Double cuotaPagContraEntrega;
 
@@ -56,10 +59,13 @@ public class Venta extends Auditor {
         super(id);
     }
 
-    public Venta(Double valorTotal, Double cuotaPagContraEntrega, Integer cantidadProductos) {
+    public Venta(Double valorTotal, Double cuotaPagContraEntrega, Integer cantidadProductos,
+            Double totalImpuestosPagados) {
         this.valorTotal = valorTotal;
         this.cuotaPagContraEntrega = cuotaPagContraEntrega;
         this.cantidadProductos = cantidadProductos;
+        this.totalImpuestosPagados = totalImpuestosPagados;
+
     }
 
     public Double getCuotaPagContraEntrega() {
@@ -108,6 +114,14 @@ public class Venta extends Auditor {
 
     public void setEnvio(Envio envio) {
         this.envio = envio;
+    }
+
+    public Double getTotalImpuestosPagados() {
+        return totalImpuestosPagados;
+    }
+
+    public void setTotalImpuestosPagados(Double totalImpuestosPagados) {
+        this.totalImpuestosPagados = totalImpuestosPagados;
     }
 
 }

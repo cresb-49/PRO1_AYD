@@ -15,6 +15,7 @@ import com.ayd1.APIecommerce.models.Producto;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
+import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.tools.mappers.ProductoMapper;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
@@ -33,8 +34,10 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
 
     @Autowired
     private ProductoRepository productoRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
-    public List<ProductoDto> getProductos() {
+    public List<ProductoDto> getProductosDto() {
         List<Producto> findAll = productoRepository.findAll();
         return findAll.stream()
                 .map(producto -> {
@@ -44,6 +47,16 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                     return productoDto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtiene la lista de productos
+     *
+     * @return
+     */
+    public List<Producto> getProductos() {
+        List<Producto> findAll = productoRepository.findAll();
+        return findAll;
     }
 
     /**
@@ -262,8 +275,36 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         throw new Exception("No pudimos actualizar el prodcuto, inténtalo más tarde.");
     }
 
+    /**
+     * Obtiene todos los productos que pertenecen a una categoria o a alguna de
+     * las categorias hijas de la misma.
+     *
+     * @param categoria
+     * @return
+     */
     public List<Producto> buscarPorCategoria(Categoria categoria) {
-        return productoRepository.findByCategoria(categoria);
+        // Obtener todas las categorías relacionadas
+        List<Categoria> categoriasDescendientes = obtenerCategoriasDescendientes(categoria);
+        // Buscar productos por las categorías obtenidas
+        return productoRepository.findByCategoriaIn(categoriasDescendientes);
+    }
+
+    /**
+     * Busca todos los decendientes de la categoria padre
+     *
+     * @param categoria
+     * @return
+     */
+    private List<Categoria> obtenerCategoriasDescendientes(Categoria categoria) {
+        List<Categoria> categoriasDescendientes = new ArrayList<>();
+        categoriasDescendientes.add(categoria); // Agrega la categoría actual
+
+        // Obtener las categorías hijas
+        List<Categoria> categoriasHijas = this.categoriaRepository.findByPadre(categoria);
+        for (Categoria hija : categoriasHijas) {
+            categoriasDescendientes.addAll(obtenerCategoriasDescendientes(hija)); // Recursivamente agrega las hijas
+        }
+        return categoriasDescendientes;
     }
 
     public List<Producto> buscarPorNombre(String nombre) {

@@ -21,6 +21,7 @@ import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import com.ayd1.APIecommerce.repositories.LineaVentaRepository;
 import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.repositories.VentaRepository;
+import com.ayd1.APIecommerce.services.reportes.Reporte;
 import com.ayd1.APIecommerce.services.reportes.imprimibles.FacturaImprimible;
 import com.ayd1.APIecommerce.tools.mappers.ProductoMapper;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * @author Luis Monterroso
  */
 @org.springframework.stereotype.Service
-public class FacturaService extends Service {
+public class FacturaService extends Reporte {
 
     @Autowired
     private LineaVentaRepository lineaVentaRepository;
@@ -77,7 +78,7 @@ public class FacturaService extends Service {
         Venta venta = this.getVenta(ventId);
         DatosFacturacion datosFacturacion = venta.getDatosFacturacion();
         List<LineaVenta> desgloce = venta.getLineaVentas();
-        
+
         return this.facturaImprimible.init(venta,
                 datosFacturacion,
                 desgloce);
@@ -94,7 +95,7 @@ public class FacturaService extends Service {
         con los distintos objetos que se crearan luego
          */
         Venta venta = new Venta(0.00, 0.00,
-                ventaRequest.getProductos().size());
+                ventaRequest.getProductos().size(), 0.00);
         /*la venta volatil2 se utilizara para guardar el desgloce de la factura
         y el valor total real de la factura
          */
@@ -107,6 +108,7 @@ public class FacturaService extends Service {
 
         ArrayList<LineaVenta> desglose = this.crearDesgloce(save, ventaRequest);
         Double total = this.calcularTotal(desglose);
+        Double totalImpuestos = this.calcularTotalDeImpuestoPagado(desglose);
         Double cuotaPagoContraEntrega = 0.00;
 
         //si el pago contra entrega esta activado entonces debemos subir a la cuota
@@ -120,6 +122,7 @@ public class FacturaService extends Service {
         save.setValorTotal(total + cuotaPagoContraEntrega);
         save.setLineaVentas(desglose);
         save.setCuotaPagContraEntrega(cuotaPagoContraEntrega);
+        save.setTotalImpuestosPagados(totalImpuestos);
 
         //actualizar
         this.ventaRepository.save(save);
@@ -162,7 +165,9 @@ public class FacturaService extends Service {
             //creamos la linea de venta del producto
             LineaVenta lineaVenta = new LineaVenta(producto, venta,
                     producto.getPrecio(),
-                    productosRequest.getCantidad().intValue());
+                    productosRequest.getCantidad().intValue(),
+                    (producto.getPrecio() * (producto.getPorcentajeImpuesto() / 100))
+            );
             //agregamos la linea de venta al array
             desglose.add(lineaVenta);
         }

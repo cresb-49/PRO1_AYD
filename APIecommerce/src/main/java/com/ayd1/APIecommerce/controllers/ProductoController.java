@@ -53,7 +53,7 @@ public class ProductoController {
     @GetMapping("/productos/public/getProductos")
     public ResponseEntity<?> getProdutos() {
         try {
-            List<ProductoDto> respuesta = productoService.getProductos();
+            List<ProductoDto> respuesta = productoService.getProductosDto();
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
@@ -195,29 +195,55 @@ public class ProductoController {
         }
     }
 
+    @Operation(summary = "Devuelve todos los productos que pertenecen a una categoria a los padres.",
+            description = "Devuelve un Array de productos, dichos productos seran todos aquellos que pertenecen "
+            + "a la categoria especificada. Si se trata de una categoria padre, tambien se enviaran"
+            + "todos los productos que pertenecen a las categorias hijas del padre.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Listado de productos",
+                content = @Content(mediaType = "application/json",
+                        array = @ArraySchema(
+                                schema = @Schema(
+                                        implementation = ProductoDto.class
+                                )
+                        )
+                )),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                content = @Content)
+    })
     @GetMapping("/producto/public/categoria/{id}")
-    public ResponseEntity<?> buscarPorCategoria(@PathVariable Long id) throws Exception {
-        
+    public ResponseEntity<?> buscarPorCategoria(
+            @Parameter(description = "ID de la categoria", required = true)
+            @PathVariable Long id) throws Exception {
+
         try {
             Categoria categoria = categoriaService.getCategoria(id);
             List<Producto> productos = productoService.buscarPorCategoria(categoria);
-            if (productos.isEmpty()) {
-                throw new IllegalArgumentException("Sin resultados en la búsqueda");
-            }
-            return new ApiBaseTransformer(HttpStatus.OK, "Lista de productos encontrados", productos, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, null, productos, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
     }
 
+    @Operation(summary = "Devuelve todos los productos con 5 o menos esxistencias",
+            description = "")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Listado de productos",
+                content = @Content(mediaType = "application/json",
+                        array = @ArraySchema(
+                                schema = @Schema(
+                                        implementation = ProductoDto.class
+                                )
+                        )
+                )),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                content = @Content)
+    })
     @GetMapping("/producto/public/nombre/{nombre}")
     public ResponseEntity<?> buscarPorNombre(@PathVariable String nombre) {
         try {
             List<Producto> productos = productoService.buscarPorNombre(nombre);
-            if (productos.isEmpty()) {
-                throw new IllegalArgumentException("Lista de productos vacía");
-            }
-            return new ApiBaseTransformer(HttpStatus.OK, "Lista de productos encontrados", productos, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, null, productos, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
