@@ -10,8 +10,10 @@ import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.models.dto.reports.ReporteInventarioDto;
 import com.ayd1.APIecommerce.models.dto.reports.ReporteVentasDto;
 import com.ayd1.APIecommerce.models.dto.reports.RestablecimientoStock;
+import com.ayd1.APIecommerce.models.request.ReporteExportRequest;
 import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.services.ProductoService;
+import com.ayd1.APIecommerce.services.reportes.imprimibles.ReporteInventarioImprimible;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -30,19 +32,27 @@ import org.springframework.stereotype.Service;
 public class ReporteInventarioService extends Reporte {
 
     @Autowired
-    private ProductoRepository productoRepository;
+    private ReporteInventarioImprimible inventarioImprimible;
     @Autowired
     private ProductoService productoService;
 
     public ReporteInventarioDto generarReporteInventario() throws Exception {
-
         //mandar a traer los productos con baja existencia
         List<ProductoDto> productosConBajaExistencia = this.productoService.getProductosConBajaExistencia();
         //mandamos a traer todos los productos existentes
         List<Producto> productos = this.productoService.getProductos();
         //mandamos a analizar el stock de los productos segun sus ventas
+        List<RestablecimientoStock> restablecimientos = this.analizarVentasDeProductos(productos);
+        //podemos construir el objeto que representa el reporte
+        return new ReporteInventarioDto(productosConBajaExistencia, restablecimientos);
+    }
 
-        return null;
+    public byte[] exportarReporteInventario(ReporteExportRequest request) throws Exception {
+        //mandamos a construir el reporte
+        ReporteInventarioDto reporte = this.generarReporteInventario();
+        //enviamos el reporte a JasperReport
+        return this.inventarioImprimible.init(reporte,
+                request.getTipoExporte());
     }
 
     /**
@@ -66,7 +76,8 @@ public class ReporteInventarioService extends Reporte {
                     item.getStock());
 
             restablecimientos.add(new RestablecimientoStock(
-                    item.getId() + "." + item.getNombre(),
+                    item.getId(),
+                    item.getNombre(),
                     cantidadVentasPromedio,
                     item.getStock(),
                     fechaAgotamiento)
@@ -110,7 +121,7 @@ public class ReporteInventarioService extends Reporte {
     private String estimarFechaAgotamiento(Double ventasDiariasPromedio,
             Integer stockActual) {
         if (ventasDiariasPromedio <= 0) {
-            return null; // No se puede calcular si no hay ventas
+            return "Sin ventas."; // No se puede calcular si no hay ventas
         }
         int diasRestantes = (int) Math.ceil(stockActual / ventasDiariasPromedio);
 

@@ -13,51 +13,63 @@ import org.springframework.stereotype.Component;
 @Component
 public class RestablecimientoStock {
 
-    private String nombreProducto;
-    private Double ventasPromedioPorDia;
-    private Integer stockActual;
-    private String fechaRestablecimientoStock;
+    private Long idR;
+    private String nombreProductoR;
+    private Double ventasPromedioPorDiaR;
+    private Integer stockActualR;
+    private String fechaAgotamientoR;
 
-    public RestablecimientoStock(String nombreProducto, Double ventasPromedioPorDia, Integer stockActual, String fechaRestablecimientoStock) {
-        this.nombreProducto = nombreProducto;
-        this.ventasPromedioPorDia = ventasPromedioPorDia;
-        this.stockActual = stockActual;
-        this.fechaRestablecimientoStock = fechaRestablecimientoStock;
+    public RestablecimientoStock(Long id, String nombreProducto,
+            Double ventasPromedioPorDia, Integer stockActual,
+            String fechaAgotamiento) {
+        this.idR = id;
+        this.nombreProductoR = nombreProducto;
+        this.ventasPromedioPorDiaR = ventasPromedioPorDia;
+        this.stockActualR = stockActual;
+        this.fechaAgotamientoR = fechaAgotamiento;
     }
 
     public RestablecimientoStock() {
     }
 
-    public String getNombreProducto() {
-        return nombreProducto;
+    public Long getIdR() {
+        return idR;
     }
 
-    public void setNombreProducto(String nombreProducto) {
-        this.nombreProducto = nombreProducto;
+    public void setIdR(Long idR) {
+        this.idR = idR;
     }
 
-    public Double getVentasPromedioPorDia() {
-        return ventasPromedioPorDia;
+    public String getNombreProductoR() {
+        return nombreProductoR;
     }
 
-    public void setVentasPromedioPorDia(Double ventasPromedioPorDia) {
-        this.ventasPromedioPorDia = ventasPromedioPorDia;
+    public void setNombreProductoR(String nombreProductoR) {
+        this.nombreProductoR = nombreProductoR;
     }
 
-    public Integer getStockActual() {
-        return stockActual;
+    public Double getVentasPromedioPorDiaR() {
+        return ventasPromedioPorDiaR;
     }
 
-    public void setStockActual(Integer stockActual) {
-        this.stockActual = stockActual;
+    public void setVentasPromedioPorDiaR(Double ventasPromedioPorDiaR) {
+        this.ventasPromedioPorDiaR = ventasPromedioPorDiaR;
     }
 
-    public String getFechaRestablecimientoStock() {
-        return fechaRestablecimientoStock;
+    public Integer getStockActualR() {
+        return stockActualR;
     }
 
-    public void setFechaRestablecimientoStock(String fechaRestablecimientoStock) {
-        this.fechaRestablecimientoStock = fechaRestablecimientoStock;
+    public void setStockActualR(Integer stockActualR) {
+        this.stockActualR = stockActualR;
+    }
+
+    public String getFechaAgotamientoR() {
+        return fechaAgotamientoR;
+    }
+
+    public void setFechaAgotamientoR(String fechaAgotamientoR) {
+        this.fechaAgotamientoR = fechaAgotamientoR;
     }
 
 }
