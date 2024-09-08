@@ -4,8 +4,9 @@
  */
 package com.ayd1.APIecommerce.models.dto;
 
-import com.ayd1.APIecommerce.models.Usuario;
 import org.springframework.stereotype.Component;
+
+import com.ayd1.APIecommerce.models.Usuario;
 
 /**
  *
@@ -16,10 +17,17 @@ public class LoginDto {
 
     private Usuario usuario;
     private String jwt;
+    private boolean hasTwoFactorCode;
 
     public LoginDto(Usuario usuario, String jwt) {
         this.usuario = usuario;
         this.jwt = jwt;
+    }
+
+    public LoginDto(Usuario usuario, String jwt, boolean hasTwoFactorCode) {
+        this.usuario = usuario;
+        this.jwt = jwt;
+        this.hasTwoFactorCode = hasTwoFactorCode;
     }
 
     public LoginDto() {
@@ -39,6 +47,14 @@ public class LoginDto {
 
     public void setJwt(String jwt) {
         this.jwt = jwt;
+    }
+
+    public boolean isHasTwoFactorCode() {
+        return hasTwoFactorCode;
+    }
+
+    public void setHasTwoFactorCode(boolean hasTwoFactorCode) {
+        this.hasTwoFactorCode = hasTwoFactorCode;
     }
 
 }
