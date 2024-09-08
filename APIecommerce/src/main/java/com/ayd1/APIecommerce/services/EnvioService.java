@@ -4,14 +4,12 @@
  */
 package com.ayd1.APIecommerce.services;
 
-import com.ayd1.APIecommerce.models.Categoria;
 import com.ayd1.APIecommerce.models.Envio;
 import com.ayd1.APIecommerce.models.EstadoEnvio;
 import com.ayd1.APIecommerce.repositories.EnvioRepository;
 import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -12,7 +12,6 @@ import com.ayd1.APIecommerce.models.Producto;
 import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.Venta;
-import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.models.request.ProductoVentaRequest;
 import com.ayd1.APIecommerce.models.request.VentaRequest;
 import com.ayd1.APIecommerce.repositories.DatosFacturacionRepository;
@@ -23,13 +22,11 @@ import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.repositories.VentaRepository;
 import com.ayd1.APIecommerce.services.reportes.Reporte;
 import com.ayd1.APIecommerce.services.reportes.imprimibles.FacturaImprimible;
-import com.ayd1.APIecommerce.tools.mappers.ProductoMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  *

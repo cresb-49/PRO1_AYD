@@ -25,6 +25,16 @@ import com.ayd1.APIecommerce.repositories.PermisoRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
 import com.ayd1.APIecommerce.services.UsuarioService;
+<<<<<<< HEAD
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
+=======
+>>>>>>> 83672019e566f28b6bcafff9f33f066b1f2336b4
 
 /**
  *
