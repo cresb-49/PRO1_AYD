@@ -4,7 +4,7 @@
  */
 package com.ayd1.APIecommerce.services.reportes.imprimibles;
 
-import com.ayd1.APIecommerce.models.dto.reports.ReporteInventarioDto;
+import com.ayd1.APIecommerce.models.dto.reports.ReporteClientesFrecuentesDto;
 import com.ayd1.APIecommerce.services.reportes.Reporte;
 import java.time.Instant;
 import java.util.HashMap;
@@ -17,36 +17,38 @@ import org.springframework.stereotype.Component;
  * @author Luis Monterroso
  */
 @Component
-public class ReporteInventarioImprimible extends Reporte {
+public class ReporteClientesFrecuentesImprimible extends Reporte {
 
-    private ReporteInventarioDto reporteDatos;
+    private ReporteClientesFrecuentesDto reporteDatos;
 
-    public byte[] init(ReporteInventarioDto reporteDatos,
+    public byte[] init(ReporteClientesFrecuentesDto reporteDatos,
             String formatoExportar) throws Exception {
         this.reporteDatos = reporteDatos;
         //si pasaron las comporbaciones mandamos a traer los parametros
-        Map<String, Object> parametrosReporte = this.construirReporteInventario();
+        Map<String, Object> parametrosReporte = this.construirReporteDeVentas();
         //mandamos ha abrir el reporte
-        return this.exportarReporte("ReporteInventario", parametrosReporte,
+        return this.exportarReporte("ReporteClientesFrecuentes",
+                parametrosReporte,
                 formatoExportar);
     }
 
-    private Map<String, Object> construirReporteInventario() throws Exception {
+    private Map<String, Object> construirReporteDeVentas() throws Exception {
         //crear el mapa que contendra los parametros del reporte
         Map<String, Object> parametrosReporte = new HashMap<>();
 
-        //creamos un nuevo JRBeanArrayDataSource (necesario para los datos de la tabla del reporte)
-        JRBeanArrayDataSource tablaPocoStock
+        //creamos un nuevo JRBeanArrayDataSource (necesario para los datos de la tabla del reporte) a partir del Set
+        JRBeanArrayDataSource tablaClientes
                 = new JRBeanArrayDataSource(
-                        this.reporteDatos.getProductosConBajaExistencia().toArray());
-        JRBeanArrayDataSource tablaStock
-                = new JRBeanArrayDataSource(
-                        this.reporteDatos.getRestablecimientos().toArray());
+                        this.reporteDatos.getClienteFrecuentes().toArray());
 
         //anadimos los parametros al map (la key debe llamarse exactamente como los prameters en el reporte)
-        parametrosReporte.put("tablaPocoStock", tablaPocoStock);
+        parametrosReporte.put("tablaClientes", tablaClientes);
 
-        parametrosReporte.put("tablaStock", tablaStock);
+        parametrosReporte.put("fecha1",
+                this.reporteDatos.getFecha1());
+
+        parametrosReporte.put("fecha2",
+                this.reporteDatos.getFecha2());
 
         parametrosReporte.put("fechaGeneracion",
                 this.manejadorDeFecha.parsearFechaYHoraAFormatoRegional(
