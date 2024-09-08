@@ -98,6 +98,31 @@ export const useProductStore = defineStore('products', {
       this.loading = false
       return { data, error: false }
     },
+    async fetchProductsByCategory(category_id: number) {
+      this.loading = true
+      
+      const { data, error } = await useCustomFetch<any>(
+        `api/producto/public/categoria/${category_id}`,
+        {
+          method: 'GET',
+        }
+      )
+      
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
+    },
     async fetchProduct(product_id: number) {
       this.loadingProduct = true
       
