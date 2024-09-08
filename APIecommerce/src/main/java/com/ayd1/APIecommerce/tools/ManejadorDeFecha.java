@@ -37,6 +37,21 @@ public class ManejadorDeFecha {
         return fechaFormateada;
     }
 
+    /**
+     * Convierte un Local date ha un formato de fecha recional en dd/MM/yyyy
+     *
+     * @param instante
+     * @return
+     */
+    public String parsearFechaYHoraAFormatoRegional(LocalDate instante) {
+        if (instante == null) { // si la fecha es nula retornamos vacío
+            return "Error";
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String fechaFormateada = instante.format(formatter);
+        return fechaFormateada;
+    }
+
     public Instant convertStringToInstant(String dateString) {
         // Convertir el string a LocalDate
         LocalDate localDate = LocalDate.parse(dateString);
