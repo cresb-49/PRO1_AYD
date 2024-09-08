@@ -1,12 +1,27 @@
 package com.ayd1.APIecommerce.services;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.ayd1.APIecommerce.models.Permiso;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.models.UsuarioPermiso;
 import com.ayd1.APIecommerce.models.UsuarioRol;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
@@ -16,16 +31,6 @@ import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
 import com.ayd1.APIecommerce.services.tools.MailService;
 import com.ayd1.APIecommerce.tools.Encriptador;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.UUID;
-import javax.transaction.Transactional;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Service
 public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
@@ -49,14 +54,25 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         return usuarioRepository.findAll();
     }
 
+    public Usuario getByEmail(String email) {
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findByEmail(email);
+        if (busquedaUsuario.isEmpty()) {
+            throw new IllegalArgumentException("Usuario no encontrado.");
+        }
+        Usuario usuario = busquedaUsuario.get();
+        if (usuario.getDeletedAt() != null) {
+            throw new IllegalArgumentException("Usuario eliminado.");
+        }
+        return usuario;
+    }
+
     public Usuario getUsuario(Long id) throws Exception {
-        if (id == null || id <= 0) {//si el correo esta en blanco entonces lanzmaos error
+        if (id == null || id <= 0) {// si el correo esta en blanco entonces lanzmaos error
             throw new Exception("Id invalido.");
         }
 
-        //mandamos a traer el estado de la cuenta
-        Optional<Usuario> busquedaUsuario
-                = usuarioRepository.findById(id);
+        // mandamos a traer el estado de la cuenta
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(id);
 
         if (busquedaUsuario.isEmpty()) {
             throw new Exception("No hemos encontrado el usuario.");
@@ -64,7 +80,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
         Usuario usuarioEncontrado = busquedaUsuario.get();
 
-        //vemos si el usuario no  ha sido eliminado
+        // vemos si el usuario no ha sido eliminado
         if (usuarioEncontrado.getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
@@ -75,36 +91,35 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     @Transactional
     public String eliminarUsuario(Long id, String emailUsuarioAutenticado) throws Exception {
 
-        if (id == null || id <= 0) {//si el correo esta en blanco entonces lanzmaos error
+        if (id == null || id <= 0) {// si el correo esta en blanco entonces lanzmaos error
             throw new Exception("Id invalido.");
         }
 
-        //mandamos a traer el estado de la cuenta
-        Optional<Usuario> busquedaUsuario
-                = usuarioRepository.findById(id);
+        // mandamos a traer el estado de la cuenta
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(id);
 
-        //si esta vacio entonces el usuairo no existe
+        // si esta vacio entonces el usuairo no existe
         if (busquedaUsuario.isEmpty()) {
             throw new Exception("No hemos encontrado el usuario.");
         }
 
-        //extraer el usuario
+        // extraer el usuario
         Usuario usuarioEliminar = busquedaUsuario.get();
 
-        //vemos si el usuario no  ha sido eliminado
+        // vemos si el usuario no ha sido eliminado
         if (usuarioEliminar.getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
 
-        //validar si el usuario tiene permiso de eliminar
+        // validar si el usuario tiene permiso de eliminar
         this.verificarUsuarioJwt(usuarioEliminar, emailUsuarioAutenticado);
-        //seteamos la fecha de eliminacion
+        // seteamos la fecha de eliminacion
         usuarioEliminar.setDeletedAt(Instant.now());
 
-        //editar el usuario
+        // editar el usuario
         Usuario usuarioUpdate = this.usuarioRepository.save(usuarioEliminar);
 
-        //mandamos a editar la password y comparamos si se hizo el cambio
+        // mandamos a editar la password y comparamos si se hizo el cambio
         if (usuarioUpdate.getId() > 0) {
             return "Se elimino el usuario con exito.";
         }
@@ -123,17 +138,17 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         }
         Usuario usuarioEncontrado = busquedaUsuario.get();
 
-        //validar si el usuario tiene permiso de eliminar
+        // validar si el usuario tiene permiso de eliminar
         this.verificarUsuarioJwt(usuarioEncontrado, emailUsuarioAutenticado);
 
-        //vemos si el usuario no  ha sido eliminado
+        // vemos si el usuario no ha sido eliminado
         if (usuarioEncontrado.getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
-        //vemos que no exista otro con el mismo email
+        // vemos que no exista otro con el mismo email
         if (this.usuarioRepository.existsUsuarioByEmailAndIdNot(usuario.getEmail(),
                 usuario.getId())) {
-            //si el metodo no se rompe hubo un error insesperado
+            // si el metodo no se rompe hubo un error insesperado
             throw new Exception(String.format("No se editó el usuario %s, "
                     + "debido a que ya existe otro usuario con el mismo email.",
                     usuario.getEmail()));
@@ -142,6 +157,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         usuario.setPassword(usuarioEncontrado.getPassword());
         usuario.setFacturas(usuarioEncontrado.getFacturas());
         usuario.setRoles(usuarioEncontrado.getRoles());
+        usuario.setPermisos(usuarioEncontrado.getPermisos());
         this.validar(usuario);
         Usuario usuarioUpdate = this.usuarioRepository.save(usuario);
         if (usuarioUpdate.getId() > 0) {
@@ -151,31 +167,30 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     }
 
     public String enviarMailDeRecuperacion(String correo) throws Exception {
-        if (correo.isBlank()) {//si el correo esta en blanco entonces lanzmaos error
+        if (correo.isBlank()) {// si el correo esta en blanco entonces lanzmaos error
             throw new Exception("Correo vacio.");
         }
 
-        //mandamos a traer el estado de la cuenta
-        Optional<Usuario> busquedaUsuario
-                = usuarioRepository.findByEmail(correo);
+        // mandamos a traer el estado de la cuenta
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findByEmail(correo);
         if (busquedaUsuario.isEmpty()) {
             throw new Exception("No hemos encontrado tu correo electrónico.");
         }
-        //obtenemos el modelo
+        // obtenemos el modelo
         Usuario usuario = busquedaUsuario.get();
-        //vemos si el usuario no  ha sido eliminado
+        // vemos si el usuario no ha sido eliminado
         if (usuario.getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
-        //creamos el codigo de recuperacion
+        // creamos el codigo de recuperacion
         String codigoRecuperacion = UUID.randomUUID().toString();
-        //actualizamos el codigo de recuperacion
+        // actualizamos el codigo de recuperacion
         usuario.setCodigoRecuperacion(codigoRecuperacion);
-        //actualizamos en la bd
+        // actualizamos en la bd
         Usuario actualizacion = usuarioRepository.save(usuario);
 
         if (actualizacion.getCodigoRecuperacion().equals(codigoRecuperacion)) {
-            //usamos el servicio de mail para mander el correo electronico de recuperacion
+            // usamos el servicio de mail para mander el correo electronico de recuperacion
             mailService.enviarCorreoEnSegundoPlano(actualizacion.getEmail(),
                     actualizacion.getCodigoRecuperacion(), 2);
             return "Te hemos enviado un correo electrónico con las "
@@ -186,12 +201,11 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
     public LoginDto iniciarSesion(Usuario log) throws Exception {
         try {
-            //validamos la password
+            // validamos la password
             this.validarAtributo(log, "email");
-            //validamos la password
+            // validamos la password
             this.validarAtributo(log, "password");
-            Optional<Usuario> busquedaUsuario = usuarioRepository.
-                    findByEmail(log.getEmail());
+            Optional<Usuario> busquedaUsuario = usuarioRepository.findByEmail(log.getEmail());
 
             if (busquedaUsuario.isEmpty()) {
                 throw new Exception("Correo electronico incorrecto.");
@@ -199,23 +213,91 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
             Usuario usuario = busquedaUsuario.get();
 
-            //si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese usuario
+            // si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese
+            // usuario
             if (usuario.getDeletedAt() != null) {
                 throw new Exception("Usuario ya ha sido eliminado.");
             }
 
             authenticationManager.authenticate(
-                    //autenticar el usuario con la contrasenia encriptada
+                    // autenticar el usuario con la contrasenia encriptada
                     new UsernamePasswordAuthenticationToken(log.getEmail(),
                             log.getPassword()));
 
-            //cargamos el usuario por el nombre
-            UserDetails userDetails
-                    = authenticationService.loadUserByUsername(
-                            log.getEmail());
-            //generar el token
+            // cargamos el usuario por el nombre
+            UserDetails userDetails = authenticationService.loadUserByUsername(
+                    log.getEmail());
+            // generar el token
             String jwt = jwtGenerator.generateToken(userDetails);
-            return new LoginDto(usuario, jwt);//devolver la respuesta 
+
+            // Si el usuario tiene habilitado el 2FA, entonces se envía el código de
+            // autenticación
+            if (usuario.isTwoFactorEnabled()) {
+                // creamos el codigo de recuperacion
+                String codigoRecuperacion = generarCodigoRecuperacion();
+                String codigoRecuperacionEncriptado = Encriptador.encriptarPassword(codigoRecuperacion);
+                // actualizamos el codigo de recuperacion
+                usuario.setTwoFactorCode(codigoRecuperacionEncriptado);
+                // actualizamos en la bd
+                Usuario actualizacion = usuarioRepository.save(usuario);
+                mailService.enviarCorreoEnSegundoPlano(actualizacion.getEmail(), codigoRecuperacion, 1);
+            }
+            return new LoginDto(usuario, (usuario.isTwoFactorEnabled() ? null : jwt), usuario.isTwoFactorEnabled());
+        } catch (AuthenticationException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public String generarCodigoRecuperacion() {
+        Random random = new Random();
+        int codigoRecuperacion = 10000 + random.nextInt(90000);
+        return String.valueOf(codigoRecuperacion);
+    }
+
+    public LoginDto login2FT(Usuario log) throws Exception {
+        try {
+            // validamos la password
+            this.validarAtributo(log, "email");
+            // validamos la password
+            this.validarAtributo(log, "twoFactorCode");
+            Optional<Usuario> busquedaUsuario = usuarioRepository.findByEmail(log.getEmail());
+
+            if (busquedaUsuario.isEmpty()) {
+                throw new Exception("Correo electronico incorrecto.");
+            }
+
+            Usuario usuario = busquedaUsuario.get();
+
+            // si la fecha de eliminacion no es nula entonces ya ha sido eliminado ese
+            // usuario
+            if (usuario.getDeletedAt() != null) {
+                throw new Exception("Usuario ya ha sido eliminado.");
+            }
+
+            if (usuario.isTwoFactorEnabled()) {
+                if (usuario.getTwoFactorCode().isEmpty()) {
+                    throw new Exception("Medio de autenticación no disponible.");
+                }
+            }
+
+            // Verificamos que el cliente tenga el mismo código de autenticación
+            if (!Encriptador.compararPassword(log.getTwoFactorCode(), usuario.getTwoFactorCode())) {
+                throw new Exception("Código de autenticación incorrecto.");
+            }
+
+            // Autenticación manual del usuario (sin contraseña)
+            // Crear un token de autenticación preautenticado
+            Authentication auth = new UsernamePasswordAuthenticationToken(log.getEmail(), null);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+
+            // Cargar los detalles del usuario por nombre de usuario
+            UserDetails userDetails = authenticationService.loadUserByUsername(log.getEmail());
+
+            // Generar el token JWT
+            String jwt = jwtGenerator.generateToken(userDetails);
+
+            // Devolver la respuesta con el usuario y el token
+            return new LoginDto(usuario, jwt);
 
         } catch (AuthenticationException ex) {
             throw new Exception(ex.getMessage());
@@ -224,36 +306,35 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
     @Transactional
     public String recuperarPassword(PasswordChange cambioPassword) throws Exception {
-        //validamos 
+        // validamos
         this.validar(cambioPassword);
 
-        //para cambiar la password necesitamos obtener el usuario que solicito mediante el codigo
+        // para cambiar la password necesitamos obtener el usuario que solicito mediante
+        // el codigo
         Optional<Usuario> busqueda = this.usuarioRepository
                 .findByCodigoRecuperacion(cambioPassword.getCodigo());
 
-        if (busqueda.isEmpty()) {//si esta vacio entonces el codigo no existe y devolvemos false
+        if (busqueda.isEmpty()) {// si esta vacio entonces el codigo no existe y devolvemos false
             throw new Exception("Tu código de autorización invalido.");
         }
 
         Usuario usuarioEncontrado = busqueda.get();
 
-        //vemos si el usuario no  ha sido eliminado
+        // vemos si el usuario no ha sido eliminado
         if (usuarioEncontrado.getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
 
-        //mandamos a borrar el codigo de recuperacion 
+        // mandamos a borrar el codigo de recuperacion
         usuarioEncontrado.setCodigoRecuperacion(null);
-        //encriptamos la password y hacemos el cambio en el modelo
+        // encriptamos la password y hacemos el cambio en el modelo
         usuarioEncontrado.setPassword(
                 Encriptador.encriptarPassword(
-                        cambioPassword.getNuevaPassword()
-                )
-        );
+                        cambioPassword.getNuevaPassword()));
 
         Usuario update = this.usuarioRepository.save(usuarioEncontrado);
 
-        //mandamos a editar la password y comparamos si se hizo el cambio
+        // mandamos a editar la password y comparamos si se hizo el cambio
         if (update.getId().longValue() == usuarioEncontrado.getId().longValue()) {
             return "Se cambió tu contraseña con exito.";
         }
@@ -262,13 +343,13 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
     @Transactional
     public String cambiarPassword(Usuario usuPassChange, String emailUsuarioAutenticado) throws Exception {
-        //que el id no este vacio
+        // que el id no este vacio
         if (usuPassChange.getId() == null || usuPassChange.getId() <= 0) {
             throw new Exception("Id inválido.");
         }
-        //validamos la password
+        // validamos la password
         this.validarAtributo(usuPassChange, "password");
-        //buscamos el usuario
+        // buscamos el usuario
         Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuPassChange.getId());
 
         if (busquedaUsuario.isEmpty()) {
@@ -277,23 +358,21 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
         Usuario usuarioEncontrado = busquedaUsuario.get();
 
-        //vemos si el usuario no  ha sido eliminado
+        // vemos si el usuario no ha sido eliminado
         if (usuarioEncontrado.getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
 
-        //validar si el usuario tiene permiso de eliminar
+        // validar si el usuario tiene permiso de eliminar
         this.verificarUsuarioJwt(usuarioEncontrado, emailUsuarioAutenticado);
 
-        //encriptamos la password y hacemos el cambio en el modelo
+        // encriptamos la password y hacemos el cambio en el modelo
         usuarioEncontrado.setPassword(
-                Encriptador.encriptarPassword(usuPassChange.getPassword()
-                )
-        );
+                Encriptador.encriptarPassword(usuPassChange.getPassword()));
 
         Usuario update = this.usuarioRepository.save(usuarioEncontrado);
 
-        //mandamos a editar la password y comparamos si se hizo el cambio
+        // mandamos a editar la password y comparamos si se hizo el cambio
         if (update.getId().longValue() == usuarioEncontrado.getId().longValue()) {
             return "Se cambió tu contraseña con exito.";
         }
@@ -301,11 +380,11 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     }
 
     public LoginDto crearUsuario(Usuario crear, String rolStr) throws Exception {
-        //validamos 
+        // validamos
         this.validar(crear);
         // traer el rol (USUARIO)
         Optional<Rol> rolBusqueda = this.rolRepository.findOneByNombre(rolStr);
-        //si el rol no existe lanzamos error
+        // si el rol no existe lanzamos error
         if (rolBusqueda.isEmpty()) {
             throw new Exception("Rol no encontrado.");
         }
@@ -331,7 +410,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         rols.add(usuarioRol);
         crear.setRoles(rols);
 
-        // Encriptar la contraseña 
+        // Encriptar la contraseña
         crear.setPassword(this.encriptador.encriptarPassword(crear.getPassword()));
 
         // Guardar el usuario
@@ -348,8 +427,85 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         throw new Exception("No pudimos crear tu usuario, inténtalo más tarde.");
     }
 
+    /**
+     * Agregar un rol a un usuario
+     * @param usuario
+     * @param rol
+     * @return
+     */
+    @Transactional
+    public Usuario agregarRolUsuario(Usuario usuario, Rol rol) throws Exception {
+        if(!this.usuarioRepository.existsByEmail(usuario.getEmail())){
+            throw new IllegalArgumentException("El usuario no existe.");
+        }
+        //Buscamos el usuario en la base de datos
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuario.getId());
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+        //Verificamos que el usuario no haya sido eliminado
+        if (busquedaUsuario.get().getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+        Usuario usuarioEncontrado = busquedaUsuario.get();
+        // Creamos el rol
+        UsuarioRol usuarioRol = new UsuarioRol(usuario, rol);
+        // Verificamos si el objeto ya tiene una lista de roles, si no la tiene, la creamos
+        usuario.keepOrphanRemoval(usuarioEncontrado);
+        if (usuario.getRoles() == null) {
+            usuario.setRoles(new ArrayList<>());
+        }
+        // Verificamos si el rol ya existe
+        if (usuario.getRoles().stream().anyMatch(r -> r.getRol().getId().equals(rol.getId()))) {
+            throw new IllegalArgumentException("El rol ya ha sido asignado al usuario.");
+        }
+        // Agregamos el rol a la lista de roles del usuario
+        usuario.getRoles().add(usuarioRol);
+        // Actualizamos el usuario
+        return this.usuarioRepository.save(usuario);
+    }   
+
+    /**
+     * Agregar un permiso a un usuario
+     * @param usuario
+     * @param permiso
+     * @return
+     */
+    @Transactional
+    public Usuario agregarPermisoUsuario(Usuario usuario, Permiso permiso) throws Exception{
+        if(!this.usuarioRepository.existsByEmail(usuario.getEmail())){
+            throw new IllegalArgumentException("El usuario no existe.");
+        }
+        //Buscamos el usuario en la base de datos
+        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuario.getId());
+        if (busquedaUsuario.isEmpty()) {
+            throw new Exception("No hemos encontrado el usuario.");
+        }
+        //Verificamos que el usuario no haya sido eliminado
+        if (busquedaUsuario.get().getDeletedAt() != null) {
+            throw new Exception("Usuario ya ha sido eliminado.");
+        }
+        Usuario usuarioEncontrado = busquedaUsuario.get();
+        // Creamos el permiso
+        UsuarioPermiso usuarioPermiso = new UsuarioPermiso(usuarioEncontrado, permiso);
+        // Verificamos si el objeto ya tiene una lista de permisos, si no la tiene, la inicializamos (sin reemplazar)
+        // Mantenemos las relaciones orphanRemoval = true para evistar inconsistencias en la base de datos
+        usuario.keepOrphanRemoval(usuarioEncontrado);
+        if(usuario.getPermisos() == null) {
+            usuario.setPermisos(new ArrayList<>());
+        }
+        // Verificamos si el permiso ya existe
+        if(usuario.getPermisos().stream().anyMatch(p -> p.getPermiso().getId().equals(permiso.getId()))){
+            throw new IllegalArgumentException("El permiso ya ha sido asignado al usuario.");
+        }
+        // Agregamos el permiso a la lista de permisos del usuario
+        usuario.getPermisos().add(usuarioPermiso);
+        // Guardamos el usuario
+        return this.usuarioRepository.save(usuario);
+    }
+
     private boolean verificarUsuarioJwt(Usuario usuarioTratar, String emailUsuarioAutenticado) throws Exception {
-        //validar si el usuario tiene permiso de eliminar
+        // validar si el usuario tiene permiso de eliminar
         if (!emailUsuarioAutenticado.equals(usuarioTratar.getEmail())
                 && !isUserAdmin(emailUsuarioAutenticado)) {
             throw new Exception("No tienes permiso para realizar acciones a este usuario.");
