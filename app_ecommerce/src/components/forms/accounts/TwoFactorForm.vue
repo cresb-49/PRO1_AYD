@@ -66,13 +66,13 @@
         <v-col cols="12">
           <span>
             <v-btn
-              to="/"
+              to="/login"
               class="px-0"
               variant="plain"
               :ripple="false"
               prepend-icon="mdi-arrow-left"
             >
-              <strong>Regresar a Homepage</strong>
+              <strong>Regresar a Login</strong>
             </v-btn>
           </span>
         </v-col>
