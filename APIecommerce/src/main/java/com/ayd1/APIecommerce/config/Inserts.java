@@ -72,8 +72,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
 
     public EstadoEnvio insertarEstadoEnvio(EstadoEnvio estadoEnvio) throws Exception {
         try {
-            Optional<EstadoEnvio> opRol
-                    = this.estadoEnvioRepository.findOneByNombre(estadoEnvio.getNombre());
+            Optional<EstadoEnvio> opRol = this.estadoEnvioRepository.findOneByNombre(estadoEnvio.getNombre());
             if (opRol.isPresent()) {
                 return opRol.get();
             }
@@ -97,8 +96,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
 
     public TiendaConfig insertarTiendaConfig(TiendaConfig config) throws Exception {
         try {
-            TiendaConfig conf
-                    = this.tiendaConfigReporitory.findFirstByOrderByIdAsc().orElse(null);
+            TiendaConfig conf = this.tiendaConfigReporitory.findFirstByOrderByIdAsc().orElse(null);
             if (conf == null) {
                 return this.tiendaConfigReporitory.save(config);
             }
@@ -112,10 +110,10 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
-            //siders roles
-            this.insertarRol(new Rol("USUARIO"));
+            // siders roles
+            Rol rolUsuario = this.insertarRol(new Rol("USUARIO"));
             Rol rolAdmin = this.insertarRol(new Rol("ADMIN"));
-            this.insertarRol(new Rol("AYUDANTE"));
+            Rol rolAyudante = this.insertarRol(new Rol("AYUDANTE"));
 
             Categoria categoria = new Categoria("Hogar");
             this.insertarCategoria(categoria);
@@ -128,22 +126,23 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             EstadoEnvio estadoEnvio2 = new EstadoEnvio("ENTREGADO");
             this.insertarEstadoEnvio(estadoEnvio2);
 
-            //IMAGEN DEFAULT DE LA TIENDA
+            // IMAGEN DEFAULT DE LA TIENDA
             byte[] img = getClass().getResourceAsStream("/img/logo.png").readAllBytes();
 
-            TiendaConfig tiendaConfig
-                    = new TiendaConfig("TiendaAyD1", img, 12.00,
-                            "2da calle XXX-XXX-XX Quetgo",
-                            "image/png");
+            TiendaConfig tiendaConfig = new TiendaConfig("TiendaAyD1", img, 12.00,
+                    "2da calle XXX-XXX-XX Quetgo",
+                    "image/png");
             this.insertarTiendaConfig(tiendaConfig);
-            //sider usuario Admin
+            // Seeder de usuarios del sistema
             Usuario admin = new Usuario("admin", "admin",
                     "admin@admin", null,
                     "123",
                     null, null, false);
+            Usuario user1 = new Usuario("Carlos", "Pac", "carlosbpac@gmail.com", null, "12345", null, null, false);
             this.usuarioService.crearUsuario(admin, rolAdmin);
+            this.usuarioService.crearUsuario(user1, rolUsuario);
 
-            //Creacion de todos los permisos que tiene el sistema
+            // Creacion de todos los permisos que tiene el sistema
             // CREAR, BORRAR, MODIFICAR, REPORTES
             Permiso permiso_crear = new Permiso("CREAR");
             Permiso permiso_borrar = new Permiso("BORRAR");
