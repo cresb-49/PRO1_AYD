@@ -1,35 +1,49 @@
+import { useCustomFetch } from '@/composables/useCustomFetch'
 import { defineStore } from 'pinia'
-import { useCookies } from 'vue3-cookies'
+import { useSnackbarStore, SnackbarType } from './snackbar'
+
+export type ConfigResponse = {
+  nombreTienda: string,
+  imagenTiendaString: string,
+  precioPagoContraEntrega: string,
+  costoEnvio: string,
+  direccionEmpresa: string
+}
 
 export const useConfigsStore = defineStore('configs', {
   state: () => ({
-    theme: 'light',
-    themeBoolean: false
+    name: 'E-Commerce',
+    logo: undefined as string | undefined,
+    deliveryCost: 15 as number,
+    cod: 0 as number,
+    address: '' as string
   }),
+  persist: true,
   actions: {
-    initTheme() {
-      // Here we use cookies to persist the theme
-      let themeCookie = useCookies().cookies.get('theme');
-      if (!themeCookie) {
-        // If there's no cookie, we set the theme to the default
-        this.theme = 'light'
-        // this.themeBoolean = false
-        themeCookie = 'light'
-        useCookies().cookies.set('theme', this.theme);
-      } else {
-        // Otherwise we set the theme to the cookie value
-        this.theme = themeCookie
-        // this.themeBoolean = themeCookie.value === 'dark'
+    async initCommerce() {
+      const { data, error } = await useCustomFetch<any>(
+        'api/tienda_config/public/getTiendaConfig',
+        {
+          method: 'GET',
+        }
+      )
+
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        return { data, error: error.value }
       }
+      
+      const config = data.value.data as ConfigResponse
+      
+      this.name = config.nombreTienda
+      this.logo = config.imagenTiendaString
+      this.cod = config.precioPagoContraEntrega as unknown as number
+      this.deliveryCost = config.costoEnvio as unknown as number
+      this.address = config.direccionEmpresa
     },
-    switchTheme() {
-      this.theme = this.theme === 'light' ? 'dark' : 'light'
-      useCookies().cookies.set('theme', this.theme);
-    },
-    changeTheme(theme?: string | null) {
-      if (!theme) return
-      this.theme = theme
-      useCookies().cookies.set('theme', theme);
-    }
   }
 })

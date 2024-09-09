@@ -4,7 +4,17 @@
       <v-btn icon="mdi-menu" @click="drawer = !drawer" />
       <v-app-bar-title class="mt-n1">
         <router-link to="/" style="text-decoration: none; color:inherit">
-        <strong> Logo </strong> - ECommerce
+          <v-row>
+            <v-col cols="1" xs="1" sm="5" md="5"></v-col>
+            <v-col cols="1">
+              <v-img v-if="logo" :src="logo" max-height="30" />
+            </v-col>
+            <v-divider v-if="logo" vertical></v-divider>
+            <v-col cols="1">
+              <h4>{{ name }}</h4>
+            </v-col>
+            <v-col cols="1" xs="1" sm="1" md="4"></v-col>
+          </v-row>
         </router-link>
       </v-app-bar-title>
       <div v-if="!user" class="app-bar__user-info">
@@ -20,11 +30,7 @@
       <div v-if="user && role === 'regular'" class="app-bar__user-info">
         <v-tooltip text="Carrito" location="bottom">
           <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/carrito')"
-            >
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/carrito')">
               <v-icon> mdi-cart-outline </v-icon>
             </v-avatar>
           </template>
@@ -32,11 +38,7 @@
         <!-- If user is logged in -->
         <v-tooltip text="Mi perfil" location="bottom">
           <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/perfil')"
-            >
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/perfil')">
               <strong>
                 {{ loggedUser?.nombres[0]
                 }}{{ loggedUser?.apellidos[0] }}
@@ -56,11 +58,7 @@
         <!-- Dashboard action (regular and admin) -->
         <v-tooltip text="Mi perfil" location="bottom">
           <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/perfil')"
-            >
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/perfil')">
               <strong>
                 {{ loggedUser?.nombres[0]
                 }}{{ loggedUser?.apellidos[0] }}
@@ -70,11 +68,7 @@
         </v-tooltip>
         <v-tooltip text="Administración" location="bottom">
           <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/admin/')"
-            >
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/admin/')">
               <v-icon> mdi-view-dashboard-outline </v-icon>
             </v-avatar>
           </template>
@@ -115,12 +109,12 @@ import { type Staff } from '../stores/staff-auth'
 import GeneralSnackbar from '../components/partials/GeneralSnackbar.vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 const drawer = ref(false);
-const configStore = useConfigsStore();
-const {theme} = configStore
+const { name, logo } = storeToRefs(useConfigsStore())
 const authStore = useAuthStore();
-const {role, user, logout} = authStore;
+const { role, user, logout } = authStore;
 const router = useRouter();
 
 const elevation = computed(() => {
