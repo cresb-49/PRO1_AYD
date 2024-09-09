@@ -13,6 +13,7 @@ import com.ayd1.APIecommerce.models.Producto;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.services.CategoriaService;
 import com.ayd1.APIecommerce.services.ProductoService;
+import com.ayd1.APIecommerce.services.tools.ValidadorPermiso;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +33,9 @@ public class ProductoController {
 
     @Autowired
     private CategoriaService categoriaService;
+
+    @Autowired
+    private ValidadorPermiso validadorPermiso;
 
     @Operation(summary = "Obtener todos los productos", description = "Devuelve una lista de todos los productos disponibles.")
     @ApiResponses(value = {
@@ -95,6 +99,7 @@ public class ProductoController {
             @Parameter(description = "Imágenes del producto", required = true)
             @RequestParam("files") List<MultipartFile> files) {
         try {
+            this.validadorPermiso.verificarPermiso();
             ProductoDto respuesta = productoService.createProducto(crear, files);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
@@ -111,11 +116,12 @@ public class ProductoController {
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
                 content = @Content)
     })
-    @PatchMapping("/producto/private/actualizarProducto")
+    @PatchMapping("/producto/protected/actualizarProducto")
     public ResponseEntity<?> actualizarProducto(
             @Parameter(description = "Detalles del producto a actualizar", required = true)
             @RequestBody Producto actualizar) {
         try {
+            this.validadorPermiso.verificarPermiso();
             ProductoDto respuesta = productoService.updateProducto(actualizar);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
@@ -139,6 +145,7 @@ public class ProductoController {
             @Parameter(description = "Nuevas imágenes del producto", required = true)
             @RequestParam("files") List<MultipartFile> files) {
         try {
+            this.validadorPermiso.verificarPermiso();
             if (files.isEmpty()) {
                 throw new IllegalArgumentException("No files provided");
             }
@@ -158,11 +165,12 @@ public class ProductoController {
         @ApiResponse(responseCode = "400", description = "Error en la solicitud",
                 content = @Content)
     })
-    @DeleteMapping("/producto/private/eliminarProducto/{id}")
-    public ResponseEntity<?> eliminarUsuario(
+    @DeleteMapping("/producto/protected/eliminarProducto/{id}")
+    public ResponseEntity<?> eliminarProducto(
             @Parameter(description = "ID del producto a eliminar", required = true)
             @PathVariable Long id) {
         try {
+            this.validadorPermiso.verificarPermiso();
             String confirmacion = this.productoService.eliminarProducto(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (Exception ex) {

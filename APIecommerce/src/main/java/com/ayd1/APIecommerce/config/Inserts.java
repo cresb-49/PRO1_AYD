@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.config;
 
+import com.ayd1.APIecommerce.enums.PermisoEnum;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ import com.ayd1.APIecommerce.repositories.PermisoRepository;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.TiendaConfigReporitory;
 import com.ayd1.APIecommerce.services.UsuarioService;
+import java.util.ArrayList;
 
 /**
  *
@@ -53,18 +55,6 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
                 return opRol.get();
             }
             return this.rolRepository.save(rol);
-        } catch (Exception e) {
-            throw new Exception("Error");
-        }
-    }
-
-    public Permiso insertarPermiso(Permiso permiso) throws Exception {
-        try {
-            Optional<Permiso> opPermiso = this.permisoRepository.findOneByNombre(permiso.getNombre());
-            if (opPermiso.isPresent()) {
-                return opPermiso.get();
-            }
-            return this.permisoRepository.save(permiso);
         } catch (Exception e) {
             throw new Exception("Error");
         }
@@ -107,6 +97,16 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
         }
     }
 
+    public Permiso insertarPermisoSiNoExiste(Permiso pa) {
+        Permiso permiso = this.permisoRepository.
+                findOneByNombre(pa.getNombre()).orElse(null);
+        if (permiso == null) {
+            return this.permisoRepository.save(
+                    pa);
+        }
+        return permiso;
+    }
+
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
@@ -136,28 +136,52 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             // Seeder de usuarios del sistema
             Usuario admin = new Usuario("admin", "admin",
                     "admin@admin", null,
-                    "123",
+                    "12345",
                     null, null, false);
-            Usuario user1 = new Usuario("Carlos", "Pac", "carlosbpac@gmail.com", null, "12345", null, null, false);
-            this.usuarioService.crearUsuario(admin, rolAdmin);
-            this.usuarioService.crearUsuario(user1, rolUsuario);
+            Usuario user1 = new Usuario("Carlos",
+                    "Pac", "carlosbpac@gmail.com",
+                    null, "12345",
+                    null, null, false);
+
+            Usuario ayudante = new Usuario("Luis",
+                    "Monterroso", "luismonteg1@hotmail.com",
+                    null, "12345",
+                    null, null, false);
+
+            /*Crear los usuarios, un catch por usuario para que ignore las 
+            excepciones que puedan haber*/
+            try {
+                this.usuarioService.crearUsuario(admin, rolAdmin);
+            } catch (Exception e) {
+            }
+            try {
+                this.usuarioService.crearUsuario(user1, rolUsuario);
+
+            } catch (Exception e) {
+            }
+            try {
+                this.usuarioService.crearUsuario(ayudante, rolAyudante);
+            } catch (Exception e) {
+            }
 
             // Creacion de todos los permisos que tiene el sistema
-            // CREAR, BORRAR, MODIFICAR, REPORTES 
-            /*
-            Permiso permiso_crear = this.insertarPermiso(new Permiso("CREAR"));
-            Permiso permiso_borrar = this.insertarPermiso(new Permiso("BORRAR"));
-            Permiso permiso_modificar = this.insertarPermiso(new Permiso("MODIFICAR"));
-            Permiso permiso_reportes =this.insertarPermiso( new Permiso("REPORTES"));*/
-            // Asignacion de permisos a los usuarios
-            // Obtenemos el usuario admin
-            Usuario admin_user = this.usuarioService.getByEmail("admin@admin");
-            /*
-            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_crear);
-            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_borrar);
-            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_modificar);
-            this.usuarioService.agregarPermisoUsuario(admin_user, permiso_reportes);
-             */
+            for (PermisoEnum permiso : PermisoEnum.values()) {
+                
+                Permiso insercion = this.insertarPermisoSiNoExiste(
+                        new Permiso(
+                                permiso.getNombrePermiso(),
+                                permiso.getRuta()
+                        )
+                );
+                try {
+                    // Asignacion de permisos a los usuarios
+                    Usuario ayudante2 = this.usuarioService.getByEmail(
+                            "luismonteg1@hotmail.com");
+                    this.usuarioService.agregarPermisoUsuario(ayudante2,
+                            insercion);
+                } catch (Exception e) {
+                }
+            }
         } catch (Exception ex) {
             Logger.getLogger(Inserts.class.getName()).log(Level.SEVERE, null, ex);
         }
