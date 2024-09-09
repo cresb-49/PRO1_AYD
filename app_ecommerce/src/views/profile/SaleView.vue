@@ -11,11 +11,11 @@
             <v-col cols="12" md="6">
               <v-card class="mx-auto" max-width="400">
                 <v-card-title>
-                  <h3>General 1</h3>
+                  <h3>General</h3>
                 </v-card-title>
                 <v-card-text>
                   <v-row
-                    v-for="(item, index) in userData"
+                    v-for="(item, index) in ventaData"
                     :key="index"
                     class="d-flex justify-space-between"
                   >
@@ -34,11 +34,11 @@
             <v-col cols="12" md="6">
               <v-card class="mx-auto" max-width="400">
                 <v-card-title>
-                  <h3>General 2</h3>
+                  <h3>Facturacion</h3>
                 </v-card-title>
                 <v-card-text>
                   <v-row
-                    v-for="(item, index) in userData"
+                    v-for="(item, index) in facturacionData"
                     :key="index"
                     class="d-flex justify-space-between"
                   >
@@ -54,9 +54,6 @@
             </v-col>
           </v-row>
         </v-container>
-      </div>
-      <div>
-        <h2>Datos de Facturacion</h2>
       </div>
       <div>
         <h2>Productos</h2>
@@ -82,12 +79,9 @@ const route = useRoute()
 const { fetchSaleById } = useSalesStore()
 const sale = ref({} as Sale)
 
-const userData = [
-  { title: 'Nombre', value: 'Juan Pérez' },
-  { title: 'Correo Electrónico', value: 'juan.perez@example.com' },
-  { title: 'Teléfono', value: '+502 1234-5678' },
-  { title: 'Dirección', value: 'Zona 1, Guatemala' }
-]
+// Informacion de la venta
+const ventaData = ref([] as any)
+const facturacionData = ref([] as any)
 
 const consoleLog = (i: number) => {}
 
@@ -109,6 +103,32 @@ onMounted(() => {
     .then((r) => r.data.value.data as Sale)
     .then((s) => {
       sale.value = s
+      ventaData.value = [
+        { title: 'ID', value: sale.value.id },
+        { title: 'Fecha', value: new Date(sale.value.createdAt).toLocaleDateString() },
+        {
+          title: 'Valor Total',
+          value: new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(
+            sale.value.valorTotal
+          )
+        },
+        {
+          title: 'Impuesto Total',
+          value: new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(
+            sale.value.totalImpuestosPagados
+          )
+        },
+        {
+          title: 'Cantida Productos',
+          value: new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(
+            sale.value.cantidadProductos
+          )
+        }
+      ]
+      facturacionData.value = [
+        { title: 'Nombre', value: sale.value.datosFacturacion.nombre },
+        { title: 'NIT', value: sale.value.datosFacturacion.nit }
+      ]
     })
 })
 </script>
