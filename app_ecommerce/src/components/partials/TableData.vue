@@ -19,7 +19,7 @@
           <v-btn
             v-for="action in actions"
             :key="action.name"
-            :to="action.path ? replaceParameterPath(row, action.path) : undefined"
+            :to="action.path ? replaceParameterPath(row, action.path, action.property) : undefined"
             @click="action.onClick ? action.onClick(row[data_key as unknown as number]) : () => {}"
           >
             {{ action.name }}
@@ -34,6 +34,7 @@ type Action = {
   name: string
   path?: string
   onClick?: (entry_id: number) => void
+  property?: string
 }
 type Column = {
   name: string
@@ -71,14 +72,26 @@ function accessRowByPropertyName(row: any, propertyName: string, type: string | 
 }
 
 //Reeplaza parametros del path con propiedades del objeto
-function replaceParameterPath(row: any, path: string) {
+function replaceParameterPath(row: any, path: string, property: string | undefined) {
   //Recorre todas las propiedades de la data
   if (props.data.length === 0) {
     return path
   } else {
-    Object.keys(row).forEach((propiedad) => {
-      path = path.replace(`:${propiedad}`, row[propiedad])
-    })
+    //Si existe en el action el valor property
+    //buscamos el valor de la propiedad en la row
+    if (property) {
+      let properties = property.split('.')
+      properties.forEach((actual_property) => {
+        row = row[actual_property]
+      })
+      // En el path vamos a buscar el valor de la propiedad con la sintaxis :propiedad
+      // y lo vamos a reemplazar por el valor de la propiedad en la row
+      path = path.replace(`:${property}`, row)
+    } else {
+      Object.keys(row).forEach((propiedad) => {
+        path = path.replace(`:${propiedad}`, row[propiedad])
+      })
+    }
     return path
   }
 }

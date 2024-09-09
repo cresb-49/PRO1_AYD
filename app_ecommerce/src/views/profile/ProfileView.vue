@@ -2,13 +2,19 @@
   <main>
     <header class="mb-4">
       <h1>Mi perfil</h1>
-      <v-btn
-        prepend-icon="mdi-pencil-outline"
-        to="/perfil/edit"
-        class="mt-3"
-      >
-        Editar
-      </v-btn>
+      <h2>Tienda</h2>
+      <v-row>
+        <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+          <menu-option-card
+          title="Compras"
+          subtitle="Ver mis compras"
+          path="/ventas"
+          ></menu-option-card>
+        </v-col>
+      </v-row>
+      <v-divider class="mt-4 mb-6"></v-divider>
+      <h2>Mi Informacion</h2>
+      <v-btn prepend-icon="mdi-pencil-outline" to="/perfil/edit" class="mt-3"> Editar </v-btn>
     </header>
     <section class="profile-edit-section">
       <PersonalInfoDetails :src="user" />
@@ -19,8 +25,9 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import PersonalInfoDetails from '../../components/profile/details/PersonalInfoDetails.vue'
-import { useAuthStore } from '@/stores/auth';
-import { useRegularAuthStore } from '@/stores/regular-auth';
+import MenuOptionCard from "../../components/partials/MenuOptionCard.vue";
+import { useAuthStore } from '@/stores/auth'
+import { useRegularAuthStore } from '@/stores/regular-auth'
 
 const authStore = useAuthStore()
 authStore.fetchUser()
