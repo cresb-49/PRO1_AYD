@@ -38,7 +38,7 @@ export type Sale = {
   totalImpuestosPagados:number
   cuotaPagContraEntrega:number
   cantidadProductos:number
-  lineasVenta:SaleLine[]
+  lineaVentas:SaleLine[]
   datosFacturacion:BillingData
   createdAt:string
 }
@@ -48,6 +48,7 @@ export const useSalesStore = defineStore('sales', {
     sales: new Array<Sale>(),
     sale: {} as Sale,
     loading: false,
+    loadingSale: false,
     error: false
   }),
   actions: {
@@ -74,7 +75,7 @@ export const useSalesStore = defineStore('sales', {
       return { data, error: false }
     },
     async fetchSaleById(id: number) {
-      this.loading = true
+      this.loadingSale = true
       const { data, error } = await useCustomFetch<any>(`api/venta/private/all/${id}`, {
         method: 'GET'
       })
@@ -86,12 +87,12 @@ export const useSalesStore = defineStore('sales', {
           message: error.value,
           type: SnackbarType.ERROR
         })
-        this.loading = false
+        this.loadingSale = false
         return { data, error: error.value }
       }
       // Success
       // Return the data and error
-      this.loading = false
+      this.loadingSale = false
       return { data, error: false }
     }
   }
