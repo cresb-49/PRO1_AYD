@@ -1,5 +1,5 @@
 <template>
-  <v-carousel v-model:model-value="controlActiveIndex" hide-delimiter-background>
+  <v-carousel v-model:model-value="controlActiveIndex" hide-delimiter-background :show-arrows="images.length > 1">
     <v-carousel-item
       v-for="(image, index) in images"
       :key="index"
