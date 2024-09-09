@@ -10,9 +10,13 @@ import * as directives from 'vuetify/directives'
 
 import App from './App.vue'
 import router from './router'
+import { VDateInput } from 'vuetify/labs/components';
 
 const vuetify = createVuetify({
-    components,
+    components: {
+        ...components,
+        VDateInput
+    },
     directives,
 })
 

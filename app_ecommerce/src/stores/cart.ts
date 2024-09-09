@@ -1,16 +1,33 @@
 import { defineStore } from 'pinia'
 import { useSnackbarStore, SnackbarType } from './snackbar'
 import { useProductStore, type Product } from './products';
+import { useCustomFetch } from '@/composables/useCustomFetch';
+import { useCookies } from 'vue3-cookies';
 
 export type CartProduct = {
   id: number,
   quantity: number
 }
 
+export type CartPayload = {
+  id: number,
+  cantidad: number
+}
+
 export type CartInfo = {
   id: number,
   quantity: number,
   info?: Product
+}
+
+export type BuyPayload = {
+  idComprador: number,
+  idCompradador?: number,
+  productos?: CartPayload[],
+  consumidorFinal: boolean,
+  retiroEnTienda: boolean,
+  pagoContraEntrega: boolean,
+  direccion: string
 }
 
 function removeAtIndex<CartProduct>(array: CartProduct[], index: number): CartProduct[] {
@@ -25,13 +42,16 @@ export const useCartStore = defineStore('cart', {
   state: () => ({
     cart: [] as CartProduct[],
     productsInfo: [] as (Product|null)[],
-    totalProducts: 0
+    totalProducts: 0,
+    totalTax: 0,
+    loading: false
   }),
   persist: true,
   actions: {
     async fetchProductsCart() {
       const {fetchProduct} = useProductStore()
       this.totalProducts = 0
+      this.totalTax = 0
       this.productsInfo = []
       for (const productCart of this.cart) {
         const {data, error} = await fetchProduct(productCart.id);
@@ -42,6 +62,7 @@ export const useCartStore = defineStore('cart', {
         
         const producto = data.value.data as Product
         this.totalProducts += producto.precio
+        this.totalTax += producto.precio * (producto.porcentajeImpuesto / 100)
         this.productsInfo.push(producto);
       }
     },
@@ -94,6 +115,46 @@ export const useCartStore = defineStore('cart', {
       };
       return false;
     },
+    async buyProducts(payload: BuyPayload) {
+      payload.idCompradador = payload.idComprador
+      payload.productos = this.cart.map(product => {return {id: product.id, cantidad: product.quantity}})
+      
+      if (payload.direccion === "") {
+        payload.direccion = "."
+      }
+      
+      console.log('aqui estamos')
+      console.log(payload)
+
+      const { data, error } = await useCustomFetch<any>(
+        'api/facturacion/cliente/generarCompra',
+        {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        }
+      )
+
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      
+      useSnackbarStore().showSnackbar({
+        title: 'Compra Exitosa',
+        message: `La compra se ha realizado exitosamente!`,
+        type: SnackbarType.SUCCESS
+      })
+      
+      this.$reset()
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
+    }
   },
   getters: {
     productAmount: (state) => state.cart ? state.cart.keys.length : 0,

@@ -1,13 +1,48 @@
 <template>
     <v-card class="mx-auto" max-width="300">
-        <v-text-field v-model="subtotal" label="Subtotal" />
-        <v-radio-group v-model="opcionEntrega" inline>
-            <v-radio label="Retiro en Tienda" value="0"></v-radio>
-            <v-radio label="Envio a Domicilio" value="1"></v-radio>
-        </v-radio-group>
-        <v-text-field v-model="costoEnvio" label="Costo Envio" />
-        <v-text-field v-model="total" label="Total" />
-        <v-btn>Comprar</v-btn>
+        <v-form>
+            <v-text-field v-model="subtotal" label="Subtotal" readonly>
+                <template v-slot:append-inner>Q</template>
+            </v-text-field>
+            <v-text-field v-model="subtotalImpuestos" label="Impuestos" readonly>
+                <template v-slot:append-inner>Q</template>
+            </v-text-field>
+            <h4 class="ml-2">Opcion de Entrega</h4>
+            <v-radio-group v-model="opcionEntrega" inline @change="updateDelivery">
+                <v-radio label="Retiro en Tienda" value="0"></v-radio>
+                <v-radio label="Envio a Domicilio" value="1"></v-radio>
+            </v-radio-group>
+            <v-text-field v-model="direccion" v-if="opcionEntrega == '1'" label="Direccion de Entrega"
+                :required="opcionEntrega == '1'" />
+            <v-text-field v-model="costoEnvio" label="Costo Envio" readonly>
+                <template v-slot:append-inner>Q</template>
+            </v-text-field>
+
+            <h4 class="ml-2">Metodo de Pago</h4>
+            <v-radio-group v-model="metodoPago" inline @change="updateDelivery">
+                <v-radio label="Pago contra Entrega" value="0"></v-radio>
+                <v-radio label="Tarjeta de Credito/Debito" value="1"></v-radio>
+            </v-radio-group>
+
+            <v-container v-if="metodoPago == '1'">
+                <h4 class="mb-2">Informacion de Tarjeta</h4>
+                <v-text-field v-model="numeroTarjeta" label="Numero de Tarjeta" :required="metodoPago == '1'" />
+                <v-row>
+                    <v-col>
+                        <v-date-input label="Fecha de Vencimiento" variant="underlined"
+                            :required="metodoPago == '1'"></v-date-input>
+                    </v-col>
+                    <v-col>
+                        <v-text-field v-model="cvvTarjeta" label="CVV" :required="metodoPago == '1'" />
+                    </v-col>
+                </v-row>
+            </v-container>
+
+            <v-text-field v-model="total" label="Total" readonly>
+                <template v-slot:append-inner>Q</template>
+            </v-text-field>
+            <v-btn width="100%" prepend-icon="mdi-cart-outline" @click="comprar">Comprar</v-btn>
+        </v-form>
     </v-card>
 </template>
 <script setup lang="ts">
@@ -18,10 +53,46 @@ const props = defineProps({
         type: Number,
         default: 0
     },
+    taxProp: {
+        type: Number,
+        default: 0
+    },
 })
 
 const subtotal = ref(props.subtotalProp)
+const subtotalImpuestos = ref(props.taxProp)
 const costoEnvio = ref(0)
-const opcionEntrega = ref("0")
-const total = ref(subtotal.value)
+const opcionEntrega = ref('0')
+const direccion = ref('')
+const metodoPago = ref('0')
+const numeroTarjeta = ref('')
+const cvvTarjeta = ref('')
+const total = ref(subtotal.value + props.taxProp)
+
+const emits = defineEmits(['buy'])
+
+function comprar() {
+    const attributesSale = {
+        consumidorFinal: true,
+        retiroEnTienda: opcionEntrega.value == '0' ? true : false,
+        pagoContraEntrega: metodoPago.value == '0' ? true : false,
+        direccion: direccion.value
+    }
+    console.log('emite')
+    emits('buy', attributesSale)
+}
+
+function updateDelivery() {
+    if (opcionEntrega.value === "0") {
+        costoEnvio.value = 0
+        updateTotal()
+    } else {
+        costoEnvio.value = 15
+        updateTotal()
+    }
+}
+
+function updateTotal() {
+    total.value = subtotal.value + subtotalImpuestos.value + costoEnvio.value
+}
 </script>
