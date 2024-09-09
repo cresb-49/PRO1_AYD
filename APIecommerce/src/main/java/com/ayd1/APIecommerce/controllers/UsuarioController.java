@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
+import com.ayd1.APIecommerce.models.request.UsuarioAyudanteRequest;
 import com.ayd1.APIecommerce.models.request.UsuarioPermisoRequest;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
@@ -233,7 +234,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PostMapping("/usuario/private/crearAyudante")
-    public ResponseEntity<?> crearAyudante(@RequestBody Usuario crear) {
+    public ResponseEntity<?> crearAyudante(@RequestBody UsuarioAyudanteRequest crear) {
         try {
             Usuario respuesta = usuarioService.crearAyudante(crear);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
@@ -251,7 +252,7 @@ public class UsuarioController {
                             schema = @Schema(implementation = Usuario.class))}),
         @ApiResponse(responseCode = "400", description = "ID no válido")
     })
-    @GetMapping("/usuario/private/perfil/{id}")
+    @GetMapping("/usuario/private/all/perfil/{id}")
     public ResponseEntity<?> getPerfil(@PathVariable Long id) {
         try {
             Usuario usuario = usuarioService.getUsuario(id);
