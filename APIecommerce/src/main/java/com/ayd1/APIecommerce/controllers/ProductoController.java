@@ -248,4 +248,14 @@ public class ProductoController {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
     }
+
+    @GetMapping("/producto/public/precio")
+    public ResponseEntity<?> buscarPorRangoDePrecio(@RequestParam Double precioMin, @RequestParam Double precioMax) {
+        try {
+            List<Producto> productos = productoService.buscarPorRangoDePrecio(precioMin, precioMax);
+            return new ApiBaseTransformer(HttpStatus.OK, null, productos, null, null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
+        }
+    }
 }

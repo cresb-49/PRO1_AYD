@@ -14,23 +14,34 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Table(name = "permiso")
-public class Permiso  extends Auditor {
+@DynamicUpdate
+public class Permiso extends Auditor {
+
     @Column(name = "permiso", length = 250, unique = true)
     @NotBlank(message = "El nombre del permiso no puede estar vacío.")
     @NotNull(message = "El nombre del permiso no puede ser nulo")
     @Size(min = 1, max = 250, message = "El nombre del permiso debe tener entre 1 y 250 caracteres.")
     private String nombre;
 
+    @Column(name = "ruta", length = 250, unique = true)
+    @NotBlank(message = "El nombre del permiso no puede estar vacío.")
+    @NotNull(message = "El nombre del permiso no puede ser nulo")
+    @Size(min = 1, max = 250, message = "El nombre del permiso debe tener entre 1 y 250 caracteres.")
+    private String ruta;
+
     @OneToMany(mappedBy = "permiso", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<UsuarioPermiso> asignaciones;
 
-    public Permiso(String nombre) {
+    public Permiso(String nombre, String ruta, List<UsuarioPermiso> asignaciones) {
         this.nombre = nombre;
+        this.ruta = ruta;
+        this.asignaciones = asignaciones;
     }
 
     public Permiso(Long id) {
@@ -54,6 +65,14 @@ public class Permiso  extends Auditor {
 
     public void setAsignaciones(List<UsuarioPermiso> asignaciones) {
         this.asignaciones = asignaciones;
+    }
+
+    public String getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(String ruta) {
+        this.ruta = ruta;
     }
 
 }

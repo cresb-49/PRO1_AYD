@@ -86,7 +86,7 @@ public class UsuarioController {
                             schema = @Schema(implementation = String.class))}),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PostMapping("/usuario/private/all/recuperarPasswordMail")
+    @PostMapping("/usuario/public/recuperarPasswordMail")
     public ResponseEntity<?> enviarMailDeRecuperacion(
             @Parameter(
                     description = "ID del producto a buscar",
@@ -110,7 +110,7 @@ public class UsuarioController {
                             schema = @Schema(implementation = String.class))}),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PatchMapping("/usuario/private/all/recuperarPassword")
+    @PatchMapping("/usuario/public/recuperarPassword")
     public ResponseEntity<?> recuperarPassword(@RequestBody PasswordChange requestBody) {
         try {
             String respuesta = usuarioService.recuperarPassword(requestBody);

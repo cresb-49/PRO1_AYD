@@ -44,6 +44,12 @@ const router = createRouter({
       component: () => import('../views/TwoFactorView.vue')
     },
     {
+      path: '/password-reset',
+      name: 'password-reset',
+      meta: {title: 'Password Reset', layout: EmptyLayout},
+      component: () => import('../views/PasswordResetView.vue')
+    },
+    {
       path: '/admin',
       name: 'admin',
       meta: {title: 'Admin', layout: DefaultLayout},
@@ -138,7 +144,13 @@ router.beforeEach(async (to, from) => {
       return {path: '/'};
     }
     return {path: from.path};
-  } else if (to.path.includes('/perfil') && !user) {
+  } else if (to.path === '/pasword-rest' && user) {
+    if (from.path === '/password-reset') {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  }
+  else if (to.path.includes('/perfil') && !user) {
     if (from.path.includes('/perfil')) {
       return {path: '/'};
     }
