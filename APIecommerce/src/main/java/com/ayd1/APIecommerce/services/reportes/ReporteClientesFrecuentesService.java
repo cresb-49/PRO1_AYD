@@ -14,12 +14,13 @@ import java.time.Instant;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Luis Monterroso
  */
-@Component
+@Service
 public class ReporteClientesFrecuentesService extends Reporte {
 
     @Autowired

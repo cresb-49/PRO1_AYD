@@ -21,6 +21,8 @@ public class TiendaConfigDto {
 
     private String direccionEmpresa;
 
+    private Double costoEnvio;
+
     public TiendaConfigDto() {
     }
 
@@ -54,6 +56,14 @@ public class TiendaConfigDto {
 
     public void setDireccionEmpresa(String direccionEmpresa) {
         this.direccionEmpresa = direccionEmpresa;
+    }
+
+    public Double getCostoEnvio() {
+        return costoEnvio;
+    }
+
+    public void setCostoEnvio(Double costoEnvio) {
+        this.costoEnvio = costoEnvio;
     }
 
 }
