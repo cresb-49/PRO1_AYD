@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
+import com.ayd1.APIecommerce.models.request.UsuarioPermisoRequest;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 
@@ -172,12 +173,12 @@ public class UsuarioController {
 
     @PostMapping("/usuario/public/validateTwoFactorToken")
     public ResponseEntity<?> validateTwoFactorToken(
-        @Parameter(
-                description = "Valida el token de autenticación de dos factores",
-                required = true,
-                example = "{email:\"user@email.com\",twoFactorCode:\"67858\"}"
-        )
-        @RequestBody Usuario login) {
+            @Parameter(
+                    description = "Valida el token de autenticación de dos factores",
+                    required = true,
+                    example = "{email:\"user@email.com\",twoFactorCode:\"67858\"}"
+            )
+            @RequestBody Usuario login) {
         try {
             LoginDto respuesta = usuarioService.login2FT(login);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
@@ -191,13 +192,13 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente",
                 content = {
                     @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = LoginDto.class))}),
+                            schema = @Schema(implementation = Usuario.class))}),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PostMapping("/usuario/public/crearUsuario")
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario crear) {
         try {
-            LoginDto respuesta = usuarioService.crearUsuario(crear, "USUARIO");
+            LoginDto respuesta = usuarioService.crearUsuarioNormal(crear);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
@@ -209,14 +210,13 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Administrador creado exitosamente",
                 content = {
                     @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = LoginDto.class))}),
+                            schema = @Schema(implementation = Usuario.class))}),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PostMapping("/usuario/private/admin/crearAdministrador")
+    @PostMapping("/usuario/private/crearAdministrador")
     public ResponseEntity<?> crearAdministrador(@RequestBody Usuario crear) {
         try {
-            String rol = "ADMIN";
-            LoginDto respuesta = usuarioService.crearUsuario(crear, rol);
+            Usuario respuesta = usuarioService.crearAdministrador(crear);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -229,14 +229,13 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Ayudante creado exitosamente",
                 content = {
                     @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = LoginDto.class))}),
+                            schema = @Schema(implementation = Usuario.class))}),
         @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
-    @PostMapping("/usuario/private/admin/crearAyudante")
+    @PostMapping("/usuario/private/crearAyudante")
     public ResponseEntity<?> crearAyudante(@RequestBody Usuario crear) {
         try {
-            String rol = "AYUDANTE";
-            LoginDto respuesta = usuarioService.crearUsuario(crear, rol);
+            Usuario respuesta = usuarioService.crearAyudante(crear);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -298,6 +297,33 @@ public class UsuarioController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String emailUsuarioAutenticado = authentication.getName();
             Usuario confirmacion = usuarioService.updateUsuario(updates, emailUsuarioAutenticado);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
+        } catch (NumberFormatException ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
+                    "Id con formato invalido",
+                    null, null, ex.getMessage()).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @Operation(summary = "Actualiza los permisos de un usuario ayudante.",
+            description = "Actualiza los permisos d eun usuario ayudante en base a su id y los id "
+            + "de los permisos enviados (todo aquel permiso que no se mande se eliminara de la "
+            + "lista de permisos del usuario).")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario encontrado",
+                content = @Content(mediaType = "application/json",
+                        schema = @Schema(
+                                implementation = Usuario.class
+                        )
+                )),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @PatchMapping("/usuario/private/actualizarPermisos")
+    public ResponseEntity<?> actualizarPermisos(@RequestBody UsuarioPermisoRequest updates) {
+        try {
+            Usuario confirmacion = usuarioService.actualizarPermisosUsuario(updates);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,

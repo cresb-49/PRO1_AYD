@@ -131,7 +131,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
 
             TiendaConfig tiendaConfig = new TiendaConfig("TiendaAyD1", img, 12.00,
                     "2da calle XXX-XXX-XX Quetgo",
-                    "image/png");
+                    "image/png", 25.0);
             this.insertarTiendaConfig(tiendaConfig);
             // Seeder de usuarios del sistema
             Usuario admin = new Usuario("admin", "admin",
@@ -151,22 +151,22 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             /*Crear los usuarios, un catch por usuario para que ignore las 
             excepciones que puedan haber*/
             try {
-                this.usuarioService.crearUsuario(admin, rolAdmin);
+                this.usuarioService.crearAdministrador(admin);
             } catch (Exception e) {
             }
             try {
-                this.usuarioService.crearUsuario(user1, rolUsuario);
+                this.usuarioService.crearUsuarioNormal(user1);
 
             } catch (Exception e) {
             }
             try {
-                this.usuarioService.crearUsuario(ayudante, rolAyudante);
+                this.usuarioService.crearAyudante(ayudante);
             } catch (Exception e) {
             }
 
             // Creacion de todos los permisos que tiene el sistema
             for (PermisoEnum permiso : PermisoEnum.values()) {
-                
+
                 Permiso insercion = this.insertarPermisoSiNoExiste(
                         new Permiso(
                                 permiso.getNombrePermiso(),
