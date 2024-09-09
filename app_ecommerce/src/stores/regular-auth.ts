@@ -12,6 +12,10 @@ type UserPayload = {
   twoFactorCode?: string
 }
 
+export type ForgotPasswordPayload = {
+  correoElectronico: string
+}
+
 export type UserUpdatePayload = {
   nombres?: string
   apellidos?: string
@@ -239,6 +243,27 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       })
       return { data, error: false }
     },
+    async sendForgotPasswordEmail(payload: ForgotPasswordPayload) {
+      this.loading = true
+
+      const path = 'api/usuario/public/recuperarPasswordMail'
+
+      const { data, error } = await useCustomFetch<any>(path, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
+      if (error.value) {
+        console.log(error.value)
+        this.loading = false
+        return
+      }
+      this.loading = false
+      useSnackbarStore().showSnackbar({
+        title: 'Correo enviado',
+        message: 'Se ha enviado un correo para recuperar tu contraseña',
+        type: SnackbarType.SUCCESS
+      })
+    },
     clearError() {
       this.error = null
     },
@@ -246,7 +271,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.user = null
       this.authenticated = false
       this.error = null
-    },
+    }
     //Here action
   }
 })
