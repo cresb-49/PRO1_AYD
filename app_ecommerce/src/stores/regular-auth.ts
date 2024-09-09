@@ -246,6 +246,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.user = null
       this.authenticated = false
       this.error = null
-    }
+    },
+    //Here action
   }
 })
