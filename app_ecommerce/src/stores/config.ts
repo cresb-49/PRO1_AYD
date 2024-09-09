@@ -10,6 +10,13 @@ export type ConfigResponse = {
   direccionEmpresa: string
 }
 
+export type UpdatePayload = {
+  nombreTienda: string,
+  precioPagoContraEntrega: string,
+  costoEnvio: string,
+  direccionEmpresa: string
+}
+
 export const useConfigsStore = defineStore('configs', {
   state: () => ({
     name: 'E-Commerce',
@@ -45,5 +52,23 @@ export const useConfigsStore = defineStore('configs', {
       this.deliveryCost = config.costoEnvio as unknown as number
       this.address = config.direccionEmpresa
     },
+    async updateConfig(payload: UpdatePayload){
+      const { data, error } = await useCustomFetch<any>(
+        'api/tienda_config/private/actualizarConfiguracion',
+        {
+          method: 'PATCH',
+          body: JSON.stringify(payload)
+        }
+      )
+
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        return { data, error: error.value }
+      }
+    }
   }
 })

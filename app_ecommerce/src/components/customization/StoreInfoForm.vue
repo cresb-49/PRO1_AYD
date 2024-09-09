@@ -5,7 +5,7 @@
       <v-row>
         <v-col cols="6">
           <v-text-field
-            v-model="name"
+            v-model="nameModel"
             variant="solo"
             label="Nombre de la Tienda"
             required
@@ -17,7 +17,7 @@
         </v-col>
         <v-col cols="6">
           <v-text-field
-            v-model="deliveryCost"
+            v-model="deliveryCostModel"
             variant="solo"
             label="Costo de Envio"
             required
@@ -29,7 +29,7 @@
         </v-col>
         <v-col cols="12" sm="6" md="6" lg="6" xl="6">
           <v-text-field
-            v-model="cod"
+            v-model="codModel"
             variant="solo"
             label="Costo de Pago contra Entrega"
             required
@@ -41,7 +41,7 @@
         </v-col>
         <v-col cols="12" sm="6" md="6" lg="6" xl="6">
           <v-text-field
-            v-model="address"
+            v-model="addressModel"
             variant="solo"
             label="Direccion de la Tienda"
             required
@@ -71,13 +71,26 @@ import ImagesUploadForm from '../forms/shared/ImagesUploadForm.vue';
 import ImageCarousel from '../partials/ImageCarousel.vue';
 import { storeToRefs } from 'pinia';
 import { useConfigsStore } from '@/stores/config';
+import { ref } from 'vue';
 
-const {name, logo, deliveryCost, cod, address } = storeToRefs(useConfigsStore())
+
+const {name, logo, deliveryCost, cod, address } = useConfigsStore()
+
+const nameModel = ref(name)
+const deliveryCostModel = ref(deliveryCost)
+const codModel = ref(cod)
+const addressModel = ref(address)
 
 const emits = defineEmits(['save'])
 
 function save() {
-    emits('save')
+    const newConfig = {
+      name: nameModel.value,
+      deliveryCost: deliveryCostModel.value,
+      cod: codModel.value,
+      address: addressModel.value,
+    }
+    emits('save', newConfig)
 }
 </script>
 <style lang="scss" scoped></style>

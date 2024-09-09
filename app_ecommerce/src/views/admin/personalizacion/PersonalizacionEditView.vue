@@ -7,30 +7,24 @@
       </v-btn>
     </header>
     <section class="profile-edit-section">
-      <StoreInfoForm></StoreInfoForm>
-    </section>
-    <section class="profile-edit-section">
-      <PasswordProfileForm
-        :src="user"
-        :loading="loading"
-        ref="passwordForm"
-        @save-password="updateUserPassword($event)"
-      />
+      <StoreInfoForm @save="updateStore"></StoreInfoForm>
     </section>
   </main>
 </template>
 <script setup lang="ts">
-import { useRegularAuthStore, type UserUpdatePayload } from '@/stores/regular-auth';
-import { ref } from 'vue';
 import StoreInfoForm from '@/components/customization/StoreInfoForm.vue';
+import { useConfigsStore, type UpdatePayload } from '@/stores/config';
 
-const regularAuthStore = useRegularAuthStore();
-const {user, loading, updateProfile} = regularAuthStore;
-const passwordForm = ref()
+const {updateConfig} = useConfigsStore()
 
-function updateUserPassword(userWithPassword: UserUpdatePayload) {
-  passwordForm.value!.resetFields()
-  updateProfile(userWithPassword)
+function updateStore(params: {name: string, deliveryCost: string, cod: string, address: string}) {
+  const updateParams: UpdatePayload = {
+    nombreTienda: params.name,
+    costoEnvio: params.deliveryCost,
+    precioPagoContraEntrega: params.cod,
+    direccionEmpresa: params.address
+  }
+  updateConfig(updateParams)
 }
 </script>
 <style lang="scss" scoped>
