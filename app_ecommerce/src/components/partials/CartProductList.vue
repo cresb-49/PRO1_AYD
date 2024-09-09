@@ -1,5 +1,5 @@
 <template>
-    <v-list>
+    <v-list v-if="products.length > 0">
         <v-list-item v-for="product in products" :key="product.id" class="cart-item">
             <v-row>
                 <v-col cols="6">
@@ -17,6 +17,7 @@
             <v-divider class="mt-4 mb-2" />
         </v-list-item>
     </v-list>
+    <h4 v-else>No hay productos en tu carrito!</h4>
 </template>
 <script setup lang="ts">
 import type { CartInfo } from '@/stores/cart';

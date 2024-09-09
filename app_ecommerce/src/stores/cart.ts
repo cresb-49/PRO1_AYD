@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useSnackbarStore, SnackbarType } from './snackbar'
 import { useProductStore, type Product } from './products';
 import { useCustomFetch } from '@/composables/useCustomFetch';
+import { useCookies } from 'vue3-cookies';
 
 export type CartProduct = {
   id: number,

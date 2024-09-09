@@ -5,7 +5,7 @@
             <h2>Productos</h2>
             <CartProductList :products="products" />
         </v-col>
-        <v-col cols="12" xs="6" sm="6">
+        <v-col v-if="products.length > 0" cols="12" xs="6" sm="6">
             <h2>Resumen</h2>
             <CartSummaryForm :subtotal-prop="totalProducts" :tax-prop="totalTax" @buy="buy"></CartSummaryForm>
         </v-col>
