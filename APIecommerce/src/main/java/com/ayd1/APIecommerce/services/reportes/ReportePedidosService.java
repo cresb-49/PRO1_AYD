@@ -11,7 +11,9 @@ import com.ayd1.APIecommerce.models.dto.reports.ReportePedidoDto;
 import com.ayd1.APIecommerce.models.request.ReporteExportRequest;
 import com.ayd1.APIecommerce.models.request.ReporteRequest;
 import com.ayd1.APIecommerce.repositories.EnvioRepository;
+import com.ayd1.APIecommerce.services.reportes.imprimibles.ReporteEnviosImprimible;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,29 +28,38 @@ public class ReportePedidosService extends Reporte {
 
     @Autowired
     private EnvioRepository envioRepository;
+    @Autowired
+    private ReporteEnviosImprimible reporteEnviosImprimible;
 
-    public ReportePedidoDto generarReporteDePedidos(ReporteRequest reporteRequest) {
+    public ReportePedidoDto generarReporteDePedidos(ReporteRequest reporteRequest)
+            throws Exception {
         //obtener las fechas
         String fecha1 = reporteRequest.getFecha1();
         String fecha2 = reporteRequest.getFecha2();
         //convertir las fechas en instants
-        Instant fecha1Instant = this.manejadorDeFecha.convertStringToInstant(fecha1);
-        Instant fecha2Instant = this.manejadorDeFecha.convertStringToInstant(fecha2);
+        LocalDate fecha1Local = this.manejadorDeFecha.convertStringToLocalDate(fecha1);
+        LocalDate fecha2Local = this.manejadorDeFecha.convertStringToLocalDate(fecha2);
         //mandamos a traer los envios 
-        List<Envio> envios = this.envioRepository.findAllByCreatedAtBetween(
-                fecha1Instant, fecha2Instant);
+        List<Envio> envios = this.envioRepository.findAllByCreatedAtDateBetween(
+                fecha1Local, fecha2Local);
         //mandamos a construir los envios EnvioReporteDto
         List<EnvioReporteDto> enviosDto
                 = this.construirEnviosReporte(envios);
         //construimos el reporte
         return new ReportePedidoDto(enviosDto,
                 this.manejadorDeFecha.
-                        parsearFechaYHoraAFormatoRegional(fecha1Instant),
+                        parsearFechaYHoraAFormatoRegional(fecha1Local),
                 this.manejadorDeFecha.
-                        parsearFechaYHoraAFormatoRegional(fecha2Instant));
+                        parsearFechaYHoraAFormatoRegional(fecha2Local));
     }
 
-    public List<EnvioReporteDto> construirEnviosReporte(
+    public byte[] exportarReporteDePedidos(ReporteExportRequest request) throws Exception {
+        ReportePedidoDto reporte = this.generarReporteDePedidos(request);
+        return this.reporteEnviosImprimible.init(reporte,
+                request.getTipoExporte());
+    }
+
+    private List<EnvioReporteDto> construirEnviosReporte(
             List<Envio> envios) {
         return envios.stream().map(envio -> {
 
@@ -73,8 +84,4 @@ public class ReportePedidosService extends Reporte {
         }).collect(Collectors.toList());
     }
 
-    public byte[] exportarReporteDePedidos(ReporteExportRequest request) {
-        ReportePedidoDto reporte = this.generarReporteDePedidos(request);
-        return null;
-    }
 }

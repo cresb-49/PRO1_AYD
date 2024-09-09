@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.1.final using JasperReports Library version 6.20.1-7584acb244139816654f64e2fd57a00d3e31921e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="FacturaAyD" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="444dfd54-0454-4724-bd93-f451cbb2673b">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="nombre_tienda" class="java.lang.String"/>
+	<parameter name="imagen_tienda" class="java.io.InputStream"/>
+	<parameter name="tablaClientes" class="net.sf.jasperreports.engine.data.JRBeanArrayDataSource"/>
+	<parameter name="fecha1" class="java.lang.String"/>
+	<parameter name="direccion_tienda" class="java.lang.String"/>
+	<parameter name="fecha2" class="java.lang.String"/>
+	<parameter name="fechaGeneracion" class="java.lang.String"/>
+	<parameter name="pedidos" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="96" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="80" width="556" height="10" backcolor="#C21C34" uuid="3ec708d9-d4cf-4e95-877d-43aa8e5572da">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Double" lineColor="#050505"/>
+				</graphicElement>
+			</rectangle>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="411" y="0" width="145" height="20" uuid="3fa8437f-002c-423e-ae14-04ed2d7d19d1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{nombre_tienda}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="70" height="70" uuid="3ff28dcb-f21c-419d-95e3-8aaead733b00"/>
+				<imageExpression><![CDATA[$P{imagen_tienda}]]></imageExpression>
+			</image>
+			<textField textAdjust="ScaleFont">
+				<reportElement x="100" y="25" width="456" height="20" uuid="2f5ceab4-2d05-443c-a2db-236001caa8ad"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{direccion_tienda}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="162" y="50" width="232" height="30" uuid="d650804d-c5c8-41b4-af38-7ce2b1bcd8ba"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="20" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pedidos"]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="60">
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="0" width="554" height="20" uuid="2af081e5-0c50-4805-8868-8f236dd2d681"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="styled">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>De la fecha: </b>"+$P{fecha1}]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement positionType="Float" x="0" y="30" width="554" height="20" uuid="25a67951-ebac-4c3a-9ff3-698a84bd99af"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle" markup="styled">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<b>A la fecha: </b>"+$P{fecha2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="181" splitType="Stretch">
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="0" width="554" height="181" uuid="6f9137b4-cf24-48e3-9831-39bf620647a8"/>
+				<textElement verticalAlignment="Top" markup="html">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{pedidos}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="36" splitType="Stretch">
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="370" y="6" width="186" height="30" uuid="82ca7f04-7ffc-4fbe-8c7a-93537ced945c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha: "+ $P{fechaGeneracion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

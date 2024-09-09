@@ -120,6 +120,7 @@ public class FacturaService extends Reporte {
 
         ArrayList<LineaVenta> desglose = this.crearDesgloce(save, ventaRequest);
         Double total = this.calcularTotal(desglose);
+        Integer cantidadDeProductos = this.calcularCantidadProductos(desglose);
         Double totalImpuestos = this.calcularTotalDeImpuestoPagado(desglose);
         Double cuotaPagoContraEntrega = 0.00;
 
@@ -135,6 +136,7 @@ public class FacturaService extends Reporte {
         save.setLineaVentas(desglose);
         save.setCuotaPagContraEntrega(cuotaPagoContraEntrega);
         save.setTotalImpuestosPagados(totalImpuestos);
+        save.setCantidadProductos(cantidadDeProductos);
 
         //actualizar
         this.ventaRepository.save(save);
@@ -214,6 +216,15 @@ public class FacturaService extends Reporte {
         for (LineaVenta linea : desgloce) {
             //sumamos el total
             total += (linea.getPrecio() * linea.getCantidad());
+        }
+        return total;
+    }
+
+    private Integer calcularCantidadProductos(ArrayList<LineaVenta> desgloce) {
+        Integer total = 0;
+        for (LineaVenta linea : desgloce) {
+            //sumamos el total
+            total += linea.getCantidad();
         }
         return total;
     }

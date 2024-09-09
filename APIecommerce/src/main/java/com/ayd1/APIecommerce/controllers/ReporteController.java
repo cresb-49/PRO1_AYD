@@ -87,6 +87,11 @@ public class ReporteController {
                             = this.reporteClientesFrecuentes
                                     .exportarReporteClientesFrecuentes(reporteDails);
                 }
+                case "reportePedidos" -> {
+                    reporte
+                            = this.reportePedidosService
+                                    .exportarReporteDePedidos(reporteDails);
+                }
                 default -> {
                     throw new AssertionError();
                 }

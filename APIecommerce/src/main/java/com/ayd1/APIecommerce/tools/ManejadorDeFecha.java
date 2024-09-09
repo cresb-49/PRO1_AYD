@@ -44,11 +44,19 @@ public class ManejadorDeFecha {
      */
     public String parsearFechaYHoraAFormatoRegional(LocalDate instante) {
         if (instante == null) { // si la fecha es nula retornamos vacío
-            return "Error";
+            return "-";
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String fechaFormateada = instante.format(formatter);
         return fechaFormateada;
+    }
+
+    public LocalDate convertStringToLocalDate(String dateString) {
+        if (dateString == null) {
+            return null;
+        }
+        // Convertir el string a LocalDate
+        return LocalDate.parse(dateString);
     }
 
     public Instant convertStringToInstant(String dateString) {
