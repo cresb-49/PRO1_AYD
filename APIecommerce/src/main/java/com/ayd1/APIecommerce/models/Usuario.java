@@ -72,9 +72,11 @@ public class Usuario extends Auditor {
     private boolean estadoActivacion;
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private List<UsuarioRol> roles;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private List<UsuarioPermiso> permisos;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
