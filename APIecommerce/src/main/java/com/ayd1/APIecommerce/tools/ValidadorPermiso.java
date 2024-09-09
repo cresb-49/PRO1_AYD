@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
  */
-package com.ayd1.APIecommerce.services.tools;
+package com.ayd1.APIecommerce.tools;
 
 import com.ayd1.APIecommerce.models.Permiso;
 import com.ayd1.APIecommerce.models.Usuario;
@@ -10,7 +10,6 @@ import com.ayd1.APIecommerce.models.UsuarioPermiso;
 import com.ayd1.APIecommerce.services.UsuarioService;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

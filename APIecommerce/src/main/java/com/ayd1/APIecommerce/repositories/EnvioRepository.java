@@ -5,8 +5,12 @@
 package com.ayd1.APIecommerce.repositories;
 
 import com.ayd1.APIecommerce.models.Envio;
+import com.ayd1.APIecommerce.models.dto.reports.EnvioReporteDto;
+import java.time.Instant;
 import java.util.List;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,4 +24,7 @@ public interface EnvioRepository extends CrudRepository<Envio, Long> {
     public List<Envio> findAll();
 
     public List<Envio> findAllByEstadoEnvio_Nombre(String nombre);
+
+    public List<Envio> findAllByCreatedAtBetween(Instant fechaInicio, Instant fechaFin);
+
 }

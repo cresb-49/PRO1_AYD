@@ -31,7 +31,7 @@ import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
-import com.ayd1.APIecommerce.services.tools.MailService;
+import com.ayd1.APIecommerce.tools.MailService;
 import com.ayd1.APIecommerce.tools.Encriptador;
 
 @Service
