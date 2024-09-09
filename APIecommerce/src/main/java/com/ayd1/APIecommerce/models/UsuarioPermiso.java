@@ -9,16 +9,18 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Table(name = "usuario_permiso")
 public class UsuarioPermiso extends Auditor {
-    
+
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "usuario", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Usuario usuario;   
+    @Schema(hidden = true)
+    private Usuario usuario;
 
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "permiso", nullable = false)
@@ -57,5 +59,5 @@ public class UsuarioPermiso extends Auditor {
     public String toString() {
         return permiso.getNombre();
     }
-    
+
 }
