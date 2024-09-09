@@ -252,7 +252,7 @@ public class UsuarioController {
                             schema = @Schema(implementation = Usuario.class))}),
         @ApiResponse(responseCode = "400", description = "ID no válido")
     })
-    @GetMapping("/usuario/private/perfil/{id}")
+    @GetMapping("/usuario/private/all/perfil/{id}")
     public ResponseEntity<?> getPerfil(@PathVariable Long id) {
         try {
             Usuario usuario = usuarioService.getUsuario(id);
