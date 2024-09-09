@@ -38,6 +38,11 @@ public class TiendaConfig extends Auditor {
             + "debe tener un valor minimo de 0.")
     private Double precioPagoContraEntrega;
 
+    @NotNull(message = "El costo de envio no puede ser nulo")
+    @Min(value = 0, message = "El costo de envio "
+            + "debe tener un valor minimo de 0.")
+    private Double costoEnvio;
+
     @Column(length = 250)
     @NotBlank(message = "La direccion de la tienda no puede estar vacía.")
     @NotNull(message = "La direccion de la tienda no puede ser nula.")
@@ -52,12 +57,14 @@ public class TiendaConfig extends Auditor {
     }
 
     public TiendaConfig(String nombreTienda, byte[] imagenTienda,
-            Double precioPagoContraEntrega, String direccionEmpresa, String mimeTypeImg) {
+            Double precioPagoContraEntrega, String direccionEmpresa, String mimeTypeImg,
+            Double costoEnvio) {
         this.nombreTienda = nombreTienda;
         this.imagenTienda = imagenTienda;
         this.precioPagoContraEntrega = precioPagoContraEntrega;
         this.direccionEmpresa = direccionEmpresa;
         this.mimeTypeImg = mimeTypeImg;
+        this.costoEnvio = costoEnvio;
     }
 
     public TiendaConfig() {
@@ -101,6 +108,14 @@ public class TiendaConfig extends Auditor {
 
     public void setMimeTypeImg(String mimeTypeImg) {
         this.mimeTypeImg = mimeTypeImg;
+    }
+
+    public Double getCostoEnvio() {
+        return costoEnvio;
+    }
+
+    public void setCostoEnvio(Double costoEnvio) {
+        this.costoEnvio = costoEnvio;
     }
 
     public String getExtension() {
