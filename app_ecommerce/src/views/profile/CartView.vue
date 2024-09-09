@@ -14,6 +14,7 @@
 <script setup lang="ts">
 import CartSummaryForm from '@/components/forms/shared/CartSummaryForm.vue';
 import CartProductList from '@/components/partials/CartProductList.vue';
+import router from '@/router';
 import { useCartStore } from '@/stores/cart';
 import { useRegularAuthStore } from '@/stores/regular-auth';
 
@@ -33,6 +34,9 @@ async function buy(params: {
         direccion: params.direccion
     }
     const {data, error} = await buyProducts(attributesSale);
+    if (error === false) {
+        router.go(0)
+    }
 }
 
 fetchProductsCart()
