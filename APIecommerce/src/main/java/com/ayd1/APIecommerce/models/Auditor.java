@@ -33,8 +33,6 @@ public class Auditor {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Schema(hidden = true)
     private Instant createdAt;
 
     @LastModifiedDate

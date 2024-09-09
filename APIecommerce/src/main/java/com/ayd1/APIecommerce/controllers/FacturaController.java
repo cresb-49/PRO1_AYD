@@ -93,7 +93,7 @@ public class FacturaController {
     }
 
     @GetMapping("/ventas/usuario/cliente/{id}")
-    public ResponseEntity<?> getVentasByUser(Long id) {
+    public ResponseEntity<?> getVentasByUser(@PathVariable Long id) {
         try {
             List<Venta> data = facturaService.getVentasByUser(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
@@ -104,7 +104,7 @@ public class FacturaController {
     }
 
     @GetMapping("/venta/private/all/{id}")
-    public ResponseEntity<?> getProductsVenta(Long id){
+    public ResponseEntity<?> getProductsVenta(@PathVariable Long id){
         try {
             Venta data = facturaService.getVenta(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();   
