@@ -4,12 +4,8 @@
  */
 package com.ayd1.APIecommerce.controllers;
 
-import com.ayd1.APIecommerce.models.request.VentaRequest;
-import com.ayd1.APIecommerce.services.FacturaService;
-import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +18,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.ayd1.APIecommerce.models.Venta;
+import com.ayd1.APIecommerce.models.request.VentaRequest;
+import com.ayd1.APIecommerce.services.FacturaService;
+import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.ayd1.APIecommerce.repositories.VentaRepository;
+
 
 /**
  *
@@ -55,7 +65,7 @@ public class FacturaController {
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
-                    ex.getMessage(), null, null, null).sendResponse();
+                    null, null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -78,7 +88,28 @@ public class FacturaController {
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
-                    ex.getMessage(), null, null, null).sendResponse();
+                    null, null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @GetMapping("/ventas/usuario/cliente/{id}")
+    public ResponseEntity<?> getVentasByUser(Long id) {
+        try {
+            List<Venta> data = facturaService.getVentasByUser(id);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
+                    null, null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @GetMapping("/venta/private/all/{id}")
+    public ResponseEntity<?> getProductsVenta(Long id){
+        try {
+            Venta data = facturaService.getVenta(id);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();   
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, null, null, null, e.getMessage()).sendResponse();
         }
     }
 

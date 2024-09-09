@@ -50,6 +50,12 @@ const router = createRouter({
       component: () => import('../views/PasswordResetView.vue')
     },
     {
+      path: '/password_reset/form',
+      name: 'password-reset-form',
+      meta: {title: 'Password Reset', layout: EmptyLayout},
+      component: () => import('../views/ChangePasswordTokenView.vue')
+    },
+    {
       path: '/admin',
       name: 'admin',
       meta: {title: 'Admin', layout: DefaultLayout},

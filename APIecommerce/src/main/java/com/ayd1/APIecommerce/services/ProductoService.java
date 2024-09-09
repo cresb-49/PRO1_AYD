@@ -118,10 +118,6 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
 
         Producto producto = productoOp.get();
 
-        if (producto.getDeletedAt() != null) {
-            throw new Exception("Producto ya ha sido eliminado.");
-        }
-
         return producto;
     }
 

@@ -18,8 +18,13 @@ public class RolService {
         return (List<Rol>) rolRepository.findAll();
     }
 
-    public Rol getRol(Long id) {
-        return rolRepository.findById(id).orElse(null);
+    public Rol getRol(String rolStr) throws Exception {
+        Rol rol = this.rolRepository.findOneByNombre(rolStr).orElse(null);
+        // si el rol no existe lanzamos error
+        if (rol == null) {
+            throw new Exception("Rol no encontrado.");
+        }
+        return rol;
     }
 
     public Rol createRol(Rol producto) {
