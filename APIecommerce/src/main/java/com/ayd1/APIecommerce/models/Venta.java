@@ -5,6 +5,7 @@
 package com.ayd1.APIecommerce.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -49,6 +50,7 @@ public class Venta extends Auditor {
     @Cascade(CascadeType.ALL)
     @JoinColumn(name = "envio", nullable = true, unique = true)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private Envio envio;
 
     public Venta() {
