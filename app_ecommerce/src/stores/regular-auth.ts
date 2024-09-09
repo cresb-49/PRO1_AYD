@@ -195,7 +195,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.loading = true
       // const snackbarStore = useSnackbarStore()
 
-      const { data } = await useCustomFetch<User>(`api/usuario/private/perfil/${this.user!.id}`, {
+      const { data } = await useCustomFetch<User>(`api/usuario/private/all/perfil/${this.user!.id}`, {
         method: 'GET'
       })
       if (data.value) {

@@ -46,6 +46,8 @@
     </v-card>
 </template>
 <script setup lang="ts">
+import { useConfigsStore } from '@/stores/config';
+import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -87,7 +89,8 @@ function updateDelivery() {
         costoEnvio.value = 0
         updateTotal()
     } else {
-        costoEnvio.value = 15
+        const {deliveryCost} = storeToRefs(useConfigsStore())
+        costoEnvio.value  = deliveryCost.value
         updateTotal()
     }
 }
