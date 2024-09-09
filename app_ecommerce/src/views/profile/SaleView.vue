@@ -5,24 +5,55 @@
     </header>
     <section>
       <div>
-        <v-card class="mx-auto" max-width="400">
-          <v-card-title class="text-h5">General</v-card-title>
-          <!-- <v-card-subtitle>Informacion</v-card-subtitle> -->
-          <v-card-text>
-            <v-row
-              v-for="(item, index) in userData"
-              :key="index"
-              class="d-flex justify-space-between"
-            >
-              <v-col cols="6" class="text-left font-weight-bold">
-                {{ item.title }}
-              </v-col>
-              <v-col cols="6" class="text-right">
-                {{ item.value }}
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+        <v-container>
+          <v-row>
+            <!-- Primera tarjeta -->
+            <v-col cols="12" md="6">
+              <v-card class="mx-auto" max-width="400">
+                <v-card-title>
+                  <h3>General 1</h3>
+                </v-card-title>
+                <v-card-text>
+                  <v-row
+                    v-for="(item, index) in userData"
+                    :key="index"
+                    class="d-flex justify-space-between"
+                  >
+                    <v-col cols="6" class="text-left font-weight-bold">
+                      {{ item.title }}
+                    </v-col>
+                    <v-col cols="6" class="text-right">
+                      {{ item.value }}
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+
+            <!-- Segunda tarjeta -->
+            <v-col cols="12" md="6">
+              <v-card class="mx-auto" max-width="400">
+                <v-card-title>
+                  <h3>General 2</h3>
+                </v-card-title>
+                <v-card-text>
+                  <v-row
+                    v-for="(item, index) in userData"
+                    :key="index"
+                    class="d-flex justify-space-between"
+                  >
+                    <v-col cols="6" class="text-left font-weight-bold">
+                      {{ item.title }}
+                    </v-col>
+                    <v-col cols="6" class="text-right">
+                      {{ item.value }}
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
       </div>
       <div>
         <h2>Datos de Facturacion</h2>
