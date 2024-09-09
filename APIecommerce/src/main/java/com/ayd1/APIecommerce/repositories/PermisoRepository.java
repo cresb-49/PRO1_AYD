@@ -11,5 +11,6 @@ import com.ayd1.APIecommerce.models.Permiso;
 public interface PermisoRepository extends CrudRepository<Permiso, Long> {
 
     public Optional<Permiso> findOneByNombre(String nombre);
-    
+
+    public boolean existsByNombre(String nombre);
 }

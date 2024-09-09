@@ -38,10 +38,9 @@ public class Permiso extends Auditor {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<UsuarioPermiso> asignaciones;
 
-    public Permiso(String nombre, String ruta, List<UsuarioPermiso> asignaciones) {
+    public Permiso(String nombre, String ruta) {
         this.nombre = nombre;
         this.ruta = ruta;
-        this.asignaciones = asignaciones;
     }
 
     public Permiso(Long id) {
