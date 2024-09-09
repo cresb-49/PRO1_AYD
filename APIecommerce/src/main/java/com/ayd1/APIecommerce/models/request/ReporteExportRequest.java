@@ -22,7 +22,7 @@ public class ReporteExportRequest extends ReporteRequest {
             + "|reportePedidos)$",
             message = "El nombre del reporte debe ser "
             + "uno de los valores permitidos: reporteVentas,"
-            + " Reporte2, Reporte3.")
+            + " reporteInventario, reporteClientesFrecuentes, reportePedidos.")
     private String tipoReporte;
     @NotBlank(message = "El nombre de la categoria no puede estar vacío.")
     @NotNull(message = "El nombre de la categoria no puede ser nulo")
