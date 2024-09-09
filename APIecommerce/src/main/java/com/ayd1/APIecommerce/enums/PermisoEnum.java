@@ -25,13 +25,17 @@ public enum PermisoEnum {
             "/api/reporte/protected/generarReporteInventario"),
     GENERAR_CLIENTES("Generar reporte de clientes",
             "/api/reporte/protected/generarReporteClientesFrecuentes"),
+    GENERAR_PEDIDOS("Generar reporte de pedidos",
+            "/api/reporte/protected/generarReportePedidos"),
     /*EXPORTACIONES*/
     EXPORTAR_VENTAS("Exportar reporte de ventas",
             "/api/reporte/protected/exportar/reporteVentas"),
     EXPORTAR_INVENTARIO("Exportar reporte de inventario",
             "/api/reporte/protected/exportar/reporteInventario"),
     EXPORTAR_CLIENTES("Exportar reporte de clientes",
-            "/api/reporte/protected/exportar/reporteClientesFrecuentes"),;
+            "/api/reporte/protected/exportar/reporteClientesFrecuentes"),
+    EXPORTAR_PEDIDOS("Exportar reporte de pedidos",
+            "/api/reporte/protected/exportar/reportePedidos"),;
 
     private final String nombrePermiso;
     private final String ruta;

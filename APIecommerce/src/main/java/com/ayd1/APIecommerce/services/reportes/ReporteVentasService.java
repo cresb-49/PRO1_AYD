@@ -13,6 +13,7 @@ import com.ayd1.APIecommerce.models.request.ReporteRequest;
 import com.ayd1.APIecommerce.repositories.VentaRepository;
 import com.ayd1.APIecommerce.services.reportes.imprimibles.ReporteDeVentasImprimible;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,10 @@ public class ReporteVentasService extends Reporte {
         String fecha1 = request.getFecha1();
         String fecha2 = request.getFecha2();
 
-        Instant fecha1Instant = this.manejadorDeFecha.convertStringToInstant(fecha1);
-        Instant fecha2Instant = this.manejadorDeFecha.convertStringToInstant(fecha2);
+        LocalDate fecha1Instant = this.manejadorDeFecha.convertStringToLocalDate(fecha1);
+        LocalDate fecha2Instant = this.manejadorDeFecha.convertStringToLocalDate(fecha2);
         //mandamos a traer las ventas desde la fecha1 hasta la fecha2
-        List<Venta> ventas = this.ventaRepository.findAllByCreatedAtBetween(
+        List<Venta> ventas = this.ventaRepository.findAllByCreatedAtDateBetween(
                 fecha1Instant,
                 fecha2Instant
         );
