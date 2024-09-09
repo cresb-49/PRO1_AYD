@@ -14,6 +14,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
@@ -36,6 +37,7 @@ public class Permiso extends Auditor {
     @OneToMany(mappedBy = "permiso", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private List<UsuarioPermiso> asignaciones;
 
     public Permiso(String nombre, String ruta) {

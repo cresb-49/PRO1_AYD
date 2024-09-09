@@ -465,8 +465,14 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
                     usuario, item
             ));
         }
-        //asignamos los nuevos permisos al usuario
-        usuario.setPermisos(permisosNuevos);
+
+        if (usuario.getPermisos() == null) {
+            usuario.setPermisos(permisosNuevos);
+        } else {
+            //asignamos los nuevos permisos al usuario
+            usuario.getPermisos().clear();
+            usuario.getPermisos().addAll(permisosNuevos);
+        }
         // Guardamos el usuario
         return this.usuarioRepository.save(usuario);
     }
