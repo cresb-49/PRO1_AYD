@@ -32,6 +32,7 @@ export type Product = {
   nombre: string,
   stock: number,
   precio: number,
+  porcentajeImpuesto: number,
   imagenesUrls?: string[]
 }
 
@@ -167,7 +168,7 @@ export const useProductStore = defineStore('products', {
       producto.stock += 1;
 
       const { data, error } = await useCustomFetch<any>(
-        'api/producto/private/actualizarProducto',
+        'api/producto/protected/actualizarProducto',
         {
           method: 'PATCH',
           body: JSON.stringify(producto)
