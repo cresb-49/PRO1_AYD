@@ -2,6 +2,7 @@ import { useCustomFetch } from '@/composables/useCustomFetch'
 import { defineStore } from 'pinia'
 import { useSnackbarStore, SnackbarType } from './snackbar'
 import { convertError } from '@/utils/error-converter'
+import { useProductStore, type Product } from './products'
 
 export type CreationPayload = {
   nombre: string,
@@ -53,6 +54,7 @@ export const useCategoryStore = defineStore('categories', {
       // Success
       // Return the data and error
       this.loading = false
+      console.log('termino esto')
       return { data, error: false }
     },
     async fetchCategory(category_id: number) {
@@ -149,6 +151,51 @@ export const useCategoryStore = defineStore('categories', {
       // Return the data and error
       this.loading = false
       return { data, error: false }
+    }
+  },
+  getters: {
+    categoriesHomepage: async (state) => {
+      console.log('categorias aqui')
+      console.log(state.categories)
+      if (state.categories.length === 0) {
+        return []
+      }
+      const categoriesLimit = state.categories.slice(0, 12)
+      const categoriesShow = [];
+      for (let index = 0; index < categoriesLimit.length; index++) {
+        const category = categoriesLimit[index];
+        const {data, error} = await useProductStore().fetchProductsByCategory(category.id);
+        
+        if (error.value) {
+          categoriesShow.push(
+            {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: undefined}
+          )
+          continue;
+        }
+        
+        const productos = data.value.data as Product[]
+        const primerProducto = productos ? (productos.length > 0 ? productos[0] : undefined) : undefined
+        if (primerProducto !== undefined) {
+          const {data, error} = await useProductStore().fetchProduct(primerProducto.id)
+
+          if (error.value) {
+            categoriesShow.push(
+              {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: undefined}
+            )
+            continue;
+          }
+
+          const productoInfo = data.value.data as Product
+          categoriesShow.push(
+            {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: productoInfo ? productoInfo.imagenesUrls![0] : undefined}
+          )
+        } else {
+          categoriesShow.push(
+            {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: undefined}
+          )
+        }
+      }
+      return categoriesShow
     }
   }
 })
