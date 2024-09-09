@@ -4,6 +4,14 @@
  */
 package com.ayd1.APIecommerce.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.ayd1.APIecommerce.models.DatosFacturacion;
 import com.ayd1.APIecommerce.models.Envio;
 import com.ayd1.APIecommerce.models.EstadoEnvio;
@@ -22,11 +30,6 @@ import com.ayd1.APIecommerce.repositories.ProductoRepository;
 import com.ayd1.APIecommerce.repositories.VentaRepository;
 import com.ayd1.APIecommerce.services.reportes.Reporte;
 import com.ayd1.APIecommerce.services.reportes.imprimibles.FacturaImprimible;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import javax.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -69,6 +72,18 @@ public class FacturaService extends Reporte {
         }
 
         return ventaSearch.get();
+    }
+
+    public List<Venta> getVentasByUser(Long idUsuario) throws Exception {
+        if (idUsuario == null || idUsuario <= 0) {
+            throw new Exception("Id invalido.");
+        }
+        //Verificamos que el usuario exista
+        Usuario usuario = this.usuarioService.getUsuario(idUsuario);
+        if (usuario == null) {
+            throw new Exception("Usuario no encontrado.");
+        }
+        return this.ventaRepository.findAllByDatosFacturacion_Usuario_Id(idUsuario);
     }
 
     public byte[] getFactura(Long ventId) throws Exception {
