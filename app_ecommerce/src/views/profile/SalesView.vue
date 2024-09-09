@@ -2,8 +2,11 @@
   <main>
     <header>
       <h1 class="mb-4">Mis Compras</h1>
+      <v-btn prepend-icon="mdi-arrow-left" to="/perfil" class="mt-3">
+        Regresar
+      </v-btn>
     </header>
-    <section>
+    <section style="margin-top: 5px;">
       <TableData :columns="columns" :data="sales" data_key="id" :actions="actionsTable" />
     </section>
   </main>

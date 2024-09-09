@@ -1,9 +1,12 @@
 <template>
   <main>
     <header>
-      <h1>Descripcion de la Venta</h1>
+      <h1 style="margin-bottom: 5px;">Descripcion de la Venta</h1>
+      <v-btn prepend-icon="mdi-arrow-left" to="/ventas" class="mt-3">
+        Regresar
+      </v-btn>
     </header>
-    <section>
+    <section style="margin-top: 5px;">
       <div>
         <v-container>
           <v-row>
