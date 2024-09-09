@@ -55,7 +55,7 @@ public class FacturaController {
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
-                    ex.getMessage(), null, null, null).sendResponse();
+                    null, null, null, ex.getMessage()).sendResponse();
         }
     }
 
@@ -78,7 +78,7 @@ public class FacturaController {
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
-                    ex.getMessage(), null, null, null).sendResponse();
+                    null, null, null, ex.getMessage()).sendResponse();
         }
     }
 
