@@ -25,6 +25,7 @@ import com.ayd1.APIecommerce.models.UsuarioPermiso;
 import com.ayd1.APIecommerce.models.UsuarioRol;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
+import com.ayd1.APIecommerce.models.request.UsuarioAyudanteRequest;
 import com.ayd1.APIecommerce.models.request.UsuarioPermisoRequest;
 import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
@@ -380,13 +381,17 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     }
 
     @Transactional
-    public Usuario crearAyudante(Usuario crear) throws Exception {
+    public Usuario crearAyudante(UsuarioAyudanteRequest crear) throws Exception {
         // validamos
-        this.validar(crear);
+        this.validar(crear.getUsuario());
         //traer rol AYUDANTE
         Rol rol = this.rolService.getRol("AYUDANTE");
-        Usuario usuario = this.guardarUsuario(crear, rol);
-        return null;
+        Usuario usuario = this.guardarUsuario(crear.getUsuario(), rol);
+        //mandamos a guardar todos los permisos para el usuario
+        Usuario actualizarPermisosUsuario = this.actualizarPermisosUsuario(
+                new UsuarioPermisoRequest(usuario.getId(), crear.getPermisos())
+        );
+        return actualizarPermisosUsuario;
     }
 
     @Transactional

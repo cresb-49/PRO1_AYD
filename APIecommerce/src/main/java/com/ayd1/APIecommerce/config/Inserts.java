@@ -20,6 +20,7 @@ import com.ayd1.APIecommerce.models.Permiso;
 import com.ayd1.APIecommerce.models.Rol;
 import com.ayd1.APIecommerce.models.TiendaConfig;
 import com.ayd1.APIecommerce.models.Usuario;
+import com.ayd1.APIecommerce.models.request.UsuarioAyudanteRequest;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.EstadoEnvioRepository;
 import com.ayd1.APIecommerce.repositories.PermisoRepository;
@@ -160,7 +161,9 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             } catch (Exception e) {
             }
             try {
-                this.usuarioService.crearAyudante(ayudante);
+                this.usuarioService.crearAyudante(
+                        new UsuarioAyudanteRequest(ayudante, new ArrayList<>())
+                );
             } catch (Exception e) {
             }
 
