@@ -21,6 +21,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  *
@@ -59,29 +60,35 @@ public class Usuario extends Auditor {
 
     @Column(name = "codigo_activacion", columnDefinition = "LONGTEXT")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private String codigoActivacion;
     @Column(name = "codigo_recuperacion", columnDefinition = "LONGTEXT")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private String codigoRecuperacion;
     @Column(name = "estado_activacion", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private boolean estadoActivacion;
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private List<UsuarioRol> roles;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private List<UsuarioPermiso> permisos;
     @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private List<DatosFacturacion> facturas;
 
-    @Column(name = "two_factor_code", length=250)
+    @Column(name = "two_factor_code", length = 250)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String twoFactorCode;
 
-    @Column(name = "two_factor_enabled", nullable=false)
+    @Column(name = "two_factor_enabled", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ColumnDefault("false")
     private boolean twoFactorEnabled;
@@ -189,7 +196,7 @@ public class Usuario extends Auditor {
     public List<UsuarioPermiso> getPermisos() {
         return permisos;
     }
-    
+
     public void setPermisos(List<UsuarioPermiso> permisos) {
         this.permisos = permisos;
     }
@@ -219,10 +226,10 @@ public class Usuario extends Auditor {
     }
 
     /**
-     * Metodo para mantener las relaciones de roles, permisos y facturas
-     * Para evitar que se eliminen al actualizar
-     * Se debe llamar antes de actualizar
+     * Metodo para mantener las relaciones de roles, permisos y facturas Para
+     * evitar que se eliminen al actualizar Se debe llamar antes de actualizar
      * Se afectan todas las relaciones con orphanRemoval = true
+     *
      * @param usuario Es el mismo objeto que se va a actualizar
      */
     public void keepOrphanRemoval(Usuario usuario) {

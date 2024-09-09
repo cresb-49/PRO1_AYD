@@ -56,6 +56,18 @@ const router = createRouter({
       component: () => import('../views/ChangePasswordTokenView.vue')
     },
     {
+      path:'/ventas',
+      name: 'ventas',
+      meta: {title: 'Ventas', layout: DefaultLayout},
+      component: () => import('../views/profile/SalesView.vue')
+    },
+    {
+      path:'/venta/:id',
+      name: 'venta',
+      meta: {title: 'Venta', layout: DefaultLayout},
+      component: () => import('../views/profile/SaleView.vue')
+    },
+    {
       path: '/admin',
       name: 'admin',
       meta: {title: 'Admin', layout: DefaultLayout},

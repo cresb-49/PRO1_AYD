@@ -27,7 +27,6 @@ import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.models.request.UsuarioAyudanteRequest;
 import com.ayd1.APIecommerce.models.request.UsuarioPermisoRequest;
-import com.ayd1.APIecommerce.repositories.RolRepository;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
 import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
@@ -415,7 +414,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         // validamos
         this.validar(crear);
         //traer rol AYUDANTE
-        Rol rol = this.rolService.getRol("ADMIN");
+        Rol rol = this.rolService.getRol("USUARIO");
         //guardamos el usuario
         Usuario userCreado = this.guardarUsuario(crear, rol);
         // Generar el JWT para el usuario creado
@@ -465,8 +464,14 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
                     usuario, item
             ));
         }
-        //asignamos los nuevos permisos al usuario
-        usuario.setPermisos(permisosNuevos);
+
+        if (usuario.getPermisos() == null) {
+            usuario.setPermisos(permisosNuevos);
+        } else {
+            //asignamos los nuevos permisos al usuario
+            usuario.getPermisos().clear();
+            usuario.getPermisos().addAll(permisosNuevos);
+        }
         // Guardamos el usuario
         return this.usuarioRepository.save(usuario);
     }
