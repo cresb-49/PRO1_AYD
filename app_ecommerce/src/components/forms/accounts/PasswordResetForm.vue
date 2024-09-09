@@ -75,7 +75,7 @@ const emits = defineEmits(['sendEmail']) //Nombre del emit con "@""
 function sendEmail() {
   //Funcion que emite un emit y envia el objeto emailData al view Padre
   const emailData = {
-    correoElectronico: email
+    correoElectronico: email.value
   }
   emits('sendEmail', emailData)
 }

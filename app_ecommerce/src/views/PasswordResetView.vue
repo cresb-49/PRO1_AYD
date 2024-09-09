@@ -2,7 +2,7 @@
   <section class="login-page">
     <v-row justify="center" no-gutters>
       <v-col cols="11" sm="8" md="8" lg="5" xl="4">
-        <PasswordResetForm @send-email="enviarEmail" />
+        <PasswordResetForm @sendEmail="sendEmail" />
       </v-col>
     </v-row>
   </section>
@@ -20,7 +20,8 @@ const { loading, error } = storeToRefs(regularAuthStore)
 const { sendForgotPasswordEmail } = regularAuthStore
 const router = useRouter()
 
-async function enviarEmail(params: { correoElectronico: string }) {
+async function sendEmail(params: { correoElectronico: string }) {
+  console.log(params.correoElectronico);
   await sendForgotPasswordEmail(params)
 }
 </script>
