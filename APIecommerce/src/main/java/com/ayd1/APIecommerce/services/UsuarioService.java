@@ -54,14 +54,13 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         return usuarioRepository.findAll();
     }
 
-    public Usuario getByEmail(String email) {
-        Optional<Usuario> busquedaUsuario = usuarioRepository.findByEmail(email);
-        if (busquedaUsuario.isEmpty()) {
-            throw new IllegalArgumentException("Usuario no encontrado.");
+    public Usuario getByEmail(String email) throws Exception {
+        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+        if (usuario == null) {
+            throw new Exception("Usuario no encontrado.");
         }
-        Usuario usuario = busquedaUsuario.get();
         if (usuario.getDeletedAt() != null) {
-            throw new IllegalArgumentException("Usuario eliminado.");
+            throw new Exception("Usuario eliminado.");
         }
         return usuario;
     }
@@ -429,13 +428,14 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
 
     /**
      * Agregar un rol a un usuario
+     *
      * @param usuario
      * @param rol
      * @return
      */
     @Transactional
     public Usuario agregarRolUsuario(Usuario usuario, Rol rol) throws Exception {
-        if(!this.usuarioRepository.existsByEmail(usuario.getEmail())){
+        if (!this.usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new IllegalArgumentException("El usuario no existe.");
         }
         //Buscamos el usuario en la base de datos
@@ -463,17 +463,18 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         usuario.getRoles().add(usuarioRol);
         // Actualizamos el usuario
         return this.usuarioRepository.save(usuario);
-    }   
+    }
 
     /**
      * Agregar un permiso a un usuario
+     *
      * @param usuario
      * @param permiso
      * @return
      */
     @Transactional
-    public Usuario agregarPermisoUsuario(Usuario usuario, Permiso permiso) throws Exception{
-        if(!this.usuarioRepository.existsByEmail(usuario.getEmail())){
+    public Usuario agregarPermisoUsuario(Usuario usuario, Permiso permiso) throws Exception {
+        if (!this.usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new IllegalArgumentException("El usuario no existe.");
         }
         //Buscamos el usuario en la base de datos
@@ -491,11 +492,11 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         // Verificamos si el objeto ya tiene una lista de permisos, si no la tiene, la inicializamos (sin reemplazar)
         // Mantenemos las relaciones orphanRemoval = true para evistar inconsistencias en la base de datos
         usuario.keepOrphanRemoval(usuarioEncontrado);
-        if(usuario.getPermisos() == null) {
+        if (usuario.getPermisos() == null) {
             usuario.setPermisos(new ArrayList<>());
         }
         // Verificamos si el permiso ya existe
-        if(usuario.getPermisos().stream().anyMatch(p -> p.getPermiso().getId().equals(permiso.getId()))){
+        if (usuario.getPermisos().stream().anyMatch(p -> p.getPermiso().getId().equals(permiso.getId()))) {
             throw new IllegalArgumentException("El permiso ya ha sido asignado al usuario.");
         }
         // Agregamos el permiso a la lista de permisos del usuario
