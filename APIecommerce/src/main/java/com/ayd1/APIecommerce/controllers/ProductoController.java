@@ -13,7 +13,7 @@ import com.ayd1.APIecommerce.models.Producto;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.services.CategoriaService;
 import com.ayd1.APIecommerce.services.ProductoService;
-import com.ayd1.APIecommerce.services.tools.ValidadorPermiso;
+import com.ayd1.APIecommerce.tools.ValidadorPermiso;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 
 import io.swagger.v3.oas.annotations.Operation;
