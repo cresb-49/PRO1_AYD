@@ -90,28 +90,17 @@ public class CategoriaService extends Service {
 
     @Transactional
     public String deleteCategoria(Long id) throws Exception {
-
         if (id == null || id <= 0) {
             throw new Exception("Id inválido");
         }
-
-        Optional<Categoria> posibleCategoria = categoriaRepository.findById(id);
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElse(null);
         // Si no encontro la categoria con el id
-        if (posibleCategoria.isEmpty()) {
+        if (categoria == null) {
             throw new Exception("No se encontró ninguna categoría para eliminar");
         }
-
-        Categoria delCategoria = posibleCategoria.get();
-
-        if (delCategoria.getDeletedAt() != null) {
-            throw new Exception("Categoría eliminada previamente");
-        }
-
-        delCategoria.setDeletedAt(Instant.now());
-
-        Categoria updateDelCategoria = this.categoriaRepository.save(delCategoria);
-
-        if (updateDelCategoria.getId() > 0) {
+        Long delete = this.categoriaRepository.deleteCategoriaById(categoria.getId());
+        if (delete > 0) {
             return "La categoría se eliminó con éxito";
         }
         throw new Exception("No se pudo eliminar la categoría");

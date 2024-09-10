@@ -16,4 +16,6 @@ public interface CategoriaRepository extends CrudRepository<Categoria, Long> {
     public boolean existsByNombreAndIdNot(String nombre, Long id);
 
     public List<Categoria> findByPadre(Categoria padre);
+
+    public Long deleteCategoriaById(Long id);
 }

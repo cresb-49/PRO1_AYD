@@ -96,31 +96,21 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         }
 
         // mandamos a traer el estado de la cuenta
-        Optional<Usuario> busquedaUsuario = usuarioRepository.findById(id);
+        Usuario usuario = usuarioRepository.findById(id).orElse(null);
 
         // si esta vacio entonces el usuairo no existe
-        if (busquedaUsuario.isEmpty()) {
+        if (usuario == null) {
             throw new Exception("No hemos encontrado el usuario.");
         }
 
-        // extraer el usuario
-        Usuario usuarioEliminar = busquedaUsuario.get();
-
-        // vemos si el usuario no ha sido eliminado
-        if (usuarioEliminar.getDeletedAt() != null) {
-            throw new Exception("Usuario ya ha sido eliminado.");
-        }
-
         // validar si el usuario tiene permiso de eliminar
-        this.verificarUsuarioJwt(usuarioEliminar, emailUsuarioAutenticado);
-        // seteamos la fecha de eliminacion
-        usuarioEliminar.setDeletedAt(Instant.now());
+        this.verificarUsuarioJwt(usuario, emailUsuarioAutenticado);
 
         // editar el usuario
-        Usuario usuarioUpdate = this.usuarioRepository.save(usuarioEliminar);
+        Long eliminar = this.usuarioRepository.deleteUsuarioById(usuario.getId());
 
         // mandamos a editar la password y comparamos si se hizo el cambio
-        if (usuarioUpdate.getId() > 0) {
+        if (eliminar > 0) {
             return "Se elimino el usuario con exito.";
         }
         throw new Exception("No pudimos eliminar el usuario, inténtalo más tarde.");

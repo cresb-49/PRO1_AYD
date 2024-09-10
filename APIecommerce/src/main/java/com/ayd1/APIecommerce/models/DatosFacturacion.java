@@ -18,6 +18,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -25,6 +27,8 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "datos_facturacion")
+@SQLDelete(sql = "UPDATE datos_facturacion SET deleted_at = NULL WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class DatosFacturacion extends Auditor {
 
     @Column(name = "nit", length = 250, unique = false)

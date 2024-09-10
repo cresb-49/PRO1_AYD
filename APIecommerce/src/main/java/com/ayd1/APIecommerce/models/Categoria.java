@@ -19,6 +19,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -27,6 +29,8 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @Table(name = "categoria")
 @DynamicUpdate
+@SQLDelete(sql = "UPDATE categoria SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class Categoria extends Auditor {
 
     @ManyToOne

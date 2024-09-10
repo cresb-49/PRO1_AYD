@@ -31,7 +31,7 @@ public class CategoriaController {
             Object data = categoriaService.getCategoria(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, "Error", null,null,e.getMessage()).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, "Error", null, null, e.getMessage()).sendResponse();
         }
     }
 
@@ -39,7 +39,7 @@ public class CategoriaController {
     public ResponseEntity<?> getCategorias() {
         try {
             List<Categoria> listaCategorias = categoriaService.getCategorias();
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",listaCategorias,null,null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", listaCategorias, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }
@@ -61,18 +61,18 @@ public class CategoriaController {
         try {
             Categoria actualCategoria = categoriaService.updateCategoria(editCategoria);
             return new ApiBaseTransformer(HttpStatus.OK, "Categoria actualizada",
-            actualCategoria,
-            null, null).sendResponse();
+                    actualCategoria,
+                    null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,"Error",null, null, e.getMessage()).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }
     }
 
-    @DeleteMapping("/categoria/protected/eliminarCategoria/{id}")
+    @DeleteMapping("/categoria/private/eliminarCategoria/{id}")
     public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
         try {
             String eliminacionCategoria = categoriaService.deleteCategoria(id);
-            return new ApiBaseTransformer(HttpStatus.OK, "Categoría eliminada con éxito",eliminacionCategoria,null,null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoría eliminada con éxito", eliminacionCategoria, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }

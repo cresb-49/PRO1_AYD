@@ -6,6 +6,12 @@ import { convertError } from '@/utils/error-converter'
 import { useCookies } from 'vue3-cookies'
 import { jwtDecode } from 'jwt-decode'
 
+export enum UserRole {
+  AYUDANTE = 'AYUDANTE',
+  ADMIN = 'ADMIN',
+  USUARIO = 'USUARIO'
+}
+
 type UserPayload = {
   email?: string
   password?: string
@@ -18,7 +24,7 @@ export type ForgotPasswordPayload = {
 
 export type ChangePasswordTokenPayload = {
   nuevaPassword: string
-  codigo: string 
+  codigo: string
 }
 
 export type UserUpdatePayload = {
@@ -33,6 +39,11 @@ export type SignupPayload = {
   apellidos: string
   email: string
   password: string
+}
+
+export type SignUpAyudante = {
+  usuario: SignupPayload
+  permisos: any[]
 }
 
 export type User = {
@@ -63,6 +74,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
   state: () => ({
     authenticated: false,
     loading: false,
+    cleanForm: false,
     error: null as any | string[] | null,
     user: null as User | null
   }),
@@ -142,25 +154,35 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         return { data, error: false, twoFactor: false }
       }
     },
-    async signupUser(payload: SignupPayload) {
+    async signupUser(payload: SignupPayload | SignUpAyudante, typeUser: UserRole, autoLogin = true) {
       const authStore = useAuthStore()
-      const { nombres, apellidos, email, password } = payload
-      const newPayload = {
-        nombres: nombres,
-        apellidos: apellidos,
-        email: email,
-        password: password
-      }
+      this.cleanForm = false
+      // const { nombres, apellidos, email, password } = payload
+      // const newPayload = {
+      //   nombres: nombres,
+      //   apellidos: apellidos,
+      //   email: email,
+      //   password: password
+      // }
       this.loading = true
       this.error = null
+      let path = 'api/usuario/public/crearUsuario'
+      switch (typeUser) {
+        case UserRole.USUARIO:
+          path = 'api/usuario/public/crearUsuario'
+          break
+        case UserRole.ADMIN:
+          path = 'api/usuario/private/crearAdministrador'
+          break
+        case UserRole.AYUDANTE:
+          path = 'api/usuario/private/crearAyudante'
+          break
+      }
       // Fetch the data from the API
-      const { data, error } = await useCustomFetch<LoginResponse>(
-        'api/usuario/public/crearUsuario',
-        {
-          method: 'POST',
-          body: JSON.stringify(newPayload)
-        }
-      )
+      const { data, error } = await useCustomFetch<LoginResponse>(path, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
       // Error handling
       if (error.value) {
         useSnackbarStore().showSnackbar({
@@ -169,44 +191,51 @@ export const useRegularAuthStore = defineStore('regular-auth', {
           type: SnackbarType.ERROR
         })
         this.loading = false
+        this.cleanForm = false
         return { data, error: error.value }
       }
       // Success
       // Set the user in the store
-      this.user = data?.value?.data?.usuario ?? null
-      this.authenticated = true
+      if (autoLogin) {
+        this.user = data?.value?.data?.usuario ?? null
+        this.authenticated = true
 
-      let roleuser = ''
-      switch (this.user?.roles[0].rol.id) {
-        case 1:
-          roleuser = 'regular'
-          break
-        case 2:
-          roleuser = 'admin'
-          break
-        case 3:
-          roleuser = 'helper'
-          break
-        default:
-          roleuser = 'regular'
-          break
+        let roleuser = ''
+        switch (this.user?.roles[0].rol.id) {
+          case 1:
+            roleuser = 'regular'
+            break
+          case 2:
+            roleuser = 'admin'
+            break
+          case 3:
+            roleuser = 'helper'
+            break
+          default:
+            roleuser = 'regular'
+            break
+        }
+        // Set cookies, user and role
+        useCookies().cookies.set('user-token', data?.value?.data?.jwt)
+        useCookies().cookies.set('roleuser', roleuser)
+        // Set the token and role in the auth store
+        authStore.login({ role: roleuser, token: data?.value?.data?.jwt ?? '' })
       }
-      // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.data?.jwt)
-      useCookies().cookies.set('roleuser', roleuser)
-      // Set the token and role in the auth store
-      authStore.login({ role: roleuser, token: data?.value?.data?.jwt ?? '' })
       // Return the data and error
       this.loading = false
+      this.cleanForm = true
       return { data, error: false }
     },
     async myProfile() {
       this.loading = true
       // const snackbarStore = useSnackbarStore()
 
-      const { data } = await useCustomFetch<User>(`api/usuario/private/all/perfil/${this.user!.id}`, {
-        method: 'GET'
-      })
+      const { data } = await useCustomFetch<User>(
+        `api/usuario/private/all/perfil/${this.user!.id}`,
+        {
+          method: 'GET'
+        }
+      )
       if (data.value) {
         this.user = data?.value?.data
       } else {
@@ -280,13 +309,11 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       })
       if (error.value) {
         console.log(error.value)
-        useSnackbarStore().showSnackbar(
-          {
-            title: 'Error',
-            message: convertError(error.value),
-            type: SnackbarType.ERROR
-          }
-        )
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: convertError(error.value),
+          type: SnackbarType.ERROR
+        })
         this.loading = false
         return { data, error: true }
       }

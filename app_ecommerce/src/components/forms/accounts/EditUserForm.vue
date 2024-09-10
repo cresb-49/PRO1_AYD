@@ -4,7 +4,7 @@
       <h3 class="text-center mb-4">{{ title }}</h3>
     </v-card-title>
     <v-card-text>
-      <v-form id="signup-form" ref="form" :disabled="loading" @submit.prevent="signup">
+      <v-form id="signup-form" ref="form" :disabled="loading" @submit.prevent="editUser">
         <v-text-field
           v-model="nombres"
           label="Nombre(s)"
@@ -40,32 +40,6 @@
             <v-icon icon="mdi-email-open-outline" size="small" />
           </template>
         </v-text-field>
-        <v-text-field
-          v-model="password"
-          :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-          label="Contraseña"
-          :type="showPassword ? 'text' : 'password'"
-          :rules="[validationRules.required, ...validationRules.password]"
-          required
-          @click:append="showPassword = !showPassword"
-        >
-          <template #prepend>
-            <v-icon icon="mdi-dots-horizontal" size="small" />
-          </template>
-        </v-text-field>
-        <v-text-field
-          v-model="confirmPassword"
-          :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-          label="Confirmar contraseña"
-          :type="showPassword ? 'text' : 'password'"
-          :rules="[validationRules.required, ...confirmPasswordRules]"
-          required
-          @click:append="showPassword = !showPassword"
-        >
-          <template #prepend>
-            <v-icon icon="mdi-dots-horizontal" size="small" />
-          </template>
-        </v-text-field>
       </v-form>
     </v-card-text>
     <v-card-actions>
@@ -86,10 +60,10 @@
         </v-col>
         <v-col cols="12">
           <v-btn type="submit" form="signup-form" variant="tonal" width="100%" :loading="loading">
-            {{ adminView ? 'Registrar' : 'Continuar' }}
+            Editar
           </v-btn>
         </v-col>
-        <v-col cols="12" v-if="adminView">
+        <v-col cols="12">
           <v-btn
             type="button"
             variant="tonal"
@@ -100,20 +74,12 @@
             Regresar
           </v-btn>
         </v-col>
-        <v-col cols="12" v-if="!adminView">
-          <span>
-            ¿Ya tienes una cuenta?
-            <router-link to="/login" class="text-orange-darken-3 text-decoration-none nav-link ml-1"
-              ><strong>Inicia sesión</strong></router-link
-            >
-          </span>
-        </v-col>
       </v-row>
     </v-card-actions>
   </v-card>
 </template>
 <script lang="ts">
-import { UserRole } from '@/stores/regular-auth'
+import type { UpdateUserPayload, UserByPermiso } from '@/stores/users'
 
 export default {
   props: {
@@ -122,34 +88,29 @@ export default {
       default: false
     },
     error: {
-      type: [String, Array],
+      type: [String, Array, Boolean],
       default: () => null
-    },
-    success: {
-      type: Boolean,
-      default: false
     },
     title: {
       type: String,
-      default: 'Regístrate'
+      default: 'Editar Usuario'
     },
-    submitType: {
-      type: String,
-      default: UserRole.USUARIO
-    },
-    adminView: {
-      type: Boolean,
-      default: false
+    user: {
+      type: Object as () => UserByPermiso,
+      default: () => ({}) as UserByPermiso
     }
   },
   watch: {
-    success(newValue) {
-      if (newValue) {
-        this.clearForm()
-      }
+    user: {
+      handler: function (val) {
+        this.nombres = val.nombres
+        this.apellidos = val.apellidos
+        this.email = val.email
+      },
+      deep: true
     }
   },
-  emits: ['signup'],
+  emits: ['editUser'],
   data() {
     return {
       nombres: '',
@@ -176,41 +137,24 @@ export default {
     }
   },
   methods: {
-    async signup() {
+    async editUser() {
       const formRef = await this.$refs.form.validate()
       if (formRef.valid) {
-        //Si es de tipo AYUDANTE, el payload cambia
-        if (this.submitType === UserRole.AYUDANTE) {
-          const payload = {
-            usuario: {
-              nombres: this.nombres,
-              apellidos: this.apellidos,
-              email: this.email,
-              password: this.password
-            },
-            permisos: []
-          }
-          this.$emit('signup', payload)
-        } else {
-          const payload = {
-            nombres: this.nombres,
-            apellidos: this.apellidos,
-            email: this.email,
-            password: this.password
-          }
-          this.$emit('signup', payload)
-        }
+        const payload = {
+          id: this.user.id,
+          nombres: this.nombres,
+          apellidos: this.apellidos,
+          email: this.email,
+          nit: this.user.nit
+        } as UpdateUserPayload
+        this.$emit('editUser', payload)
       }
-    },
-    async clearForm() {
-      //Agregamos una pausa de 1 segundo y limpiamos los campos del formulario
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      this.nombres = ''
-      this.apellidos = ''
-      this.email = ''
-      this.password = ''
-      this.confirmPassword = ''
     }
+  },
+  mounted() {
+    this.nombres = this.user.nombres
+    this.apellidos = this.user.apellidos
+    this.email = this.user.email
   }
 }
 </script>
