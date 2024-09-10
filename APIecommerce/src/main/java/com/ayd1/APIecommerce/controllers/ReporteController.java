@@ -15,6 +15,7 @@ import com.ayd1.APIecommerce.services.reportes.ReporteClientesFrecuentesService;
 import com.ayd1.APIecommerce.services.reportes.ReporteInventarioService;
 import com.ayd1.APIecommerce.services.reportes.ReportePedidosService;
 import com.ayd1.APIecommerce.services.reportes.ReporteVentasService;
+import com.ayd1.APIecommerce.tools.ValidadorPermiso;
 import com.ayd1.APIecommerce.transformers.ApiBaseTransformer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,6 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/reporte/protected")
 public class ReporteController {
 
+    @Autowired
+    private ValidadorPermiso validadorPermiso;
     @Autowired
     private Service service;
     @Autowired
@@ -69,8 +72,9 @@ public class ReporteController {
             @RequestBody ReporteExportRequest reporteDails) {
 
         try {
-            byte[] reporte;
             this.service.validar(reporteDails);
+            this.validadorPermiso.verificarPermiso(reporteDails.getTipoReporte());
+            byte[] reporte;
             switch (reporteDails.getTipoReporte()) {
                 case "reporteVentas" -> {
                     reporte
@@ -86,6 +90,11 @@ public class ReporteController {
                     reporte
                             = this.reporteClientesFrecuentes
                                     .exportarReporteClientesFrecuentes(reporteDails);
+                }
+                case "reportePedidos" -> {
+                    reporte
+                            = this.reportePedidosService
+                                    .exportarReporteDePedidos(reporteDails);
                 }
                 default -> {
                     throw new AssertionError();
@@ -135,6 +144,7 @@ public class ReporteController {
             @Parameter(description = "Detalles del reporte a generar", required = true)
             @RequestBody ReporteRequest reporte) {
         try {
+            this.validadorPermiso.verificarPermiso();
             ReporteVentasDto respuesta = this.reporteVentasService.generarReporteVentas(reporte);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
@@ -156,6 +166,7 @@ public class ReporteController {
     @PostMapping("/generarReporteInventario")
     public ResponseEntity<?> generarReporteInventario() {
         try {
+            this.validadorPermiso.verificarPermiso();
             ReporteInventarioDto respuesta = this.reporteInventarioService.generarReporteInventario();
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
@@ -179,6 +190,7 @@ public class ReporteController {
             @Parameter(description = "Detalles del reporte a generar", required = true)
             @RequestBody ReporteRequest reporteRequest) {
         try {
+            this.validadorPermiso.verificarPermiso();
             ReporteClientesFrecuentesDto respuesta
                     = this.reporteClientesFrecuentes.
                             generarReporteClientesFrecuentes(reporteRequest);
@@ -204,6 +216,7 @@ public class ReporteController {
             @Parameter(description = "Detalles del reporte a generar", required = true)
             @RequestBody ReporteExportRequest reporteRequest) {
         try {
+            this.validadorPermiso.verificarPermiso();
             ReportePedidoDto respuesta
                     = this.reportePedidosService.
                             generarReporteDePedidos(reporteRequest);

@@ -18,10 +18,11 @@ public class ReporteExportRequest extends ReporteRequest {
 
     @NotBlank(message = "El nombre de la categoria no puede estar vacío.")
     @NotNull(message = "El nombre de la categoria no puede ser nulo")
-    @Pattern(regexp = "^(reporteVentas|reporteInventario|reporteClientesFrecuentes)$",
+    @Pattern(regexp = "^(reporteVentas|reporteInventario|reporteClientesFrecuentes"
+            + "|reportePedidos)$",
             message = "El nombre del reporte debe ser "
             + "uno de los valores permitidos: reporteVentas,"
-            + " Reporte2, Reporte3.")
+            + " reporteInventario, reporteClientesFrecuentes, reportePedidos.")
     private String tipoReporte;
     @NotBlank(message = "El nombre de la categoria no puede estar vacío.")
     @NotNull(message = "El nombre de la categoria no puede ser nulo")

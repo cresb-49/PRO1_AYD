@@ -64,6 +64,35 @@ public class ProductoController {
         }
     }
 
+    @Operation(summary = "Obtener todos los 10 productos mas nuevos en la bd"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description
+                = "Lista de productos obtenida exitosamente",
+                content = {
+                    @Content(mediaType = "application/json",
+                            array = @ArraySchema(
+                                    schema = @Schema(
+                                            implementation = ProductoDto.class
+                                    )
+                            )
+                    )
+                }
+        ),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud",
+                content = @Content
+        )
+    })
+    @GetMapping("/productos/public/getDiezProductosMasReciente")
+    public ResponseEntity<?> getDiezProductosMasReciente() {
+        try {
+            List<ProductoDto> respuesta = productoService.getDiezProductosMasReciente();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
     @Operation(summary = "Obtener un producto por ID", description = "Devuelve los detalles de un producto específico según su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Producto obtenido exitosamente",
@@ -226,7 +255,7 @@ public class ProductoController {
 
         try {
             Categoria categoria = categoriaService.getCategoria(id);
-            List<Producto> productos = productoService.buscarPorCategoria(categoria);
+            List<ProductoDto> productos = productoService.buscarPorCategoria(categoria);
             return new ApiBaseTransformer(HttpStatus.OK, null, productos, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
@@ -250,7 +279,7 @@ public class ProductoController {
     @GetMapping("/producto/public/nombre/{nombre}")
     public ResponseEntity<?> buscarPorNombre(@PathVariable String nombre) {
         try {
-            List<Producto> productos = productoService.buscarPorNombre(nombre);
+            List<ProductoDto> productos = productoService.buscarPorNombre(nombre);
             return new ApiBaseTransformer(HttpStatus.OK, null, productos, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
@@ -260,7 +289,7 @@ public class ProductoController {
     @GetMapping("/producto/public/precio")
     public ResponseEntity<?> buscarPorRangoDePrecio(@RequestParam Double precioMin, @RequestParam Double precioMax) {
         try {
-            List<Producto> productos = productoService.buscarPorRangoDePrecio(precioMin, precioMax);
+            List<ProductoDto> productos = productoService.buscarPorRangoDePrecio(precioMin, precioMax);
             return new ApiBaseTransformer(HttpStatus.OK, null, productos, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();

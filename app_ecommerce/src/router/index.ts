@@ -152,6 +152,12 @@ const router = createRouter({
       component: () => import('../views/admin/productos/ProductosAddView.vue')
     },
     {
+      path: '/admin/usuario/permisos/:id',
+      name: 'admin-usuario-permisos',
+      meta: {title: 'Permisos Usuario', layout: DefaultLayout},
+      component: () => import('../views/admin/usuarios/PermisosView.vue')
+    },
+    {
       path: '/producto/:id',
       name: 'detalle-producto',
       meta: {title: 'Detalle Producto', layout: DefaultLayout},
