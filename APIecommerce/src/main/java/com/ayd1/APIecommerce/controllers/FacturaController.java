@@ -28,11 +28,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.ayd1.APIecommerce.repositories.VentaRepository;
-
-
 /**
  *
  * @author Luis Monterroso
@@ -104,10 +99,10 @@ public class FacturaController {
     }
 
     @GetMapping("/venta/private/all/{id}")
-    public ResponseEntity<?> getProductsVenta(@PathVariable Long id){
+    public ResponseEntity<?> getProductsVenta(@PathVariable Long id) {
         try {
             Venta data = facturaService.getVenta(id);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();   
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
         } catch (Exception e) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, null, null, null, e.getMessage()).sendResponse();
         }

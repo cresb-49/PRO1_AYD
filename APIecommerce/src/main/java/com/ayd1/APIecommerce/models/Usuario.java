@@ -22,6 +22,8 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -30,6 +32,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Entity
 @Table(name = "usuario")
 @DynamicUpdate
+@SQLDelete(sql = "UPDATE usuario SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class Usuario extends Auditor {
 
     @Column(name = "nombres", length = 250, unique = false)
