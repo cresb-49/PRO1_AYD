@@ -83,15 +83,19 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                 .collect(Collectors.toList());
 
         List<ProductoDto> productosDto
-                = productosConBajaExistencia.stream()
-                        .map(producto -> {
-                            ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
-                            // Aquí conviertes las imágenes a URLs o nombres de archivos
-                            productoDto.convertImagenesToUrls(producto.getImagenes());
-                            return productoDto;
-                        })
-                        .collect(Collectors.toList());
+                = this.listProductoToListProdutoDto(productosConBajaExistencia);
         return productosDto;
+    }
+
+    private List<ProductoDto> listProductoToListProdutoDto(List<Producto> productos) {
+        return productos.stream()
+                .map(producto -> {
+                    ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
+                    // Aquí conviertes las imágenes a URLs o nombres de archivos
+                    productoDto.convertImagenesToUrls(producto.getImagenes());
+                    return productoDto;
+                })
+                .collect(Collectors.toList());
     }
 
     public ProductoDto getProductoDto(Long id) throws Exception {
@@ -259,11 +263,13 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
      * @param categoria
      * @return
      */
-    public List<Producto> buscarPorCategoria(Categoria categoria) {
+    public List<ProductoDto> buscarPorCategoria(Categoria categoria) {
         // Obtener todas las categorías relacionadas
         List<Categoria> categoriasDescendientes = obtenerCategoriasDescendientes(categoria);
         // Buscar productos por las categorías obtenidas
-        return productoRepository.findByCategoriaIn(categoriasDescendientes);
+        return this.listProductoToListProdutoDto(
+                productoRepository.findByCategoriaIn(
+                        categoriasDescendientes));
     }
 
     /**
@@ -284,11 +290,13 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         return categoriasDescendientes;
     }
 
-    public List<Producto> buscarPorNombre(String nombre) {
-        return productoRepository.findByNombreContaining(nombre);
+    public List<ProductoDto> buscarPorNombre(String nombre) {
+        return this.listProductoToListProdutoDto(
+                productoRepository.findByNombreContaining(nombre));
     }
 
-    public List<Producto> buscarPorRangoDePrecio(Double precioMin, Double precioMax) {
-        return productoRepository.findByPrecioBetween(precioMin, precioMax);
+    public List<ProductoDto> buscarPorRangoDePrecio(Double precioMin, Double precioMax) {
+        return this.listProductoToListProdutoDto(
+                productoRepository.findByPrecioBetween(precioMin, precioMax));
     }
 }
