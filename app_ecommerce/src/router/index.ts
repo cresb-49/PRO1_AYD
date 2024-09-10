@@ -110,6 +110,18 @@ const router = createRouter({
       component: () => import('../views/admin/productos/ProductosAddView.vue')
     },
     {
+      path: '/admin/store',
+      name: 'admin-tienda-personalizacion',
+      meta: {title: 'Admin Personalizacion Tienda', layout: DefaultLayout},
+      component: () => import('../views/admin/personalizacion/PersonalizacionView.vue')
+    },
+    {
+      path: '/admin/store/edit',
+      name: 'admin-tienda-personalizacion-edit',
+      meta: {title: 'Admin Personalizacion Tienda Editar', layout: DefaultLayout},
+      component: () => import('../views/admin/personalizacion/PersonalizacionEditView.vue')
+    },
+    {
       path: '/admin/inventario',
       name: 'admin-inventario',
       meta: {title: 'Admin Inventario', layout: DefaultLayout},

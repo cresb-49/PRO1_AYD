@@ -14,8 +14,10 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByCategoria(Categoria categoria);
 
     List<Producto> findByNombreContaining(String nombre);
-    
+
     List<Producto> findByCategoriaIn(List<Categoria> categoria);
 
     List<Producto> findByPrecioBetween(Double precioMin, Double precioMax);
+
+    List<Producto> findTop10ByOrderByCreatedAtDesc();
 }

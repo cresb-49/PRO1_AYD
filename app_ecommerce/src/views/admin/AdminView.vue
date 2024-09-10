@@ -38,7 +38,7 @@
         <menu-option-card title="Usuarios" subtitle="Administracion de Usuarios administrativos" path="/admin/usuarios"></menu-option-card>
       </v-col>
       <v-col cols="12" xs="8" sm="4" md="4" lg="4">
-        <menu-option-card title="Personalizacion" subtitle="Personalizacion de logo y nombre de la tienda"></menu-option-card>
+        <menu-option-card title="Personalizacion" subtitle="Personalizacion de logo y nombre de la tienda" path="/admin/store"></menu-option-card>
       </v-col>
       <v-col>
       </v-col>
