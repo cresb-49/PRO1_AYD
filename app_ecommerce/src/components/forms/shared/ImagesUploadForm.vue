@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-text>
-      <ImageCarousel :images="images"/>
+      <ImageCarousel :images="images instanceof Array ? images : [images]"/>
     </v-card-text>
     <v-file-input
       class="ml-4 mr-4"
@@ -12,7 +12,7 @@
       prepend-icon="mdi-paperclip"
       variant="outlined"
       counter
-      multiple
+      :multiple="!unique"
     >
       <template v-slot:selection="{ fileNames }">
         <template v-for="(fileName, index) in fileNames" :key="fileName">
@@ -33,6 +33,13 @@ import ImageCarousel from '@/components/partials/ImageCarousel.vue';
 import { ref } from 'vue';
 
 const images = ref([])
+
+defineProps({
+  unique: {
+    type: Boolean,
+    default: false
+  }
+})
 
 defineExpose({images})
 </script>
