@@ -4,7 +4,7 @@
       <h3 class="text-center mb-4">{{ title }}</h3>
     </v-card-title>
     <v-card-text>
-      <v-form id="signup-form" ref="form" :disabled="loading" @submit.prevent="signup">
+      <v-form id="signup-form" ref="form" :disabled="loading" @submit.prevent="editUser">
         <v-text-field
           v-model="nombres"
           label="Nombre(s)"
@@ -79,7 +79,7 @@
   </v-card>
 </template>
 <script lang="ts">
-import { UserRole } from '@/stores/regular-auth'
+import type { UpdateUserPayload, UserByPermiso } from '@/stores/users'
 
 export default {
   props: {
@@ -88,34 +88,29 @@ export default {
       default: false
     },
     error: {
-      type: [String, Array],
+      type: [String, Array, Boolean],
       default: () => null
-    },
-    success: {
-      type: Boolean,
-      default: false
     },
     title: {
       type: String,
       default: 'Editar Usuario'
     },
-    submitType: {
-      type: String,
-      default: UserRole.USUARIO
-    },
-    adminView: {
-      type: Boolean,
-      default: false
+    user: {
+      type: Object as () => UserByPermiso,
+      default: () => ({}) as UserByPermiso
     }
   },
   watch: {
-    success(newValue) {
-      if (newValue) {
-        this.clearForm()
-      }
+    user: {
+      handler: function (val) {
+        this.nombres = val.nombres
+        this.apellidos = val.apellidos
+        this.email = val.email
+      },
+      deep: true
     }
   },
-  emits: ['signup', 'signupAdmin', 'signupAssistant'],
+  emits: ['editUser'],
   data() {
     return {
       nombres: '',
@@ -142,27 +137,24 @@ export default {
     }
   },
   methods: {
-    async signup() {
+    async editUser() {
       const formRef = await this.$refs.form.validate()
       if (formRef.valid) {
         const payload = {
+          id: this.user.id,
           nombres: this.nombres,
           apellidos: this.apellidos,
           email: this.email,
-          password: this.password
-        }
-        this.$emit('signup', payload)
+          nit: this.user.nit
+        } as UpdateUserPayload
+        this.$emit('editUser', payload)
       }
-    },
-    async clearForm() {
-      //Agregamos una pausa de 1 segundo y limpiamos los campos del formulario
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-      this.nombres = ''
-      this.apellidos = ''
-      this.email = ''
-      this.password = ''
-      this.confirmPassword = ''
     }
+  },
+  mounted() {
+    this.nombres = this.user.nombres
+    this.apellidos = this.user.apellidos
+    this.email = this.user.email
   }
 }
 </script>

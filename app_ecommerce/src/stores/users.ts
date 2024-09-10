@@ -8,10 +8,12 @@ export type CreationPayload = {
   padre?: number
 }
 
-export type UpdatePayload = {
+export type UpdateUserPayload = {
   id: number
-  nombre: string
-  padre?: number
+  nombres: string
+  apellidos: string
+  email: string
+  nit?: string
 }
 
 export type UpdatePermisosPayload = {
@@ -151,10 +153,10 @@ export const useUserStore = defineStore('users', {
       this.loading = false
       return { data, error: false }
     },
-    async updateUser(payload: UpdatePayload) {
+    async updateUser(payload: UpdateUserPayload, updateAllUsers: boolean = true) {
       this.loading = true
 
-      const { data, error } = await useCustomFetch<any>('api/categoria/protected/updateCategoria', {
+      const { data, error } = await useCustomFetch<any>('api/usuario/private/all/updateUsuario', {
         method: 'PATCH',
         body: JSON.stringify(payload)
       })
@@ -172,11 +174,12 @@ export const useUserStore = defineStore('users', {
       // Show success snackbar
       useSnackbarStore().showSnackbar({
         title: 'Actualizacion Exitosa',
-        message: `Categoria Actualizada Exitosamente`,
+        message: `Usuario Actualizado Exitosamente`,
         type: SnackbarType.SUCCESS
       })
-
-      await this.fetchAllUsers()
+      if (updateAllUsers) {
+        await this.fetchAllUsers()
+      }
       // Return the data and error
       this.loading = false
       return { data, error: false }
