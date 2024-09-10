@@ -3,13 +3,13 @@
     <header>
       <h1 class="mb-4">Usuarios</h1>
       <v-btn style="margin: 3px;" prepend-icon="mdi-arrow-left" to="/admin" class="mt-3"> Regresar </v-btn>
-      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/productos/add" class="mt-3">
+      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/user/add" class="mt-3">
         Agregar Usuario
       </v-btn>
-      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/productos/add" class="mt-3">
+      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/admin/add" class="mt-3">
         Agregar Admin
       </v-btn>
-      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/productos/add" class="mt-3">
+      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/ayudante/add" class="mt-3">
         Agregar Ayudante
       </v-btn>
     </header>

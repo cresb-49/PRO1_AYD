@@ -1,15 +1,10 @@
 <template>
   <v-card class="signup-card pa-8">
     <v-card-title>
-      <h3 class="text-center mb-4">Regístrate</h3>
+      <h3 class="text-center mb-4">{{ title }}</h3>
     </v-card-title>
     <v-card-text>
-      <v-form
-        id="signup-form"
-        ref="form"
-        :disabled="loading"
-        @submit.prevent="signup"
-      >
+      <v-form id="signup-form" ref="form" :disabled="loading" @submit.prevent="signup">
         <v-text-field
           v-model="nombres"
           label="Nombre(s)"
@@ -47,9 +42,7 @@
         </v-text-field>
         <v-text-field
           v-model="password"
-          :append-icon="
-            showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
-          "
+          :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
           label="Contraseña"
           :type="showPassword ? 'text' : 'password'"
           :rules="[validationRules.required, ...validationRules.password]"
@@ -62,9 +55,7 @@
         </v-text-field>
         <v-text-field
           v-model="confirmPassword"
-          :append-icon="
-            showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
-          "
+          :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
           label="Confirmar contraseña"
           :type="showPassword ? 'text' : 'password'"
           :rules="[validationRules.required, ...confirmPasswordRules]"
@@ -88,32 +79,31 @@
         <v-col v-if="Array.isArray(error)" cols="12">
           <span class="text-red">
             <v-icon class="mr-3 mb-2"> mdi-alert-circle-outline </v-icon>
-            <div
-              v-for="e in error"
-              :key="e as string"
-              class="font-weight-medium text-body-2"
-            >
+            <div v-for="e in error" :key="e as string" class="font-weight-medium text-body-2">
               {{ e }}
             </div>
           </span>
         </v-col>
         <v-col cols="12">
-          <v-btn
-            type="submit"
-            form="signup-form"
-            variant="tonal"
-            width="100%"
-            :loading="loading"
-          >
-            Continuar
+          <v-btn type="submit" form="signup-form" variant="tonal" width="100%" :loading="loading">
+            {{ adminView ? 'Registrar' : 'Continuar' }}
           </v-btn>
         </v-col>
-        <v-col cols="12">
+        <v-col cols="12" v-if="adminView">
+          <v-btn
+            type="button"
+            variant="tonal"
+            width="100%"
+            prepend-icon="mdi-arrow-left"
+            @click="$router.go(-1)"
+          >
+            Regresar
+          </v-btn>
+        </v-col>
+        <v-col cols="12" v-if="!adminView">
           <span>
             ¿Ya tienes una cuenta?
-            <router-link
-              to="/login"
-              class="text-orange-darken-3 text-decoration-none nav-link ml-1"
+            <router-link to="/login" class="text-orange-darken-3 text-decoration-none nav-link ml-1"
               ><strong>Inicia sesión</strong></router-link
             >
           </span>
@@ -123,6 +113,8 @@
   </v-card>
 </template>
 <script lang="ts">
+import { UserRole } from '@/stores/regular-auth'
+
 export default {
   props: {
     loading: {
@@ -132,9 +124,32 @@ export default {
     error: {
       type: [String, Array],
       default: () => null
+    },
+    success: {
+      type: Boolean,
+      default: false
+    },
+    title: {
+      type: String,
+      default: 'Regístrate'
+    },
+    submitType: {
+      type: String,
+      default: UserRole.USUARIO
+    },
+    adminView: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['signup'],
+  watch: {
+    success(newValue) {
+      if (newValue) {
+        this.clearForm()
+      }
+    }
+  },
+  emits: ['signup', 'signupAdmin', 'signupAssistant'],
   data() {
     return {
       nombres: '',
@@ -146,28 +161,18 @@ export default {
       validationRules: {
         required: (v: string) => !!v || 'Campo requerido',
         name: [
-          (v: string) =>
-            (v && v.length <= 100) ||
-            'El nombre no debe exceder los 100 caracteres'
+          (v: string) => (v && v.length <= 100) || 'El nombre no debe exceder los 100 caracteres'
         ],
-        email: [
-          (v: string) =>
-            /.+@([\w-]+\.)+.[\w-]{1,3}$/.test(v) ||
-            'E-mail debe ser válido'
-        ],
+        email: [(v: string) => /.+@([\w-]+\.)+.[\w-]{1,3}$/.test(v) || 'E-mail debe ser válido'],
         password: [
-          (v: string) =>
-            (v && v.length >= 8) ||
-            'La contraseña debe tener al menos 8 caracteres'
+          (v: string) => (v && v.length >= 8) || 'La contraseña debe tener al menos 8 caracteres'
         ]
       }
     }
   },
   computed: {
     confirmPasswordRules() {
-      return [
-        (v: string) => v === this.password || 'Las contraseñas no coinciden'
-      ]
+      return [(v: string) => v === this.password || 'Las contraseñas no coinciden']
     }
   },
   methods: {
@@ -182,6 +187,15 @@ export default {
         }
         this.$emit('signup', payload)
       }
+    },
+    async clearForm() {
+      //Agregamos una pausa de 1 segundo y limpiamos los campos del formulario
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      this.nombres = ''
+      this.apellidos = ''
+      this.email = ''
+      this.password = ''
+      this.confirmPassword = ''
     }
   }
 }
