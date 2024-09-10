@@ -6,6 +6,12 @@
       <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/productos/add" class="mt-3">
         Agregar Usuario
       </v-btn>
+      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/productos/add" class="mt-3">
+        Agregar Admin
+      </v-btn>
+      <v-btn style="margin: 3px;" prepend-icon="mdi-pencil-outline" to="/admin/productos/add" class="mt-3">
+        Agregar Ayudante
+      </v-btn>
     </header>
     <section>
       <TableData :columns="columns" :data="users" data_key="id" :actions="actionsTable" />
