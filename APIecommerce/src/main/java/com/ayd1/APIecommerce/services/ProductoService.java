@@ -42,6 +42,18 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductoDto> getDiezProductosMasReciente() {
+        List<Producto> findAll = productoRepository.findTop10ByOrderByCreatedAtDesc();
+        return findAll.stream()
+                .map(producto -> {
+                    ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
+                    // Aquí conviertes las imágenes a URLs o nombres de archivos
+                    productoDto.convertImagenesToUrls(producto.getImagenes());
+                    return productoDto;
+                })
+                .collect(Collectors.toList());
+    }
+
     /**
      * Obtiene la lista de productos
      *
