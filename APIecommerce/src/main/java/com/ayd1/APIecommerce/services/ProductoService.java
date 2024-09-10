@@ -83,15 +83,19 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
                 .collect(Collectors.toList());
 
         List<ProductoDto> productosDto
-                = productosConBajaExistencia.stream()
-                        .map(producto -> {
-                            ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
-                            // Aquí conviertes las imágenes a URLs o nombres de archivos
-                            productoDto.convertImagenesToUrls(producto.getImagenes());
-                            return productoDto;
-                        })
-                        .collect(Collectors.toList());
+                = this.listProductoToListProdutoDto(productosConBajaExistencia);
         return productosDto;
+    }
+
+    private List<ProductoDto> listProductoToListProdutoDto(List<Producto> productos) {
+        return productos.stream()
+                .map(producto -> {
+                    ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
+                    // Aquí conviertes las imágenes a URLs o nombres de archivos
+                    productoDto.convertImagenesToUrls(producto.getImagenes());
+                    return productoDto;
+                })
+                .collect(Collectors.toList());
     }
 
     public ProductoDto getProductoDto(Long id) throws Exception {
@@ -106,10 +110,6 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         }
 
         Producto producto = productoOp.get();
-
-        if (producto.getDeletedAt() != null) {
-            throw new Exception("Producto ya ha sido eliminado.");
-        }
 
         // Convertir Producto a ProductoDTO
         ProductoDto productoDto = ProductoMapper.INSTANCE.productoToProductoDto(producto);
@@ -211,31 +211,17 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         }
 
         //buscar producti
-        Optional<Producto> busquedaProd
-                = productoRepository.findById(id);
+        Producto prodEliminar
+                = productoRepository.findById(id).orElse(null);
 
         //verificar si existe
-        if (busquedaProd.isEmpty()) {
+        if (prodEliminar == null) {
             throw new Exception("No hemos encontrado el producto.");
         }
+        //eliminamos el producto
+        Long delete = this.productoRepository.deleteProductoById(prodEliminar.getId());
 
-        //extraer el usuario
-        Producto prodEliminar = busquedaProd.get();
-
-        //vemos si el usuario no  ha sido eliminado
-        if (prodEliminar.getDeletedAt() != null) {
-            throw new Exception("Producto ya ha sido eliminado.");
-        }
-
-        //seteamos la fecha de eliminacion
-        prodEliminar.setDeletedAt(Instant.now());
-        //prodEliminar.setImagenes(new ArrayList<>());
-
-        //editar el usuario
-        Producto prodEliminado = this.productoRepository.save(prodEliminar);
-
-        //mandamos a editar la password y comparamos si se hizo el cambio
-        if (prodEliminado.getId() > 0) {
+        if (delete > 0) {
             return "Se elimino el producto con exito.";
         }
         throw new Exception("No pudimos eliminar el producto, inténtalo más tarde.");
@@ -244,19 +230,13 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
     @Transactional
     public ProductoDto updateProducto(Producto productoActualizar) throws Exception {
         //verificar el id
-        if (productoActualizar.getId() == null || productoActualizar.getId() <= 0) {
-            throw new Exception("Id inválido.");
-        }
+        this.validarAtributo(productoActualizar, "id");
         //buscar por id
-        Optional<Producto> busquedaProducto = this.productoRepository.findById(productoActualizar.getId());
-        if (busquedaProducto.isEmpty()) { //validar si existe
+        Producto productoEncontrado
+                = this.productoRepository.findById(productoActualizar.getId())
+                        .orElse(null);
+        if (productoEncontrado == null) { //validar si existe
             throw new Exception("No hemos encontrado el producto.");
-        }
-        //extraer el producto
-        Producto productoEncontrado = busquedaProducto.get();
-        //verificar eliminacion
-        if (productoEncontrado.getDeletedAt() != null) {
-            throw new Exception("Producto ya ha sido eliminado.");
         }
         //seteamos las listas
         productoActualizar.setImagenes(productoEncontrado.getImagenes());
@@ -283,11 +263,13 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
      * @param categoria
      * @return
      */
-    public List<Producto> buscarPorCategoria(Categoria categoria) {
+    public List<ProductoDto> buscarPorCategoria(Categoria categoria) {
         // Obtener todas las categorías relacionadas
         List<Categoria> categoriasDescendientes = obtenerCategoriasDescendientes(categoria);
         // Buscar productos por las categorías obtenidas
-        return productoRepository.findByCategoriaIn(categoriasDescendientes);
+        return this.listProductoToListProdutoDto(
+                productoRepository.findByCategoriaIn(
+                        categoriasDescendientes));
     }
 
     /**
@@ -308,11 +290,13 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
         return categoriasDescendientes;
     }
 
-    public List<Producto> buscarPorNombre(String nombre) {
-        return productoRepository.findByNombreContaining(nombre);
+    public List<ProductoDto> buscarPorNombre(String nombre) {
+        return this.listProductoToListProdutoDto(
+                productoRepository.findByNombreContaining(nombre));
     }
 
-    public List<Producto> buscarPorRangoDePrecio(Double precioMin, Double precioMax) {
-        return productoRepository.findByPrecioBetween(precioMin, precioMax);
+    public List<ProductoDto> buscarPorRangoDePrecio(Double precioMin, Double precioMax) {
+        return this.listProductoToListProdutoDto(
+                productoRepository.findByPrecioBetween(precioMin, precioMax));
     }
 }
