@@ -4,10 +4,21 @@ import { SnackbarType, useSnackbarStore } from './snackbar'
 import { useCustomFetch } from '@/composables/useCustomFetch'
 import { convertError } from '@/utils/error-converter'
 import { useCookies } from 'vue3-cookies'
+import { jwtDecode } from 'jwt-decode'
 
 type UserPayload = {
-  email: string
-  password: string
+  email?: string
+  password?: string
+  twoFactorCode?: string
+}
+
+export type ForgotPasswordPayload = {
+  correoElectronico: string
+}
+
+export type ChangePasswordTokenPayload = {
+  nuevaPassword: string
+  codigo: string 
 }
 
 export type UserUpdatePayload = {
@@ -24,14 +35,6 @@ export type SignupPayload = {
   password: string
 }
 
-export type Profile = {
-  id: number
-  nombres: string
-  apellidos: string
-  created_at: Date
-  updated_at: Date
-}
-
 export type User = {
   id: number
   nombres: string
@@ -39,6 +42,16 @@ export type User = {
   email: string
   created_at: Date
   updated_at: Date
+  roles: RoleResponse[]
+}
+
+export type RoleResponse = {
+  rol: Role
+}
+
+export type Role = {
+  id: number
+  nombre: string
 }
 
 export type LoginResponse = {
@@ -59,43 +72,75 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       const authStore = useAuthStore()
       this.loading = true
       this.error = null
-      // Fetch the data from the API
 
-      const { data, error } = await useCustomFetch<any>(
-        'api/usuario/public/login',
-        {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        }
-      )
+      const hasTwoFactorCode = payload.twoFactorCode !== undefined
+      const path = hasTwoFactorCode
+        ? 'api/usuario/public/validateTwoFactorToken'
+        : 'api/usuario/public/login'
+
+      // Fetch the data from the API
+      const { data, error } = await useCustomFetch<any>(path, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
+
       // Errorr Handling
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
         return { data, error: error.value }
       }
       // Success
-      // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
-      useCookies().cookies.set('roleuser', 'regular');
       // Set the user in the store
       this.user = data?.value?.data?.usuario ?? null
-      this.authenticated = true
-      // Set the token and role in the auth store
-      authStore.login({role: 'regular', token: data?.value?.data?.jwt ?? ''})
-      // Show success snackbar
-      useSnackbarStore().showSnackbar({
-        title: 'Session iniciada',
-        message: `Bienvenid@ ${this.user?.nombres} ${this.user?.apellidos}`,
-        type: SnackbarType.SUCCESS
-      })
-      // Return the data and error
-      this.loading = false
-      return { data, error: false }
+      const userHasTwoFactor = data?.value?.data?.hasTwoFactorCode ?? false
+      if (userHasTwoFactor && !hasTwoFactorCode) {
+        this.authenticated = false
+        useSnackbarStore().showSnackbar({
+          title: 'Se necesita autenticación de dos factores',
+          message: `Ingresa tu token ${this.user?.nombres} ${this.user?.apellidos}`,
+          type: SnackbarType.MESSAGE
+        })
+        // Return the data and error
+        this.loading = false
+        return { data, error: false, twoFactor: true }
+      } else {
+        this.authenticated = true
+
+        let roleuser = ''
+        switch (this.user?.roles[0].rol.id) {
+          case 1:
+            roleuser = 'regular'
+            break
+          case 2:
+            roleuser = 'admin'
+            break
+          case 3:
+            roleuser = 'helper'
+            break
+          default:
+            roleuser = 'regular'
+            break
+        }
+        // Set cookies, user and role
+        useCookies().cookies.set('user-token', data?.value?.data?.jwt)
+        useCookies().cookies.set('roleuser', roleuser)
+        // Set the token and role in the auth store
+        authStore.login({ role: roleuser, token: data?.value?.data?.jwt ?? '' })
+        // Show success snackbar
+        useSnackbarStore().showSnackbar({
+          title: 'Session iniciada',
+          message: `Bienvenid@ ${this.user?.nombres} ${this.user?.apellidos}`,
+          type: SnackbarType.SUCCESS
+        })
+        // Return the data and error
+        this.loading = false
+        return { data, error: false, twoFactor: false }
+      }
     },
     async signupUser(payload: SignupPayload) {
       const authStore = useAuthStore()
@@ -120,21 +165,37 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       if (error.value) {
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
         return { data, error: error.value }
       }
       // Success
-      // Set cookies, user and role
-      useCookies().cookies.set('user-token', data?.value?.data?.jwt);
-      useCookies().cookies.set('roleuser', 'regular');
       // Set the user in the store
       this.user = data?.value?.data?.usuario ?? null
       this.authenticated = true
+
+      let roleuser = ''
+      switch (this.user?.roles[0].rol.id) {
+        case 1:
+          roleuser = 'regular'
+          break
+        case 2:
+          roleuser = 'admin'
+          break
+        case 3:
+          roleuser = 'helper'
+          break
+        default:
+          roleuser = 'regular'
+          break
+      }
+      // Set cookies, user and role
+      useCookies().cookies.set('user-token', data?.value?.data?.jwt)
+      useCookies().cookies.set('roleuser', roleuser)
       // Set the token and role in the auth store
-      authStore.login({role: 'regular', token: data?.value?.data?.jwt ?? ''})
+      authStore.login({ role: roleuser, token: data?.value?.data?.jwt ?? '' })
       // Return the data and error
       this.loading = false
       return { data, error: false }
@@ -143,14 +204,15 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.loading = true
       // const snackbarStore = useSnackbarStore()
 
-      const { data } = await useCustomFetch<User>('/auth/me')
+      const { data } = await useCustomFetch<User>(`api/usuario/private/all/perfil/${this.user!.id}`, {
+        method: 'GET'
+      })
       if (data.value) {
-        this.user = data?.value
+        this.user = data?.value?.data
       } else {
         useSnackbarStore().showSnackbar({
           title: 'Error de sesión',
-          message:
-            'No se ha podido recuperar tu sesión, por favor vuelve a intentar más tarde',
+          message: 'No se ha podido recuperar tu sesión, por favor vuelve a intentar más tarde',
           type: SnackbarType.ERROR
         })
       }
@@ -158,9 +220,15 @@ export const useRegularAuthStore = defineStore('regular-auth', {
     },
     async updateProfile(payload: UserUpdatePayload) {
       this.loading = true
-      const { data, error } = await useCustomFetch<User>('/auth/me', {
-        method: 'PUT',
-        body: JSON.stringify(payload)
+      const user_id = this.user!.id
+
+      //Si se envia el password se envia solo esta a actualizar, caso contrario se actualizan los demas campos del usuario
+      const url_api_update = payload.password
+        ? 'api/usuario/private/all/cambioPassword'
+        : 'api/usuario/private/all/updateUsuario'
+      const { data, error } = await useCustomFetch<User>(url_api_update, {
+        method: 'PATCH',
+        body: JSON.stringify({ id: user_id, ...payload })
       })
       if (error.value) {
         console.log(error.value)
@@ -171,6 +239,63 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         this.myProfile()
       }
       this.loading = false
+      useSnackbarStore().showSnackbar({
+        title: 'Actualizacion Exitosa',
+        message: payload.password
+          ? `Password actualizada exitosamente`
+          : `Tu perfil se ha actualizado exitosamente`,
+        type: SnackbarType.SUCCESS
+      })
+      return { data, error: false }
+    },
+    async sendForgotPasswordEmail(payload: ForgotPasswordPayload) {
+      this.loading = true
+
+      const path = 'api/usuario/public/recuperarPasswordMail'
+
+      const { data, error } = await useCustomFetch<any>(path, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      })
+      if (error.value) {
+        console.log(error.value)
+        this.loading = false
+        return
+      }
+      this.loading = false
+      useSnackbarStore().showSnackbar({
+        title: 'Correo enviado',
+        message: 'Se ha enviado un correo para recuperar tu contraseña',
+        type: SnackbarType.SUCCESS
+      })
+    },
+    async changePasswordWithToken(payload: ChangePasswordTokenPayload) {
+      this.loading = true
+
+      const path = 'api/usuario/public/recuperarPassword'
+
+      const { data, error } = await useCustomFetch<any>(path, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+      })
+      if (error.value) {
+        console.log(error.value)
+        useSnackbarStore().showSnackbar(
+          {
+            title: 'Error',
+            message: convertError(error.value),
+            type: SnackbarType.ERROR
+          }
+        )
+        this.loading = false
+        return { data, error: true }
+      }
+      this.loading = false
+      useSnackbarStore().showSnackbar({
+        title: 'Contraseña cambiada',
+        message: 'Tu contraseña ha sido cambiada exitosamente',
+        type: SnackbarType.SUCCESS
+      })
       return { data, error: false }
     },
     clearError() {
@@ -181,5 +306,6 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.authenticated = false
       this.error = null
     }
+    //Here action
   }
 })

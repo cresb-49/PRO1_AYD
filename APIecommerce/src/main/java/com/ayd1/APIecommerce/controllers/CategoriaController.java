@@ -1,8 +1,11 @@
 package com.ayd1.APIecommerce.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,38 +25,56 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-    @GetMapping("/categoria/{id}")
+    @GetMapping("/categoria/public/{id}")
     public ResponseEntity<?> getCategoria(@PathVariable Long id) {
         try {
             Object data = categoriaService.getCategoria(id);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), null,null,null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.INTERNAL_SERVER_ERROR, "Error", null,null,e.getMessage()).sendResponse();
         }
     }
 
-    @PostMapping("/categoria/private/crearCategoria")
+    @GetMapping("/categoria/public/getCategorias")
+    public ResponseEntity<?> getCategorias() {
+        try {
+            List<Categoria> listaCategorias = categoriaService.getCategorias();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK",listaCategorias,null,null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
+        }
+    }
+
+    @PostMapping("/categoria/protected/crearCategoria")
     public ResponseEntity<?> crearCategoria(@RequestBody Categoria nuevaCategoria) {
         try {
             Categoria categoria = categoriaService.createCategoria(nuevaCategoria);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK", null,
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", categoria,
                     null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }
     }
 
-    @PatchMapping("/categoria/private/updateCategoria")
-    public ResponseEntity<?> actualizarCategoria(@RequestBody Long id, Categoria editCategoria) {
+    @PatchMapping("/categoria/protected/updateCategoria")
+    public ResponseEntity<?> actualizarCategoria(@RequestBody Categoria editCategoria) {
         try {
-            Categoria okCategoria = categoriaService.updateCategoria(id, editCategoria);
-            return new ApiBaseTransformer(HttpStatus.OK, "OK",
-            okCategoria,
+            Categoria actualCategoria = categoriaService.updateCategoria(editCategoria);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoria actualizada",
+            actualCategoria,
             null, null).sendResponse();
         } catch (Exception e) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
-                    e.getMessage(),
-                    null, null, null).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,"Error",null, null, e.getMessage()).sendResponse();
+        }
+    }
+
+    @DeleteMapping("/categoria/protected/eliminarCategoria/{id}")
+    public ResponseEntity<?> eliminarCategoria(@PathVariable Long id) {
+        try {
+            String eliminacionCategoria = categoriaService.deleteCategoria(id);
+            return new ApiBaseTransformer(HttpStatus.OK, "Categoría eliminada con éxito",eliminacionCategoria,null,null).sendResponse();
+        } catch (Exception e) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, e.getMessage()).sendResponse();
         }
     }
 }

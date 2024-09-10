@@ -5,41 +5,11 @@
     </component>
   </main> 
 </template>
-<script lang="ts">
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
-import { useTheme } from 'vuetify/lib/framework.mjs'
-import { useConfigsStore } from './stores/config'
-export default {
-  setup() {
-    const vTheme = useTheme()
-    const { theme } = storeToRefs(useConfigsStore())
-    const currentTheme = computed(() => {
-      return vTheme.computedThemes.value[theme.value]
-    })
-    vTheme.global.name.value = currentTheme.value.dark ? 'dark' : 'light'
-    const bgColor = computed(() => {
-      return currentTheme.value.dark ? '#121212' : '#fff'
-    })
-    const loadingColor = computed(() => {
-      return currentTheme.value.dark ? '#fff' : '#121212'
-    })
-    return {
-      theme,
-      bgColor,
-      loadingColor
-    }
-  },
-  computed: {
-    // ...mapState(useConfigsStore, ['theme']),
-    // bgColor() {
-    //   return this.theme === 'light' ? '#fff' : '#121212'
-    // },
-    // loadingColor() {
-    //   return this.theme === 'light' ? '#121212' : '#fff'
-    // }
-  }
-}
+<script setup lang="ts">
+import { useConfigsStore } from './stores/config';
+
+  const {initCommerce} = useConfigsStore()
+  initCommerce()
 </script>
 <style lang="scss">
 /*

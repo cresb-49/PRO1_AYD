@@ -1,12 +1,19 @@
 package com.ayd1.APIecommerce.repositories;
 
+import com.ayd1.APIecommerce.models.Categoria;
+import java.util.List;
+
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-import com.ayd1.APIecommerce.models.Categoria;
+public interface CategoriaRepository extends CrudRepository<Categoria, Long> {
 
-public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
-    
     public Optional<Categoria> findOneByNombre(String nombre);
-} 
+
+    public boolean existsByNombre(String nombre);
+
+    public boolean existsByNombreAndIdNot(String nombre, Long id);
+
+    public List<Categoria> findByPadre(Categoria padre);
+}

@@ -4,6 +4,8 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +33,8 @@ public class EstadoEnvio extends Auditor {
 
     @OneToMany(mappedBy = "estadoEnvio", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private List<Envio> envios;
 
     public EstadoEnvio(String nombre) {

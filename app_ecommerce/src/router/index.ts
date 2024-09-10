@@ -1,7 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, useRoute } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import EmptyLayout from '@/layouts/EmptyLayout.vue'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,16 +10,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      meta: {title: 'Homepage', layout: DefaultLayout},
+      meta: {title: 'homepage', layout: DefaultLayout},
       component: HomeView
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      path: '/perfil',
+      name: 'perfil',
+      meta: {title: 'perfil', layout: DefaultLayout},
+      component: () => import('../views/profile/ProfileView.vue')
+    },
+    {
+      path: '/perfil/edit',
+      name: 'perfil-editar',
+      meta: {title: 'perfil-editar', layout: DefaultLayout},
+      component: () => import('../views/profile/ProfileEditView.vue')
     },
     {
       path: '/login',
@@ -31,11 +36,163 @@ const router = createRouter({
       name: 'sign-up',
       meta: {title: 'Sign Up', layout: EmptyLayout},
       component: () => import('../views/SignUpView.vue')
-    }
+    },
+    {
+      path:'/two-factor',
+      name: 'two-factor',
+      meta: {title: 'Two Factor', layout: EmptyLayout},
+      component: () => import('../views/TwoFactorView.vue')
+    },
+    {
+      path: '/password-reset',
+      name: 'password-reset',
+      meta: {title: 'Password Reset', layout: EmptyLayout},
+      component: () => import('../views/PasswordResetView.vue')
+    },
+    {
+      path: '/password_reset/form',
+      name: 'password-reset-form',
+      meta: {title: 'Password Reset', layout: EmptyLayout},
+      component: () => import('../views/ChangePasswordTokenView.vue')
+    },
+    {
+      path:'/ventas',
+      name: 'ventas',
+      meta: {title: 'Ventas', layout: DefaultLayout},
+      component: () => import('../views/profile/SalesView.vue')
+    },
+    {
+      path:'/venta/:id',
+      name: 'venta',
+      meta: {title: 'Venta', layout: DefaultLayout},
+      component: () => import('../views/profile/SaleView.vue')
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      meta: {title: 'Admin', layout: DefaultLayout},
+      component: () => import('../views/admin/AdminView.vue')
+    },
+    {
+      path: '/admin/categorias',
+      name: 'admin-categorias',
+      meta: {title: 'Admin Categorias', layout: DefaultLayout},
+      component: () => import('../views/admin/categorias/CategoriasView.vue')
+    },
+    {
+      path: '/admin/categorias/edit/:id',
+      name: 'admin-categorias-editar',
+      meta: {title: 'Admin Categorias-Edit', layout: DefaultLayout},
+      component: () => import('../views/admin/categorias/CategoriasEditView.vue')
+    },
+    {
+      path: '/admin/categorias/add',
+      name: 'admin-categorias-agregar',
+      meta: {title: 'Admin Categorias-Add', layout: DefaultLayout},
+      component: () => import('../views/admin/categorias/CategoriasAddView.vue')
+    },
+    {
+      path: '/admin/productos',
+      name: 'admin-productos',
+      meta: {title: 'Admin Productos', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosView.vue')
+    },
+    {
+      path: '/admin/productos/edit/:id',
+      name: 'admin-productos-editar',
+      meta: {title: 'Admin Categorias-Edit', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosEditView.vue')
+    },
+    {
+      path: '/admin/productos/add',
+      name: 'admin-productos-agregar',
+      meta: {title: 'Admin Productos-Add', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosAddView.vue')
+    },
+    {
+      path: '/admin/store',
+      name: 'admin-tienda-personalizacion',
+      meta: {title: 'Admin Personalizacion Tienda', layout: DefaultLayout},
+      component: () => import('../views/admin/personalizacion/PersonalizacionView.vue')
+    },
+    {
+      path: '/admin/store/edit',
+      name: 'admin-tienda-personalizacion-edit',
+      meta: {title: 'Admin Personalizacion Tienda Editar', layout: DefaultLayout},
+      component: () => import('../views/admin/personalizacion/PersonalizacionEditView.vue')
+    },
+    {
+      path: '/admin/inventario',
+      name: 'admin-inventario',
+      meta: {title: 'Admin Inventario', layout: DefaultLayout},
+      component: () => import('../views/admin/inventario/InventarioView.vue')
+    },
+    {
+      path: '/admin/usuarios',
+      name: 'admin-usuarios',
+      meta: {title: 'Admin Usuarios', layout: DefaultLayout},
+      component: () => import('../views/admin/usuarios/UsuariosView.vue')
+    },
+    {
+      path: '/admin/productos/edit/:id',
+      name: 'admin-productos-editar',
+      meta: {title: 'Admin Categorias-Edit', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosEditView.vue')
+    },
+    {
+      path: '/admin/productos/add',
+      name: 'admin-productos-agregar',
+      meta: {title: 'Admin Productos-Add', layout: DefaultLayout},
+      component: () => import('../views/admin/productos/ProductosAddView.vue')
+    },
+    {
+      path: '/producto/:id',
+      name: 'detalle-producto',
+      meta: {title: 'Detalle Producto', layout: DefaultLayout},
+      component: () => import('../views/ProductDetailView.vue')
+    },
+    {
+      path: '/carrito',
+      name: 'carrito',
+      meta: {title: 'Carrito', layout: DefaultLayout},
+      component: () => import('../views/profile/CartView.vue')
+    },
   ]
 })
 
 router.beforeEach(async (to, from) => {
+  //Se obtiene la autenticacion actual
+  const {user, role} = useAuthStore();
+
+  if (to.path === '/login' && user) {
+    if (from.path === '/login') {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  } else if (to.path === '/sign-up' && user) {
+    if (from.path === '/sign-up') {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  } else if (to.path === '/pasword-rest' && user) {
+    if (from.path === '/password-reset') {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  }
+  else if (to.path.includes('/perfil') && !user) {
+    if (from.path.includes('/perfil')) {
+      return {path: '/'};
+    }
+    return {path: from.path};
+  } else if (to.path.includes('/admin') && (!user || (user && (role === 'regular')))) {
+    //Si se intenta ir a una ruta de admin y no hay usuario, o hay usuario pero su rol es normal
+    if (from.path.includes('/admin')) {
+      //Si el path de donde viene es igual al path a donde va se devuelve a home
+      return {path: '/'};
+    }
+    return {path: from.path};
+  }
 })
 
 export default router

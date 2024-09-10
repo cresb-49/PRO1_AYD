@@ -2,9 +2,20 @@
   <v-app :theme="theme">
     <v-app-bar class="app-bar" :elevation="elevation">
       <v-btn icon="mdi-menu" @click="drawer = !drawer" />
-        <v-spacer></v-spacer>
       <v-app-bar-title class="mt-n1">
-        <strong>Portal </strong> - ECommerce
+        <router-link to="/" style="text-decoration: none; color:inherit">
+          <v-row>
+            <v-col cols="1" xs="1" sm="5" md="5"></v-col>
+            <v-col cols="1">
+              <v-img v-if="logo" :src="logo" max-height="30" />
+            </v-col>
+            <v-divider v-if="logo" vertical></v-divider>
+            <v-col cols="1">
+              <h4>{{ name }}</h4>
+            </v-col>
+            <v-col cols="1" xs="1" sm="1" md="4"></v-col>
+          </v-row>
+        </router-link>
       </v-app-bar-title>
       <div v-if="!user" class="app-bar__user-info">
         <!-- Dashboard action (regular and admin) -->
@@ -16,15 +27,18 @@
           </template>
         </v-tooltip>
       </div>
-      <div v-if="user && loggedUser" class="app-bar__user-info">
+      <div v-if="user && role === 'regular'" class="app-bar__user-info">
+        <v-tooltip text="Carrito" location="bottom">
+          <template #activator="{ props }">
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/carrito')">
+              <v-icon> mdi-cart-outline </v-icon>
+            </v-avatar>
+          </template>
+        </v-tooltip>
         <!-- If user is logged in -->
         <v-tooltip text="Mi perfil" location="bottom">
           <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/dashboard/profile')"
-            >
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/perfil')">
               <strong>
                 {{ loggedUser?.nombres[0]
                 }}{{ loggedUser?.apellidos[0] }}
@@ -40,36 +54,28 @@
           </template>
         </v-tooltip>
       </div>
-      <div v-if="user && !loggedUser" class="app-bar__user-info">
+      <div v-if="user && role !== 'regular'" class="app-bar__user-info">
         <!-- Dashboard action (regular and admin) -->
-        <v-tooltip text="Administración" location="bottom">
+        <v-tooltip text="Mi perfil" location="bottom">
           <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/dashboard/home')"
-            >
-              <v-icon> mdi-view-dashboard-outline </v-icon>
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/perfil')">
+              <strong>
+                {{ loggedUser?.nombres[0]
+                }}{{ loggedUser?.apellidos[0] }}
+              </strong>
             </v-avatar>
           </template>
         </v-tooltip>
-        <!-- If user is logged in -->
-        <v-tooltip text="Mi perfil" location="bottom">
+        <v-tooltip text="Administración" location="bottom">
           <template #activator="{ props }">
-            <v-avatar
-              v-bind="props"
-              class="app-bar__avatar text-accent-4"
-              @click="$router.push('/perfil')"
-            >
-              <strong>
-                {{ loggedStaff?.nombres }}{{ loggedStaff?.apellidos }}
-              </strong>
+            <v-avatar v-bind="props" class="app-bar__avatar text-accent-4" @click="$router.push('/admin/')">
+              <v-icon> mdi-view-dashboard-outline </v-icon>
             </v-avatar>
           </template>
         </v-tooltip>
         <v-tooltip text="Cerrar sesión" location="bottom">
           <template #activator="{ props }">
-            <v-btn icon v-bind="props" @click="logout">
+            <v-btn icon v-bind="props" @click="logoutSession">
               <v-icon> mdi-logout-variant </v-icon>
             </v-btn>
           </template>
@@ -88,7 +94,7 @@
 
       <v-footer style="flex-grow: 0" class="pa-4">
         <v-col class="text-center" cols="12">
-          <strong>CICS</strong> — {{ new Date().getFullYear() }}
+          <strong>AyD</strong> — {{ new Date().getFullYear() }}
         </v-col>
       </v-footer>
     </v-main>
@@ -96,7 +102,6 @@
   </v-app>
 </template>
 <script setup lang="ts">
-import { mapState, mapActions, storeToRefs } from 'pinia'
 import { useConfigsStore } from '../stores/config'
 import { useAuthStore } from '../stores/auth'
 import { type User } from '../stores/regular-auth'
@@ -104,12 +109,12 @@ import { type Staff } from '../stores/staff-auth'
 import GeneralSnackbar from '../components/partials/GeneralSnackbar.vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
 const drawer = ref(false);
-const configStore = useConfigsStore();
-const {theme} = configStore
+const { name, logo } = useConfigsStore()
 const authStore = useAuthStore();
-const {role, user, logout} = authStore;
+const { role, user, logout } = authStore;
 const router = useRouter();
 
 const elevation = computed(() => {
@@ -118,10 +123,6 @@ const elevation = computed(() => {
 
 const loggedUser = computed(() => {
   return user as User
-})
-
-const loggedStaff = computed(() => {
-  return user as Staff
 })
 
 function logoutSession() {

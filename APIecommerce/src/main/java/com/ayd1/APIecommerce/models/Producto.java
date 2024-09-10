@@ -4,9 +4,12 @@
  */
 package com.ayd1.APIecommerce.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -17,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -26,6 +30,7 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "producto")
+@DynamicUpdate
 public class Producto extends Auditor {
 
     @Column(name = "nombre", length = 250, unique = false)
@@ -34,8 +39,12 @@ public class Producto extends Auditor {
     @Size(min = 1, max = 250, message = "El nombre del producto debe tener entre 1 y 250 caracteres.")
     private String nombre;
 
+    @Column(name = "descripcion", columnDefinition = "LONGTEXT")
+    private String descripcion;
+
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "categoria", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @NotNull(message = "La categoria del producto no puede ser nula")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Categoria categoria;
 
@@ -47,29 +56,43 @@ public class Producto extends Auditor {
     @Min(value = 0, message = "El precio debe tener como valor mínimo 0.")
     private Double precio;
 
+    @Column(name = "porcentaje_impuesto", nullable = false)
+    @Min(value = 0, message = "El procentaje de impuesto debe tener como valor mínimo 0.")
+    @NotNull(message = "El porcentaje de impuesto no puede ser nulo")
+    private Double porcentajeImpuesto;
+
     @Column(name = "habilitado", nullable = false)
+    @NotNull(message = "El estado del producto no puede ser nulo")
     private Boolean habilitado;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private List<MovimientoStock> movimientos;
 
     @OneToMany(mappedBy = "producto", orphanRemoval = true)
     @Cascade(CascadeType.ALL)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private List<LineaVenta> lineaVentas;
 
-    @OneToMany(mappedBy = "producto", orphanRemoval = true)
+    @OneToMany(mappedBy = "producto", orphanRemoval = true, fetch = FetchType.EAGER)
     @Cascade(CascadeType.ALL)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private List<Imagen> imagenes;
 
     public Producto() {
     }
 
-    public Producto(String nombre, Categoria categoria, Integer stock, Double precio, Boolean habilitado) {
+    public Producto(String nombre, String descripcion, Categoria categoria, Integer stock, Double precio, Double porcentajeImpuesto, Boolean habilitado) {
         this.nombre = nombre;
+        this.descripcion = descripcion;
         this.categoria = categoria;
         this.stock = stock;
         this.precio = precio;
+        this.porcentajeImpuesto = porcentajeImpuesto;
         this.habilitado = habilitado;
     }
 
@@ -139,6 +162,22 @@ public class Producto extends Auditor {
 
     public void setLineaVentas(List<LineaVenta> lineaVentas) {
         this.lineaVentas = lineaVentas;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Double getPorcentajeImpuesto() {
+        return porcentajeImpuesto;
+    }
+
+    public void setPorcentajeImpuesto(Double porcentajeImpuesto) {
+        this.porcentajeImpuesto = porcentajeImpuesto;
     }
 
 }

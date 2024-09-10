@@ -17,6 +17,7 @@ public class AppProperties {
 
     private String hostFront1;
     private String hostFront2;
+    private String hostBackend;
 
     public String getHostFront1() {
         return hostFront1;
@@ -32,6 +33,14 @@ public class AppProperties {
 
     public void setHostFront2(String hostFront2) {
         this.hostFront2 = hostFront2;
+    }
+
+    public String getHostBackend() {
+        return hostBackend;
+    }
+
+    public void setHostBackend(String hostBackend) {
+        this.hostBackend = hostBackend;
     }
 
 }

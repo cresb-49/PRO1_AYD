@@ -4,11 +4,14 @@
  */
 package com.ayd1.APIecommerce.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -36,19 +39,19 @@ public class DatosFacturacion extends Auditor {
     @Size(min = 1, max = 250, message = "El nombe debe tener entre 1 y 250 caracteres.")
     private String nombre;
 
-    @ManyToOne//indicador de relacion muchos a uno
-    @JoinColumn(name = "venta", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "venta", nullable = false, unique = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Schema(hidden = true)
     private Venta venta;
 
     @ManyToOne//indicador de relacion muchos a uno
     @JoinColumn(name = "usuario", nullable = false) //indicamos que el id del paciente se guardara con un solo field de tabla
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore // Evita la serialización del usuario al serializar UsuarioRol
     private Usuario usuario;
 
-    public DatosFacturacion(String nit, String nombre, Venta venta, Usuario usuario, Long id) {
-        super(id);
+    public DatosFacturacion(String nit, String nombre, Venta venta, Usuario usuario) {
         this.nit = nit;
         this.nombre = nombre;
         this.venta = venta;
