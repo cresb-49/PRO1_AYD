@@ -78,24 +78,28 @@ onMounted(() => {
     .then((r) => r.data.value.data as UserByPermiso)
     .then((user) => {
       usuario.value = user
-      //Si el usuario no es de tipo ayudante entonce no se puede editar los permisos y redirigir a la vista de usuarios
-      console.log('ROL USUARIO', user.roles[0].rol.nombre)
+
+      // Si el usuario no es de tipo ayudante, redirigir a la vista de usuarios
       if (user.roles[0].rol.nombre !== 'AYUDANTE') {
         router.go(-1)
+        return
       }
-    })
 
-  fetchAllPermisos().then((r) => {
-    const permisos = r.data.value.data as Permiso[]
-    permisosAsignables.value = permisos.map((permiso) => {
-      return {
-        permiso: permiso,
-        asignado: usuario.value.permisos.some((ur: any) => ur.permiso.id === permiso.id)
-      }
+      // Solo después de cargar el usuario, cargamos los permisos
+      fetchAllPermisos().then((r) => {
+        const permisos = r.data.value.data as Permiso[]
+        permisosAsignables.value = permisos.map((permiso) => {
+          return {
+            permiso: permiso,
+            asignado: usuario.value.permisos
+              ? usuario.value.permisos.some((ur: any) => ur.permiso.id === permiso.id)
+              : false // Si no hay permisos, se asigna false
+          }
+        })
+        // Guardar una copia del estado original
+        originalPermisos.value = JSON.parse(JSON.stringify(permisosAsignables.value))
+      })
     })
-    // Guardar una copia del estado original
-    originalPermisos.value = JSON.parse(JSON.stringify(permisosAsignables.value))
-  })
 })
 
 // Manejar cambios en el switch
