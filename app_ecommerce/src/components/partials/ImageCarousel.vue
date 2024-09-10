@@ -1,13 +1,7 @@
 <template>
-  <v-carousel v-model:model-value="controlActiveIndex" hide-delimiter-background>
-    <v-carousel-item
-      v-for="(image, index) in images"
-      :key="index"
-      width="1000"
-      :src="is_direct_src ? image : base64Images[index]"
-      aspect-ratio="1"
-      cover
-    >
+  <v-carousel v-model:model-value="controlActiveIndex" hide-delimiter-background :show-arrows="images.length > 1">
+    <v-carousel-item v-for="(image, index) in images" :key="index" width="1000"
+      :src="is_direct_src ? image : base64Images[index]" aspect-ratio="1" cover>
     </v-carousel-item>
   </v-carousel>
 </template>
@@ -33,13 +27,15 @@ watchEffect(() => {
 
   if (!props.is_direct_src) {
     props.images.forEach((image, index) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(image as Blob)
+      if (image !== undefined) {
+        const reader = new FileReader()
+        reader.readAsDataURL(image as Blob)
 
-      reader.onload = (e) => {
-        base64Images.value[index] = e.target!.result as string
-        if (index === 0) {
-          controlActiveIndex.value = 0
+        reader.onload = (e) => {
+          base64Images.value[index] = e.target!.result as string
+          if (index === 0) {
+            controlActiveIndex.value = 0
+          }
         }
       }
     })
