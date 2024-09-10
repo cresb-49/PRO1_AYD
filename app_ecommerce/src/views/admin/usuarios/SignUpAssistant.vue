@@ -17,7 +17,7 @@
 </template>
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { useRegularAuthStore, UserRole, type SignupPayload } from '../../../stores/regular-auth'
+import { useRegularAuthStore, UserRole, type SignUpAyudante, type SignupPayload } from '../../../stores/regular-auth'
 import SignupForm from '../../../components/forms/accounts/SignupForm.vue'
 import { useRouter } from 'vue-router'
 import { SnackbarType, useSnackbarStore } from '@/stores/snackbar'
@@ -30,7 +30,7 @@ const router = useRouter()
 
 const success = ref(false)
 
-async function signUp(payload: SignupPayload) {
+async function signUp(payload: SignUpAyudante) {
   const { error } = await signupUser(payload, UserRole.AYUDANTE, false)
   if (error === false) {
     success.value = true

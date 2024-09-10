@@ -149,7 +149,7 @@ export default {
       }
     }
   },
-  emits: ['signup', 'signupAdmin', 'signupAssistant'],
+  emits: ['signup'],
   data() {
     return {
       nombres: '',
@@ -179,13 +179,27 @@ export default {
     async signup() {
       const formRef = await this.$refs.form.validate()
       if (formRef.valid) {
-        const payload = {
-          nombres: this.nombres,
-          apellidos: this.apellidos,
-          email: this.email,
-          password: this.password
+        //Si es de tipo AYUDANTE, el payload cambia
+        if (this.submitType === UserRole.AYUDANTE) {
+          const payload = {
+            usuario: {
+              nombres: this.nombres,
+              apellidos: this.apellidos,
+              email: this.email,
+              password: this.password
+            },
+            permisos: []
+          }
+          this.$emit('signup', payload)
+        } else {
+          const payload = {
+            nombres: this.nombres,
+            apellidos: this.apellidos,
+            email: this.email,
+            password: this.password
+          }
+          this.$emit('signup', payload)
         }
-        this.$emit('signup', payload)
       }
     },
     async clearForm() {

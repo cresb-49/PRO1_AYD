@@ -41,6 +41,11 @@ export type SignupPayload = {
   password: string
 }
 
+export type SignUpAyudante = {
+  usuario: SignupPayload
+  permisos: any[]
+}
+
 export type User = {
   id: number
   nombres: string
@@ -149,16 +154,16 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         return { data, error: false, twoFactor: false }
       }
     },
-    async signupUser(payload: SignupPayload, typeUser: UserRole, autoLogin = true) {
+    async signupUser(payload: SignupPayload | SignUpAyudante, typeUser: UserRole, autoLogin = true) {
       const authStore = useAuthStore()
       this.cleanForm = false
-      const { nombres, apellidos, email, password } = payload
-      const newPayload = {
-        nombres: nombres,
-        apellidos: apellidos,
-        email: email,
-        password: password
-      }
+      // const { nombres, apellidos, email, password } = payload
+      // const newPayload = {
+      //   nombres: nombres,
+      //   apellidos: apellidos,
+      //   email: email,
+      //   password: password
+      // }
       this.loading = true
       this.error = null
       let path = 'api/usuario/public/crearUsuario'
@@ -176,7 +181,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       // Fetch the data from the API
       const { data, error } = await useCustomFetch<LoginResponse>(path, {
         method: 'POST',
-        body: JSON.stringify(newPayload)
+        body: JSON.stringify(payload)
       })
       // Error handling
       if (error.value) {
