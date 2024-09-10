@@ -152,6 +152,12 @@ const router = createRouter({
       component: () => import('../views/admin/usuarios/UsuariosView.vue')
     },
     {
+      path: '/admin/usuarios/edit/:id',
+      name: 'admin-usuarios-editar',
+      meta: { title: 'Admin Usuario-Edit', layout: DefaultLayout },
+      component: () => import('../views/admin/usuarios/UsuarioEditView.vue')
+    },
+    {
       path: '/admin/productos/edit/:id',
       name: 'admin-productos-editar',
       meta: { title: 'Admin Categorias-Edit', layout: DefaultLayout },
