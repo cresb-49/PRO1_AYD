@@ -32,7 +32,7 @@ const columns = [
 const actionsTable = [
   { name: 'Editar', path: '/admin/usuarios/edit/:id' },
   { name: 'Eliminar', onClick: consoleLog },
-  { name: 'Permisos', path: '/admin/usuarios/permisos/:id' }
+  { name: 'Permisos', path: '/admin/usuario/permisos/:id' }
 ]
 
 fetchAllUsers()
