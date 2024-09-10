@@ -24,7 +24,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@Where(clause = "deleted_at IS NULL")
 public class Auditor {
 
     @Id
@@ -84,5 +83,4 @@ public class Auditor {
     public void setDeletedAt(Instant deletedAt) {
         this.deletedAt = deletedAt;
     }
-
 }
