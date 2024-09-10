@@ -68,8 +68,6 @@ const useCustomFetchPartial = createFetch({
       return ctx
     },
     afterFetch(ctx) {
-      console.log('response')
-      console.log(ctx)
       return ctx
     },
     async beforeFetch({ options }) {

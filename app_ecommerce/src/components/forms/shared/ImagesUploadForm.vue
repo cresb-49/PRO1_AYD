@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-text>
-      <ImageCarousel :images="images"/>
+      <ImageCarousel :images="images instanceof Array ? images : [images]"/>
     </v-card-text>
     <v-file-input
       class="ml-4 mr-4"

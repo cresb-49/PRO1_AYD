@@ -60,8 +60,11 @@
         </v-col>
         <v-col cols="6">
           <h1 class="mb-2 text-overline">Elegir Nuevo Logo</h1>
-          <ImagesUploadForm unique></ImagesUploadForm>
+          <ImagesUploadForm ref="imageForm" unique></ImagesUploadForm>
         </v-col>
+      <v-col cols="12" class="d-flex justify-center">
+        <v-btn min-width="50%" @click="saveImage">Actualizar imagen</v-btn>
+      </v-col>
       </v-row>
     </div>
   </section>
@@ -81,7 +84,9 @@ const deliveryCostModel = ref(deliveryCost)
 const codModel = ref(cod)
 const addressModel = ref(address)
 
-const emits = defineEmits(['save'])
+const imageForm = ref(null)
+
+const emits = defineEmits(['save', 'saveImage'])
 
 function save() {
     const newConfig = {
@@ -91,6 +96,12 @@ function save() {
       address: addressModel.value,
     }
     emits('save', newConfig)
+}
+
+function saveImage() {
+    if (imageForm.value.images instanceof File) {
+      emits('saveImage', imageForm.value.images)
+    }
 }
 </script>
 <style lang="scss" scoped></style>

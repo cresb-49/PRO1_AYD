@@ -112,7 +112,7 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 const drawer = ref(false);
-const { name, logo } = storeToRefs(useConfigsStore())
+const { name, logo } = useConfigsStore()
 const authStore = useAuthStore();
 const { role, user, logout } = authStore;
 const router = useRouter();
