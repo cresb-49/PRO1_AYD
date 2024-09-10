@@ -71,7 +71,7 @@ public class UsuarioController {
         @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/usuario/private/getUsuarios")
-    public ResponseEntity<?> getUsuario() {
+    public ResponseEntity<?> getUsuarios() {
         try {
             List<Usuario> data = usuarioService.getUsuarios();
             return new ApiBaseTransformer(HttpStatus.OK, "OK", data, null, null).sendResponse();
@@ -270,7 +270,7 @@ public class UsuarioController {
                             schema = @Schema(implementation = String.class))}),
         @ApiResponse(responseCode = "400", description = "ID con formato inválido")
     })
-    @DeleteMapping("/usuario/protected/eliminarUsuario/{id}")
+    @DeleteMapping("/usuario/private/eliminarUsuario/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

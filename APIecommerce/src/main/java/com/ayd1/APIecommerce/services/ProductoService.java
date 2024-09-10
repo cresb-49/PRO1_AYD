@@ -174,10 +174,6 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
 
         Producto prodActualizar = busquedaProd.get();
 
-        if (prodActualizar.getDeletedAt() != null) {
-            throw new Exception("Producto ya ha sido eliminado.");
-        }
-
         // Limpiar la lista de imágenes existentes
         prodActualizar.getImagenes().clear();
 

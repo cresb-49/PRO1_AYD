@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -19,6 +21,8 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "rol_usuario")
+@SQLDelete(sql = "UPDATE rol_usuario SET deleted_at = NULL WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class UsuarioRol extends Auditor {
 
     @ManyToOne//indicador de relacion muchos a uno
