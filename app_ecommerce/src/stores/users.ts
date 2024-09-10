@@ -229,6 +229,35 @@ export const useUserStore = defineStore('users', {
       // Return the data and error
       this.loading = false
       return { data, error: false }
+    },
+    async deleteUser(user_id: number) {
+      this.loading = true
+      const { data, error } = await useCustomFetch<any>(
+        `api/usuario/protected/eliminarUsuario/${user_id}`,
+        {
+          method: 'DELETE'
+        }
+      )
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Show success snackbar
+      useSnackbarStore().showSnackbar({
+        title: 'Eliminacion Exitosa',
+        message: `Usuario Eliminado Exitosamente`,
+        type: SnackbarType.SUCCESS
+      })
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
     }
   }
 })

@@ -37,7 +37,6 @@ onMounted(() => {
     .then((r) => r.data.value.data as UserByPermiso)
     .then((user) => {
       usuario.value = user
-      console.log('USUARIO', usuario.value)
     })
 })
 </script>
