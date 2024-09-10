@@ -14,6 +14,12 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/categoria/:id',
+      name: 'categoria',
+      meta: {title: 'categoria', layout: DefaultLayout},
+      component: () => import('../views/CategoryView.vue')
+    },
+    {
       path: '/perfil',
       name: 'perfil',
       meta: {title: 'perfil', layout: DefaultLayout},
