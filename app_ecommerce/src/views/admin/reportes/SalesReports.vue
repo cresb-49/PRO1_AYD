@@ -24,7 +24,7 @@
                   <v-select
                     v-model="tipoReporteVenta"
                     label="Tipo de Reporte"
-                    :items="tiposReporteVenta"
+                    :items="tiposReporte"
                   >
                   </v-select>
                   <v-btn class="mt-2" type="submit" block>Descargar</v-btn>
@@ -55,7 +55,7 @@
                   <v-select
                     v-model="tipoReportePedidos"
                     label="Tipo de Reporte"
-                    :items="tiposReporteVenta"
+                    :items="tiposReporte"
                   ></v-select>
                   <v-btn class="mt-2" type="submit" block>Descargar</v-btn>
                 </v-form>
@@ -72,9 +72,9 @@
             <template #actions>
               <v-sheet class="mx-auto" width="300">
                 <v-select
-                  v-model="tipoReporteVenta"
+                  v-model="tipoReporteInventario"
                   label="Tipo de Reporte"
-                  :items="tiposReporteVenta"
+                  :items="tiposReporte"
                 ></v-select>
                 <v-btn class="mt-2" block @click="accionReporteInventario">Descargar</v-btn>
               </v-sheet>
@@ -90,9 +90,9 @@
             <template #actions>
               <v-sheet class="mx-auto" width="300">
                 <v-select
-                  v-model="tipoReporteVenta"
+                  v-model="tipoReporteClientes"
                   label="Tipo de Reporte"
-                  :items="tiposReporteVenta"
+                  :items="tiposReporte"
                 ></v-select>
                 <v-btn class="mt-2" block @click="accionReporteClientes">Descargar</v-btn>
               </v-sheet>
@@ -116,16 +116,20 @@ import { ref } from 'vue'
 
 const reportStore = useReportStore()
 const { fetchReport } = reportStore
+const tiposReporte = [ReportExportType.PDF, ReportExportType.EXCEL, ReportExportType.WORD]
 
+// Estados para el reporte de ventas
 const firstDate = ref(getTodayDateInUTC6())
 const lastDate = ref(getTodayDateInUTC6())
 const tipoReporteVenta = ref(ReportExportType.PDF)
-
-const tiposReporteVenta = [ReportExportType.PDF, ReportExportType.EXCEL, ReportExportType.WORD]
-
+// Estados para el reporte de pedidos
 const firstDatePedidos = ref(getTodayDateInUTC6())
 const lastDatePedidos = ref(getTodayDateInUTC6())
 const tipoReportePedidos = ref(ReportExportType.PDF)
+// Estados para el reporte de inventario
+const tipoReporteInventario = ref(ReportExportType.PDF)
+// Estados para el reporte de clientes
+const tipoReporteClientes = ref(ReportExportType.PDF)
 
 function getTodayDateInUTC6() {
   const today = new Date()
@@ -136,7 +140,7 @@ function getTodayDateInUTC6() {
   return `${year}-${month}-${day}`
 }
 
-const accionReporteVentas = () => {
+async function accionReporteVentas() {
   console.log('Descargando reporte...')
   const payload: ReportExportPayload = {
     fecha1: firstDate.value,
@@ -147,7 +151,7 @@ const accionReporteVentas = () => {
   console.log(payload)
 }
 
-const accionReportePedidos = () => {
+async function accionReportePedidos() {
   console.log('Descargando reporte...')
   const payload: ReportExportPayload = {
     fecha1: firstDatePedidos.value,
@@ -158,19 +162,19 @@ const accionReportePedidos = () => {
   console.log(payload)
 }
 
-const accionReporteInventario = () => {
+async function accionReporteInventario() {
   console.log('Descargando reporte...')
   const payload: ReportExportPayload = {
-    tipoExporte: ReportExportType.PDF,
+    tipoExporte: tipoReporteInventario.value,
     tipoReporte: ReportType.INVENTARIO
   }
-  console.log(payload)
+  const { data, error } = await fetchReport(payload)
 }
 
-const accionReporteClientes = () => {
+async function accionReporteClientes() {
   console.log('Descargando reporte...')
   const payload: ReportExportPayload = {
-    tipoExporte: ReportExportType.PDF,
+    tipoExporte: tipoReporteClientes.value,
     tipoReporte: ReportType.CLIENTES_FRECUENTES
   }
   console.log(payload)
