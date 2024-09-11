@@ -17,8 +17,10 @@ import CartProductList from '@/components/partials/CartProductList.vue';
 import router from '@/router';
 import { useCartStore } from '@/stores/cart';
 import { useRegularAuthStore } from '@/stores/regular-auth';
+import { storeToRefs } from 'pinia';
 
-const { products, totalProducts, totalTax, fetchProductsCart, buyProducts } = useCartStore()
+const { totalProducts, totalTax, fetchProductsCart, buyProducts } = useCartStore()
+const { products } = storeToRefs(useCartStore())
 
 async function buy(params: {
     consumidorFinal: boolean,
