@@ -25,7 +25,7 @@ export type UpdateStockPayload = {
   id: number,
   newStock: number,
 }
- 
+
 export type Product = {
   id: number,
   categoria: number
@@ -41,6 +41,7 @@ export const useProductStore = defineStore('products', {
     products: new Array<Product>,
     productsLowStock: new Array<Product>,
     productsCategory: new Array<Product>,
+    foundProducts: new Array<Product>,
     loading: false,
     loadingProduct: false,
     error: false
@@ -48,14 +49,14 @@ export const useProductStore = defineStore('products', {
   actions: {
     async fetchAllProducts() {
       this.loading = true
-      
+
       const { data, error } = await useCustomFetch<any>(
         'api/productos/public/getProductos',
         {
           method: 'GET',
         }
       )
-      
+
       this.products = data.value.data;
 
       // Error Handling
@@ -75,14 +76,14 @@ export const useProductStore = defineStore('products', {
     },
     async fetchWithLowStock() {
       this.loading = true
-      
+
       const { data, error } = await useCustomFetch<any>(
         'api/producto/protected/getStockBajo',
         {
           method: 'GET',
         }
       )
-      
+
       this.productsLowStock = data.value.data;
 
       // Error Handling
@@ -102,14 +103,14 @@ export const useProductStore = defineStore('products', {
     },
     async fetchProductsByCategory(category_id: number) {
       this.loading = true
-      
+
       const { data, error } = await useCustomFetch<any>(
         `api/producto/public/categoria/${category_id}`,
         {
           method: 'GET',
         }
       )
-      
+
       // Error Handling
       if (error.value) {
         useSnackbarStore().showSnackbar({
@@ -120,8 +121,62 @@ export const useProductStore = defineStore('products', {
         this.loading = false
         return { data, error: error.value }
       }
-      
+
       this.productsCategory = data.value.data
+      // Success
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
+    },
+    async fetchLastProducts() {
+      this.loading = true
+
+      const { data, error } = await useCustomFetch<any>(
+        'api/productos/public/getDiezProductosMasReciente',
+        {
+          method: 'GET',
+        }
+      )
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loading = false
+      return { data, error: false }
+    },
+    async fetchProductsSearch(name: string) {
+      this.loading = true
+
+      const { data, error } = await useCustomFetch<any>(
+        `api/producto/public/nombre/${name}`,
+        {
+          method: 'GET',
+        }
+      )
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+
+      this.foundProducts = data.value.data
+      console.log('encontrados')
+      console.log(this.foundProducts)
       // Success
       // Return the data and error
       this.loading = false
@@ -129,7 +184,7 @@ export const useProductStore = defineStore('products', {
     },
     async fetchProduct(product_id: number) {
       this.loadingProduct = true
-      
+
       const { data, error } = await useCustomFetch<any>(
         `api/producto/public/getProducto/${product_id}`,
         {
@@ -154,7 +209,7 @@ export const useProductStore = defineStore('products', {
     },
     async addUnitProducts(product_id: number) {
       this.loading = true
-      
+
       const {data: dataProduct, error: errorProduct} = await this.fetchProduct(product_id);
       // Error Handling
       if (errorProduct.value) {
@@ -166,7 +221,7 @@ export const useProductStore = defineStore('products', {
         this.loading = false
         return { dataProduct, error: errorProduct.value }
       }
-      
+
       const producto = dataProduct.value.data as Product;
       producto.stock += 1;
 
@@ -195,7 +250,7 @@ export const useProductStore = defineStore('products', {
         message: `Stock Aumentado Exitosamente`,
         type: SnackbarType.SUCCESS
       })
-      
+
       await this.fetchAllProducts()
       await this.fetchWithLowStock()
       // Return the data and error
@@ -205,7 +260,7 @@ export const useProductStore = defineStore('products', {
     async createProduct(payload: CreationPayload) {
       const {categoria, nombre, stock, precio, impuesto, imagenes} = payload
       this.loading = true
-      
+
       const formData = new FormData();
 
       imagenes.forEach(imagen => {
@@ -218,7 +273,7 @@ export const useProductStore = defineStore('products', {
       formData.append("precio", precio as unknown as string);
       formData.append("porcentajeImpuesto", impuesto as unknown as string);
       formData.append("habilitado", "true");
-      
+
       const { data, error } = await useCustomFetch<any>(
         'api/producto/protected/crearProducto',
         {
@@ -245,7 +300,7 @@ export const useProductStore = defineStore('products', {
         message: `Producto Creado Exitosamente`,
         type: SnackbarType.SUCCESS
       })
-      
+
       await this.fetchAllProducts()
       // Return the data and error
       this.loading = false
@@ -280,7 +335,7 @@ export const useProductStore = defineStore('products', {
         message: `Producto Actualizado Exitosamente`,
         type: SnackbarType.SUCCESS
       })
-      
+
       await this.fetchAllProducts()
       // Return the data and error
       this.loading = false
