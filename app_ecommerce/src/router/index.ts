@@ -182,6 +182,18 @@ const router = createRouter({
       component: () => import('../views/admin/usuarios/PermisosView.vue')
     },
     {
+      path: '/admin/reportes',
+      name: 'admin-reportes',
+      meta: { title: 'Reportes', layout: DefaultLayout },
+      component: () => import('../views/admin/reportes/SalesReports.vue')
+    },
+    {
+      path: '/admin/reportes/proyecciones',
+      name: 'admin-reportes-proyecciones',
+      meta: { title: 'Reportes Proyecciones', layout: DefaultLayout },
+      component: () => import('../views/admin/reportes/ProyectionReports.vue')
+    },
+    {
       path: '/producto/:id',
       name: 'detalle-producto',
       meta: { title: 'Detalle Producto', layout: DefaultLayout },
