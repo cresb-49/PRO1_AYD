@@ -6,7 +6,7 @@ export function useCustomFetch<T>(
   options: RequestInit = {},
   multipart = false,
 ) {
-    
+
   if (multipart) {
     return useCustomFetchPartialMultipart<T>(url, options).json()
   }
@@ -43,8 +43,34 @@ async function openPDF(stream: ReadableStream) {
   const blobUrl = URL.createObjectURL(pdfBlob);
 
   // Abre el pdf
-  window.open(blobUrl, '_blank'); 
+  window.open(blobUrl, '_blank');
 }
+
+async function downloadFile(
+    stream: ReadableStream<Uint8Array>,
+    fileName: string,
+    mimeType: string = 'application/octet-stream'
+  ) {
+    // Create a new response object from the stream
+    const response = new Response(stream);
+
+    // Read the response as a blob
+    const blob = await response.blob();
+
+    // Create a download link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.type = mimeType;
+
+    // Append the link to the document, click it, and remove it after
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Revoke the URL to free up resources
+    URL.revokeObjectURL(link.href);
+  }
 
 const useCustomFetchPartial = createFetch({
   baseUrl: import.meta.env.VITE_API_BASE_URL,
@@ -58,6 +84,14 @@ const useCustomFetchPartial = createFetch({
               openPDF(ctx.response.body as ReadableStream)
               ctx.error = null
               return ctx;
+            } else if (ctx.response.headers.get('content-type') === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                downloadFile(ctx.response.body as ReadableStream, 'report.xlsx')
+                ctx.error = null
+                return ctx;
+            } else if (ctx.response.headers.get('content-type') === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                downloadFile(ctx.response.body as ReadableStream, 'report.docx')
+                ctx.error = null
+                return ctx;
             }
           }
           return ctx;
@@ -72,12 +106,12 @@ const useCustomFetchPartial = createFetch({
     },
     async beforeFetch({ options }) {
       const userAuth = useCookies().cookies.get('user-token')
-      options.headers = userAuth 
+      options.headers = userAuth
       ? {
         ...options.headers,
         Authorization: `Bearer ${userAuth}`,
         'Content-Type': 'application/json'
-      } 
+      }
       : {
         ...options.headers,
         'Content-Type': 'application/json'
@@ -98,11 +132,11 @@ const useCustomFetchPartialMultipart = createFetch({
     },
     async beforeFetch({ options }) {
       const userAuth = useCookies().cookies.get('user-token')
-      options.headers = userAuth 
+      options.headers = userAuth
       ? {
         ...options.headers,
         Authorization: `Bearer ${userAuth}`,
-      } 
+      }
       : {
         ...options.headers,
       }

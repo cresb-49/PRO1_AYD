@@ -1,7 +1,9 @@
 <template>
   <v-app :theme="theme">
     <v-app-bar class="app-bar" :elevation="elevation">
+      <!--
       <v-btn icon="mdi-menu" @click="drawer = !drawer" />
+      -->
       <v-app-bar-title class="mt-n1">
         <router-link to="/" style="text-decoration: none; color:inherit">
           <v-row>
@@ -83,9 +85,11 @@
       </div>
     </v-app-bar>
 
+    <!--
     <v-navigation-drawer v-model="drawer" disable-resize-watcher width="350">
       <SidebarNavigator />
     </v-navigation-drawer>
+    -->
 
     <v-main class="d-flex flex-column">
       <v-container class="page-v-container" style="flex-grow: 1">

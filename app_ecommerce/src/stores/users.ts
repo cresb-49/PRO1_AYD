@@ -233,7 +233,7 @@ export const useUserStore = defineStore('users', {
     async deleteUser(user_id: number) {
       this.loading = true
       const { data, error } = await useCustomFetch<any>(
-        `api/usuario/protected/eliminarUsuario/${user_id}`,
+        `api/usuario/private/eliminarUsuario/${user_id}`,
         {
           method: 'DELETE'
         }

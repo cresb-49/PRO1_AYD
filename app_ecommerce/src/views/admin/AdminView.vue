@@ -47,6 +47,13 @@
           path="/admin/reportes"
         ></menu-option-card>
       </v-col>
+      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+        <menu-option-card
+          title="Graficos"
+          subtitle="Visualizacion de graficos del sistema"
+          path="/admin/reportes/graficos"
+        ></menu-option-card>
+      </v-col>
     </v-row>
     <v-divider class="mt-4 mb-6"></v-divider>
     <v-row v-if="role!='helper'">
