@@ -4,15 +4,15 @@
  */
 package com.ayd1.APIecommerce.repositories;
 
-import com.ayd1.APIecommerce.models.Envio;
-import com.ayd1.APIecommerce.models.dto.reports.EnvioReporteDto;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.ayd1.APIecommerce.models.Envio;
 
 /**
  *
@@ -26,7 +26,7 @@ public interface EnvioRepository extends CrudRepository<Envio, Long> {
 
     public List<Envio> findAllByEstadoEnvio_Nombre(String nombre);
 
-    @Query(value = "SELECT * FROM Envio e "
+    @Query(value = "SELECT * FROM envio e "
             + "WHERE (:fechaInicio IS NULL OR DATE(e.created_at) >= :fechaInicio) "
             + "AND (:fechaFin IS NULL OR DATE(e.created_at) <= :fechaFin)", nativeQuery = true)
     public List<Envio> findAllByCreatedAtDateBetween(@Param("fechaInicio") LocalDate fechaInicio, @Param("fechaFin") LocalDate fechaFin);
