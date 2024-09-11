@@ -47,6 +47,21 @@ export type SaleReport = {
   totalImpuestoPagado: number
 }
 
+export type ClientReport = {
+  id: number
+  nombres: string
+  apellidos: string
+  numeroPedidos: number
+  valorTotalCompras: number
+  ticketPromedio: number
+}
+
+export type ClientsReport = {
+  clienteFrecuentes: ClientReport[]
+  fecha1: string
+  fecha2: string
+}
+
 export function getTodayDateInUTC6() {
   const today = new Date()
   // Obtenemos la fecha en formato YYYY-MM-DD
