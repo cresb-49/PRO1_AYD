@@ -17,6 +17,7 @@
         </td>
         <td v-if="actions.length > 0">
           <v-btn
+            style="margin: 3px;"
             v-for="action in actions"
             :key="action.name"
             :to="action.path ? replaceParameterPath(row, action.path, action.property) : undefined"

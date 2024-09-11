@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
+    public Long deleteProductoById(Long producto);
+
     List<Producto> findByCategoria(Categoria categoria);
 
     List<Producto> findByNombreContaining(String nombre);

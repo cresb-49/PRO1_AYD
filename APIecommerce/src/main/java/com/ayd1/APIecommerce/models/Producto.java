@@ -23,6 +23,8 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 /**
  *
@@ -31,6 +33,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "producto")
 @DynamicUpdate
+@SQLDelete(sql = "UPDATE producto SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class Producto extends Auditor {
 
     @Column(name = "nombre", length = 250, unique = false)

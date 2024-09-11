@@ -21,13 +21,13 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
 
     public Long deleteUsuarioById(Long id);
 
-    boolean existsByEmail(String email);
+    public boolean existsByEmail(String email);
 
-    boolean existsByNit(String nit);
+    public boolean existsByNit(String nit);
 
-    boolean existsUsuarioByEmailAndIdNot(String email, Long id);
+    public boolean existsUsuarioByEmailAndIdNot(String email, Long id);
 
-    boolean existsUsuarioByNitAndIdNot(String nit, Long id);
+    public boolean existsUsuarioByNitAndIdNot(String nit, Long id);
 
     @Override
     public List<Usuario> findAll();
