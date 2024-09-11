@@ -14,6 +14,12 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/buscar/:busqueda',
+      name: 'busqueda',
+      meta: { title: 'busqueda', layout: DefaultLayout },
+      component: () => import('../views/SearchView.vue')
+    },
+    {
       path: '/categoria/:id',
       name: 'categoria',
       meta: {title: 'categoria', layout: DefaultLayout},
