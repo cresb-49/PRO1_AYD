@@ -91,9 +91,16 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
      * @return
      * @throws Exception
      */
-    @Scheduled(fixedRate = 3000000) // Cada 5 minutos
+    @Scheduled(fixedRate = 60000) // Cada 5 minutos
     public void notificarProductosBajosEnExistencia() throws Exception {
+        System.out.println("Ejecutando tarea programada: notificarProductosBajosEnExistencia");
+
         List<ProductoDto> productos = this.getProductosConBajaExistencia();
+        //si esta vacio el array no notificar
+        if (productos.isEmpty()) {
+            return;
+        }
+
         //obtenemos la lista de administradores
         List<Usuario> admins = this.usuarioService.getUsuariosByRol(
                 new Rol("ADMIN"));
