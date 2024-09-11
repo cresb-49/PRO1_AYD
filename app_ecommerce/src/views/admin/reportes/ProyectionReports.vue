@@ -11,6 +11,9 @@
             <ProductosVendidosBarChart />
           </v-col>
           <v-col cols="12" xs="8" sm="8" md="8" lg="6">
+            <ClientesFrecuentesBarChart />
+          </v-col>
+          <v-col cols="12" xs="8" sm="8" md="8" lg="6">
             <VentasVsImpuestos />
           </v-col>
         </v-row>
@@ -22,4 +25,5 @@
 <script setup lang="ts">
 import ProductosVendidosBarChart from '@/components/charts/ProductosVendidosBarChart.vue'
 import VentasVsImpuestos from '@/components/charts/VentasVsImpuestos.vue'
+import ClientesFrecuentesBarChart from '@/components/charts/ClientesFrecuentesBarChart.vue'
 </script>
