@@ -89,6 +89,16 @@
           >
             <template #actions>
               <v-sheet class="mx-auto" width="300">
+                <v-text-field
+                    v-model="firstDateClientes"
+                    label="Fecha de inicio"
+                    type="date"
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="lastDateClientes"
+                    label="Fecha de fin"
+                    type="date"
+                  ></v-text-field>
                 <v-select
                   v-model="tipoReporteClientes"
                   label="Tipo de Reporte"
@@ -129,6 +139,8 @@ const tipoReportePedidos = ref(ReportExportType.PDF)
 // Estados para el reporte de inventario
 const tipoReporteInventario = ref(ReportExportType.PDF)
 // Estados para el reporte de clientes
+const firstDateClientes = ref(getTodayDateInUTC6())
+const lastDateClientes = ref(getTodayDateInUTC6())
 const tipoReporteClientes = ref(ReportExportType.PDF)
 
 function getTodayDateInUTC6() {
@@ -174,6 +186,8 @@ async function accionReporteInventario() {
 async function accionReporteClientes() {
   console.log('Descargando reporte...')
   const payload: ReportExportPayload = {
+    fecha1: firstDateClientes.value,
+    fecha2: lastDateClientes.value,
     tipoExporte: tipoReporteClientes.value,
     tipoReporte: ReportType.CLIENTES_FRECUENTES
   }
