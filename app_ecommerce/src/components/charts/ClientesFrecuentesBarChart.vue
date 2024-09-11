@@ -2,7 +2,7 @@
   <div>
     <v-card class="mx-auto" width="500" max-width="500" min-width="300">
       <template v-slot:title>
-        <h4>Productos Vendidos</h4>
+        <h4>Clientes Frecuentes</h4>
       </template>
       <v-card-text class="bg-surface-light pt-4">
         <v-container>
@@ -12,7 +12,7 @@
             </v-row>
             <v-row>
               <v-container class="mx-auto" width="500">
-                <v-form fast-fail @submit.prevent="obtenerReporteVentas">
+                <v-form fast-fail @submit.prevent="obtenerReporteCliente">
                   <v-row>
                     <v-col cols="6">
                       <v-text-field
@@ -45,7 +45,12 @@
 </template>
 
 <script setup lang="ts">
-import { useReportStore, type SaleReport } from '@/stores/report'
+import {
+  useReportStore,
+  type ClientReport,
+  type ClientsReport,
+  type SaleReport
+} from '@/stores/report'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 import { Bar } from 'vue-chartjs'
@@ -63,34 +68,31 @@ import {
 import { getRandomColor } from './colors'
 
 const reportStore = useReportStore()
-const { fetchReportVentas } = reportStore
+const { fecthReporteClientesFrecuentes } = reportStore
 const { error, loading } = storeToRefs(reportStore)
 
-const resultObtenerReporteVentas = ref({} as SaleReport)
+const resultadoClientes = ref({} as ClientsReport)
 
 const fecha1 = ref(getTodayDateInUTC6())
 const fecha2 = ref(getTodayDateInUTC6())
 
-async function obtenerReporteVentas() {
-  const { data, error } = await fetchReportVentas({ fecha1: fecha1.value, fecha2: fecha2.value })
-  resultObtenerReporteVentas.value = data.value.data as SaleReport
+async function obtenerReporteCliente() {
+  const { data, error } = await fecthReporteClientesFrecuentes({
+    fecha1: fecha1.value,
+    fecha2: fecha2.value
+  })
+  resultadoClientes.value = data.value.data as ClientsReport
   calcularDatos()
 }
 
 async function calcularDatos() {
   // Creamos un diccionario para almacenar los productos vendidos
-  let productosVendidos = {} as { [key: string]: number }
-  resultObtenerReporteVentas.value.productosVendidos.forEach((producto) => {
-    if (productosVendidos[producto.producto]) {
-      productosVendidos[producto.producto] += producto.cantidad
-    } else {
-      productosVendidos[producto.producto] = producto.cantidad
-    }
+  let labels = [] as string[]
+  const data = [] as number[]
+  resultadoClientes.value.clienteFrecuentes.forEach((cliente: ClientReport) => {
+    labels.push(cliente.nombres + ' ' + cliente.apellidos)
+    data.push(cliente.numeroPedidos)
   })
-  // Convertimos el diccionario a un array de labels y data para el gráfico
-  const labels = Object.keys(productosVendidos)
-  const data = Object.values(productosVendidos)
-  
   // En base a la cantidad de productos vendidos, se asigna un color a cada barra
   let anterior = null
   const colors = data.map(() => {
@@ -108,7 +110,7 @@ async function calcularDatos() {
   }
 }
 onMounted(() => {
-  obtenerReporteVentas()
+  obtenerReporteCliente()
 })
 
 const chartData = ref({
@@ -127,6 +129,21 @@ const barChartOptions = ref({
   plugins: {
     legend: {
       display: false
+    }
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Clientes' // Título del eje X
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Cantidad de Pedidos' // Título del eje Y
+      },
+      beginAtZero: true // Para comenzar el eje Y en 0
     }
   }
 })

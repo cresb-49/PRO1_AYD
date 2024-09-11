@@ -58,7 +58,8 @@ import {
   LinearScale,
   Tooltip,
   Legend,
-  plugins
+  plugins,
+  scales
 } from 'chart.js'
 import { getRandomColor } from './colors'
 
@@ -127,6 +128,21 @@ const barChartOptions = ref({
   plugins: {
     legend: {
       display: false
+    }
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Producto' // Título del eje X
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Cantidad de Vendidos' // Título del eje Y
+      },
+      beginAtZero: true // Para comenzar el eje Y en 0
     }
   }
 })
