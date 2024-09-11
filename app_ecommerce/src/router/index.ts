@@ -182,6 +182,12 @@ const router = createRouter({
       component: () => import('../views/admin/reportes/SalesReports.vue')
     },
     {
+      path: '/admin/reportes/graficos',
+      name: 'admin-reportes-graficos',
+      meta: { title: 'Reportes Graficos', layout: DefaultLayout },
+      component: () => import('../views/admin/reportes/ProyectionReports.vue')
+    },
+    {
       path: '/admin/reportes/proyecciones',
       name: 'admin-reportes-proyecciones',
       meta: { title: 'Reportes Proyecciones', layout: DefaultLayout },
