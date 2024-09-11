@@ -9,8 +9,10 @@
           v-model="email"
           label="Correo electrónico"
           type="email"
+          name="email"
           required
           :disabled="loading"
+          autocomplete="email"
         >
           <template #prepend>
             <v-icon :icon="emailIcon" size="small" />
