@@ -21,6 +21,12 @@
                     type="date"
                   ></v-text-field>
                   <v-text-field v-model="lastDate" label="Fecha de fin" type="date"></v-text-field>
+                  <v-select
+                    v-model="tipoReporteVenta"
+                    label="Tipo de Reporte"
+                    :items="tiposReporteVenta"
+                  >
+                  </v-select>
                   <v-btn class="mt-2" type="submit" block>Descargar</v-btn>
                 </v-form>
               </v-sheet>
@@ -46,6 +52,11 @@
                     label="Fecha de fin"
                     type="date"
                   ></v-text-field>
+                  <v-select
+                    v-model="tipoReportePedidos"
+                    label="Tipo de Reporte"
+                    :items="tiposReporteVenta"
+                  ></v-select>
                   <v-btn class="mt-2" type="submit" block>Descargar</v-btn>
                 </v-form>
               </v-sheet>
@@ -60,7 +71,11 @@
           >
             <template #actions>
               <v-sheet class="mx-auto" width="300">
-                <p>Informacion de los productos de la tienda</p>
+                <v-select
+                  v-model="tipoReporteVenta"
+                  label="Tipo de Reporte"
+                  :items="tiposReporteVenta"
+                ></v-select>
                 <v-btn class="mt-2" block @click="accionReporteInventario">Descargar</v-btn>
               </v-sheet>
             </template>
@@ -74,7 +89,11 @@
           >
             <template #actions>
               <v-sheet class="mx-auto" width="300">
-                <p>Informacion de los clientes que mas compran en la tienda</p>
+                <v-select
+                  v-model="tipoReporteVenta"
+                  label="Tipo de Reporte"
+                  :items="tiposReporteVenta"
+                ></v-select>
                 <v-btn class="mt-2" block @click="accionReporteClientes">Descargar</v-btn>
               </v-sheet>
             </template>
@@ -88,30 +107,74 @@
 </template>
 
 <script setup lang="ts">
+import {
+  type ReportExportPayload,
+  ReportExportType,
+  ReportType,
+  useReportStore
+} from '@/stores/report'
 import CardReveal from '@/components/partials/CardReveal.vue'
 import { ref } from 'vue'
 
-const firstDate = ref('')
-const lastDate = ref('')
+const reportStore = useReportStore()
+const { fetchReport } = reportStore
 
-const firstDatePedidos = ref('')
-const lastDatePedidos = ref('')
+const firstDate = ref(getTodayDateInUTC6())
+const lastDate = ref(getTodayDateInUTC6())
+const tipoReporteVenta = ref(ReportExportType.PDF)
+
+const tiposReporteVenta = [ReportExportType.PDF, ReportExportType.EXCEL, ReportExportType.WORD]
+
+const firstDatePedidos = ref(getTodayDateInUTC6())
+const lastDatePedidos = ref(getTodayDateInUTC6())
+const tipoReportePedidos = ref(ReportExportType.PDF)
+
+function getTodayDateInUTC6() {
+  const today = new Date()
+  // Obtenemos la fecha en formato YYYY-MM-DD
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0') // Meses de 0-11
+  const day = String(today.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 const accionReporteVentas = () => {
   console.log('Descargando reporte...')
-  console.log('fecha de inicio: ', firstDate.value, 'fecha de fin: ', lastDate.value)
+  const payload: ReportExportPayload = {
+    fecha1: firstDate.value,
+    fecha2: lastDate.value,
+    tipoExporte: tipoReporteVenta.value,
+    tipoReporte: ReportType.VENTAS
+  }
+  console.log(payload)
 }
 
 const accionReportePedidos = () => {
   console.log('Descargando reporte...')
-  console.log('fecha de inicio: ', firstDatePedidos.value, 'fecha de fin: ', lastDatePedidos.value)
+  const payload: ReportExportPayload = {
+    fecha1: firstDatePedidos.value,
+    fecha2: lastDatePedidos.value,
+    tipoExporte: ReportExportType.PDF,
+    tipoReporte: ReportType.PEDIDOS
+  }
+  console.log(payload)
 }
 
 const accionReporteInventario = () => {
   console.log('Descargando reporte...')
+  const payload: ReportExportPayload = {
+    tipoExporte: ReportExportType.PDF,
+    tipoReporte: ReportType.INVENTARIO
+  }
+  console.log(payload)
 }
 
 const accionReporteClientes = () => {
   console.log('Descargando reporte...')
+  const payload: ReportExportPayload = {
+    tipoExporte: ReportExportType.PDF,
+    tipoReporte: ReportType.CLIENTES_FRECUENTES
+  }
+  console.log(payload)
 }
 </script>
