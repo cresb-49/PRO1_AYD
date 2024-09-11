@@ -130,6 +130,21 @@ const barChartOptions = ref({
     legend: {
       display: false
     }
+  },
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: 'Clientes' // Título del eje X
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Cantidad de Pedidos' // Título del eje Y
+      },
+      beginAtZero: true // Para comenzar el eje Y en 0
+    }
   }
 })
 
