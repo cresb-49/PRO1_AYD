@@ -6,7 +6,7 @@
     </header>
     <section>
       <v-row>
-        <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+        <v-col cols="12" xs="8" sm="6" md="4" lg="4">
           <CardReveal
             title="Reporte de Ventas"
             content="Ventas en un intervalo de tiempo"
@@ -33,7 +33,7 @@
             </template>
           </CardReveal>
         </v-col>
-        <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+        <v-col cols="12" xs="8" sm="6" md="4" lg="4">
           <CardReveal
             title="Reporte de Pedidos"
             content="Pedidos en un intervalo de tiempo"
@@ -63,7 +63,7 @@
             </template>
           </CardReveal>
         </v-col>
-        <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+        <v-col cols="12" xs="8" sm="6" md="4" lg="4">
           <CardReveal
             title="Reporte Inventario"
             content="Reporte de los productos de la plataforma"
@@ -81,7 +81,7 @@
             </template>
           </CardReveal>
         </v-col>
-        <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+        <v-col cols="12" xs="8" sm="6" md="4" lg="4">
           <CardReveal
             title="Reporte Clientes"
             content="Reporte de los clientes que mas compran en la tienda"
@@ -99,8 +99,6 @@
             </template>
           </CardReveal>
         </v-col>
-        <v-col cols="12" xs="8" sm="4" md="4" lg="4"> </v-col>
-        <v-col cols="12" xs="8" sm="4" md="4" lg="4"> </v-col>
       </v-row>
     </section>
   </main>
