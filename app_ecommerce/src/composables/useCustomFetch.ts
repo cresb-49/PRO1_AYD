@@ -6,7 +6,7 @@ export function useCustomFetch<T>(
   options: RequestInit = {},
   multipart = false,
 ) {
-    
+
   if (multipart) {
     return useCustomFetchPartialMultipart<T>(url, options).json()
   }
@@ -43,7 +43,7 @@ async function openPDF(stream: ReadableStream) {
   const blobUrl = URL.createObjectURL(pdfBlob);
 
   // Abre el pdf
-  window.open(blobUrl, '_blank'); 
+  window.open(blobUrl, '_blank');
 }
 
 const useCustomFetchPartial = createFetch({
@@ -58,6 +58,12 @@ const useCustomFetchPartial = createFetch({
               openPDF(ctx.response.body as ReadableStream)
               ctx.error = null
               return ctx;
+            } else if (ctx.response.headers.get('content-type') === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                console.log('body excel')
+                console.log(ctx.response.body)
+            } else if (ctx.response.headers.get('content-type') === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                console.log('body word')
+                console.log(ctx.response.body)
             }
           }
           return ctx;
@@ -72,12 +78,12 @@ const useCustomFetchPartial = createFetch({
     },
     async beforeFetch({ options }) {
       const userAuth = useCookies().cookies.get('user-token')
-      options.headers = userAuth 
+      options.headers = userAuth
       ? {
         ...options.headers,
         Authorization: `Bearer ${userAuth}`,
         'Content-Type': 'application/json'
-      } 
+      }
       : {
         ...options.headers,
         'Content-Type': 'application/json'
@@ -98,11 +104,11 @@ const useCustomFetchPartialMultipart = createFetch({
     },
     async beforeFetch({ options }) {
       const userAuth = useCookies().cookies.get('user-token')
-      options.headers = userAuth 
+      options.headers = userAuth
       ? {
         ...options.headers,
         Authorization: `Bearer ${userAuth}`,
-      } 
+      }
       : {
         ...options.headers,
       }
