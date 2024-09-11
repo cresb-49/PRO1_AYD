@@ -61,7 +61,7 @@
             <template #actions>
               <v-sheet class="mx-auto" width="300">
                 <p>Informacion de los productos de la tienda</p>
-                <v-btn class="mt-2" block>Descargar</v-btn>
+                <v-btn class="mt-2" block @click="accionReporteInventario">Descargar</v-btn>
               </v-sheet>
             </template>
           </CardReveal>
@@ -75,7 +75,7 @@
             <template #actions>
               <v-sheet class="mx-auto" width="300">
                 <p>Informacion de los clientes que mas compran en la tienda</p>
-                <v-btn class="mt-2" block>Descargar</v-btn>
+                <v-btn class="mt-2" block @click="accionReporteClientes">Descargar</v-btn>
               </v-sheet>
             </template>
           </CardReveal>
@@ -105,5 +105,13 @@ const accionReporteVentas = () => {
 const accionReportePedidos = () => {
   console.log('Descargando reporte...')
   console.log('fecha de inicio: ', firstDatePedidos.value, 'fecha de fin: ', lastDatePedidos.value)
+}
+
+const accionReporteInventario = () => {
+  console.log('Descargando reporte...')
+}
+
+const accionReporteClientes = () => {
+  console.log('Descargando reporte...')
 }
 </script>
