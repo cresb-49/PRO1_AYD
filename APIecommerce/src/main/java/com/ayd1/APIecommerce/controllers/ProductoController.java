@@ -295,4 +295,20 @@ public class ProductoController {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, e.getMessage(), null, null, null).sendResponse();
         }
     }
+
+    @Operation(summary = "Envia un correo electronico a todos los adminsitradores"
+            + " indicando los productos con bajo stock")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Se envio el correo exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Error en la solicitud")
+    })
+    @PostMapping("/producto/private/notificarBajoStock")
+    public ResponseEntity<?> notificarBajoStock() {
+        try {
+            productoService.notificarProductosBajaExistenciaUnaVez();
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", null, null, null).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
 }

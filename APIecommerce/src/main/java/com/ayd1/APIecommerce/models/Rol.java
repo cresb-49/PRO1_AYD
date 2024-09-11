@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -29,6 +30,8 @@ public class Rol extends Auditor {
     @NotBlank(message = "El nombre del rol no puede estar vacío.")
     @NotNull(message = "El nombre del rol no puede ser nulo")
     @Size(min = 1, max = 250, message = "El nombre del rol debe tener entre 1 y 250 caracteres.")
+    @Pattern(regexp = "^(USUARIO|ADMIN|AYUDANTE)$",
+            message = "El nombre de rol solo puede ser USUARIO, ADMIN, AYUDANTE")
     private String nombre;
 
     @OneToMany(mappedBy = "rol", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
