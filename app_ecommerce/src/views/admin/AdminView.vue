@@ -36,17 +36,9 @@
         <menu-option-card
           title="Ventas"
           subtitle="Visualizacion de Reportes de Ventas"
-          path="/admin/reportes/ventas"
+          path="/admin/reportes"
         ></menu-option-card>
       </v-col>
-      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
-        <menu-option-card
-          title="Proyecciones"
-          subtitle="Visualizacion de Proyecciones de Ventas"
-          path="/admin/reportes/proyecciones"
-        ></menu-option-card>
-      </v-col>
-      <v-col> </v-col>
     </v-row>
     <v-divider class="mt-4 mb-6"></v-divider>
     <v-row>

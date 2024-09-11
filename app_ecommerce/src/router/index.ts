@@ -176,9 +176,9 @@ const router = createRouter({
       component: () => import('../views/admin/usuarios/PermisosView.vue')
     },
     {
-      path: '/admin/reportes/ventas',
-      name: 'admin-reportes-ventas',
-      meta: { title: 'Reportes Ventas', layout: DefaultLayout },
+      path: '/admin/reportes',
+      name: 'admin-reportes',
+      meta: { title: 'Reportes', layout: DefaultLayout },
       component: () => import('../views/admin/reportes/SalesReports.vue')
     },
     {
