@@ -61,7 +61,7 @@ export const useCategoryStore = defineStore('categories', {
       this.loading = true
       
       const { data, error } = await useCustomFetch<any>(
-        `api/categoria/${category_id}`,
+        `api/categoria/public/${category_id}`,
         {
           method: 'GET',
         }
@@ -168,7 +168,7 @@ export const useCategoryStore = defineStore('categories', {
         
         if (error.value) {
           categoriesShow.push(
-            {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: undefined}
+            {id: category.id, name: category.nombre, path: `/categoria/${category.id}`, image: undefined}
           )
           continue;
         }
@@ -180,18 +180,18 @@ export const useCategoryStore = defineStore('categories', {
 
           if (error.value) {
             categoriesShow.push(
-              {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: undefined}
+              {id: category.id, name: category.nombre, path: `/categoria/${category.id}`, image: undefined}
             )
             continue;
           }
 
           const productoInfo = data.value.data as Product
           categoriesShow.push(
-            {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: productoInfo ? productoInfo.imagenesUrls![0] : undefined}
+            {id: category.id, name: category.nombre, path: `/categoria/${category.id}`, image: productoInfo ? productoInfo.imagenesUrls![0] : undefined}
           )
         } else {
           categoriesShow.push(
-            {id: category.id, name: category.nombre, path: `/categorias/${category.id}`, image: undefined}
+            {id: category.id, name: category.nombre, path: `/categoria/${category.id}`, image: undefined}
           )
         }
       }

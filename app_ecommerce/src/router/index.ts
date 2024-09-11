@@ -14,6 +14,18 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/buscar/:busqueda',
+      name: 'busqueda',
+      meta: { title: 'busqueda', layout: DefaultLayout },
+      component: () => import('../views/SearchView.vue')
+    },
+    {
+      path: '/categoria/:id',
+      name: 'categoria',
+      meta: {title: 'categoria', layout: DefaultLayout},
+      component: () => import('../views/CategoryView.vue')
+    },
+    {
       path: '/perfil',
       name: 'perfil',
       meta: { title: 'perfil', layout: DefaultLayout },
@@ -110,6 +122,12 @@ const router = createRouter({
       component: () => import('../views/admin/categorias/CategoriasAddView.vue')
     },
     {
+      path: '/admin/envios',
+      name: 'admin-envios',
+      meta: { title: 'Admin Envios', layout: DefaultLayout },
+      component: () => import('../views/admin/envios/EnviosView.vue')
+    },
+    {
       path: '/admin/productos',
       name: 'admin-productos',
       meta: { title: 'Admin Productos', layout: DefaultLayout },
@@ -180,6 +198,12 @@ const router = createRouter({
       name: 'admin-reportes',
       meta: { title: 'Reportes', layout: DefaultLayout },
       component: () => import('../views/admin/reportes/SalesReports.vue')
+    },
+    {
+      path: '/admin/reportes/graficos',
+      name: 'admin-reportes-graficos',
+      meta: { title: 'Reportes Graficos', layout: DefaultLayout },
+      component: () => import('../views/admin/reportes/ProyectionReports.vue')
     },
     {
       path: '/admin/reportes/proyecciones',

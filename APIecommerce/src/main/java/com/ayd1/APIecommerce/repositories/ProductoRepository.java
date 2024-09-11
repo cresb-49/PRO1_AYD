@@ -13,13 +13,15 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     public Long deleteProductoById(Long producto);
 
-    List<Producto> findByCategoria(Categoria categoria);
+    public List<Producto> findByCategoria(Categoria categoria);
 
-    List<Producto> findByNombreContaining(String nombre);
+    public List<Producto> findByNombreContaining(String nombre);
 
-    List<Producto> findByCategoriaIn(List<Categoria> categoria);
+    public List<Producto> findByCategoriaIn(List<Categoria> categoria);
 
-    List<Producto> findByPrecioBetween(Double precioMin, Double precioMax);
+    public List<Producto> findByPrecioBetween(Double precioMin, Double precioMax);
 
-    List<Producto> findTop10ByOrderByCreatedAtDesc();
+    public List<Producto> findTop10ByOrderByCreatedAtDesc();
+
+    public List<Producto> findByStockLessThan(int stock);
 }

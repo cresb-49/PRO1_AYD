@@ -4,6 +4,7 @@
  */
 package com.ayd1.APIecommerce.tools;
 
+import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -15,6 +16,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.ayd1.APIecommerce.models.noBD.AppProperties;
+import java.util.List;
 
 /**
  *
@@ -32,20 +34,23 @@ public class MailService {
 
     /**
      *
-     * @param correo 1: confirmacion, 2.recuperacion
-     * @param codigo
-     * @param tipoDeCorreo
+     * @param correo correo electronico destinatario
+     * @param parametro parametro que vaya a ir en el reporte
+     * @param tipoDeCorreo 1: confirmacion, 2.recuperacion, 3. Bajo Stock
      */
-    public void enviarCorreoEnSegundoPlano(String correo, String codigo, int tipoDeCorreo) {
+    public void enviarCorreoEnSegundoPlano(String correo, String parametro, int tipoDeCorreo) {
         Thread hiloMail = new Thread() {
             @Override
             public void run() {
                 switch (tipoDeCorreo) {
                     case 1:
-                        enviarCorreoTwoFactorToken(correo, codigo);
+                        enviarCorreoTwoFactorToken(correo, parametro);
                         break;
                     case 2:
-                        enviarCorreoDeRecuperacion(correo, codigo);
+                        enviarCorreoDeRecuperacion(correo, parametro);
+                        break;
+                    case 3:
+                        enviarCorreoDeRecuperacion(correo, parametro);
                         break;
                 }
             }
@@ -74,7 +79,7 @@ public class MailService {
         }
     }
 
-    private void enviarCorreoTwoFactorToken(String correo,String codigo){
+    private void enviarCorreoTwoFactorToken(String correo, String codigo) {
         try {
             Context context = new Context();//crear nuevo contexto
             context.setVariable("codigo", codigo);//adjuntar las variables     
@@ -85,6 +90,24 @@ public class MailService {
             helper.setText(html, true);//adjuntamos el mansaje indicando que sera un html
             helper.setTo(correo);
             helper.setSubject("Token de verificación P1.");
+            helper.setFrom("P1 <namenotfound4004@gmail.com>");
+            mailSender.send(mimeMessage);
+        } catch (MessagingException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void enviarCorreoBajoStock(String correo, List<ProductoDto> productos) {
+        try {
+            Context context = new Context();//crear nuevo contexto
+            context.setVariable("productosConBajoStock", productos);//adjuntar las variables     
+            String html = templateEngine.process("CorreoBajoStock", context);
+            //mandamos el correo electronico
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            helper.setText(html, true);//adjuntamos el mansaje indicando que sera un html
+            helper.setTo(correo);
+            helper.setSubject("Bajo Stock en productos P1.");
             helper.setFrom("P1 <namenotfound4004@gmail.com>");
             mailSender.send(mimeMessage);
         } catch (MessagingException ex) {
