@@ -110,6 +110,12 @@ const router = createRouter({
       component: () => import('../views/admin/categorias/CategoriasAddView.vue')
     },
     {
+      path: '/admin/envios',
+      name: 'admin-envios',
+      meta: { title: 'Admin Envios', layout: DefaultLayout },
+      component: () => import('../views/admin/envios/EnviosView.vue')
+    },
+    {
       path: '/admin/productos',
       name: 'admin-productos',
       meta: { title: 'Admin Productos', layout: DefaultLayout },

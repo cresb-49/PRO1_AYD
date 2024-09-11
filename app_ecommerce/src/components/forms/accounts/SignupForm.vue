@@ -34,7 +34,9 @@
           label="Correo electrónico"
           :rules="[validationRules.required, ...validationRules.email]"
           type="text"
+          name="email"
           required
+          autocomplete="email"
         >
           <template #prepend>
             <v-icon icon="mdi-email-open-outline" size="small" />

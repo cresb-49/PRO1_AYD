@@ -26,6 +26,13 @@
           path="/admin/inventario"
         ></menu-option-card>
       </v-col>
+      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+        <menu-option-card
+          title="Envios"
+          subtitle="Administracion de Envios/Orders"
+          path="/admin/envios"
+        ></menu-option-card>
+      </v-col>
 
     </v-row>
     <v-divider class="mt-4 mb-6"></v-divider>
