@@ -34,8 +34,8 @@
     <v-row>
       <v-col cols="12" xs="8" sm="4" md="4" lg="4">
         <menu-option-card
-          title="Ventas"
-          subtitle="Visualizacion de Reportes de Ventas"
+          title="Reportes Varios"
+          subtitle="Visualizacion de Reportes del sistema"
           path="/admin/reportes"
         ></menu-option-card>
       </v-col>
