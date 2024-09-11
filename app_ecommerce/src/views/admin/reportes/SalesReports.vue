@@ -148,7 +148,7 @@ async function accionReporteVentas() {
     tipoExporte: tipoReporteVenta.value,
     tipoReporte: ReportType.VENTAS
   }
-  console.log(payload)
+  const { data, error } = await fetchReport(payload)
 }
 
 async function accionReportePedidos() {
@@ -159,7 +159,7 @@ async function accionReportePedidos() {
     tipoExporte: ReportExportType.PDF,
     tipoReporte: ReportType.PEDIDOS
   }
-  console.log(payload)
+  const { data, error } = await fetchReport(payload)
 }
 
 async function accionReporteInventario() {
@@ -177,6 +177,6 @@ async function accionReporteClientes() {
     tipoExporte: tipoReporteClientes.value,
     tipoReporte: ReportType.CLIENTES_FRECUENTES
   }
-  console.log(payload)
+  const { data, error } = await fetchReport(payload)
 }
 </script>
