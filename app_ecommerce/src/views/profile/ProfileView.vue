@@ -2,9 +2,9 @@
   <main>
     <header class="mb-4">
       <h1>Mi perfil</h1>
-      <h2>Tienda</h2>
+      <h2 v-if="role!='helper'">Tienda</h2>
       <v-row>
-        <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+        <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
           <menu-option-card
           title="Compras"
           subtitle="Ver mis compras"
@@ -33,6 +33,7 @@ const authStore = useAuthStore()
 authStore.fetchUser()
 const regularAuthStore = useRegularAuthStore()
 const { user } = storeToRefs(regularAuthStore)
+const { role, logout } = authStore;
 </script>
 
 <style lang="scss" scoped>

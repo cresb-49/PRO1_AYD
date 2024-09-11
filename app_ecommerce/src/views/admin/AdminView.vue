@@ -5,7 +5,7 @@
       <h2>Tienda</h2>
     </v-row>
     <v-row>
-      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+      <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
         <menu-option-card
           title="Categorias"
           subtitle="Administracion de las Categorias"
@@ -26,13 +26,14 @@
           path="/admin/inventario"
         ></menu-option-card>
       </v-col>
+
     </v-row>
     <v-divider class="mt-4 mb-6"></v-divider>
-    <v-row>
+    <v-row v-if="role!='helper'">
       <h2>Reportes</h2>
     </v-row>
     <v-row>
-      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+      <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
         <menu-option-card
           title="Reportes Varios"
           subtitle="Visualizacion de Reportes del sistema"
@@ -41,18 +42,18 @@
       </v-col>
     </v-row>
     <v-divider class="mt-4 mb-6"></v-divider>
-    <v-row>
+    <v-row v-if="role!='helper'">
       <h2>Sistema</h2>
     </v-row>
     <v-row>
-      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+      <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
         <menu-option-card
           title="Usuarios"
           subtitle="Administracion de Usuarios administrativos"
           path="/admin/usuarios"
         ></menu-option-card>
       </v-col>
-      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+      <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
         <menu-option-card
           title="Personalizacion"
           subtitle="Personalizacion de logo y nombre de la tienda"
@@ -63,6 +64,12 @@
     </v-row>
   </main>
 </template>
+
 <script setup lang="ts">
 import MenuOptionCard from '../../components/partials/MenuOptionCard.vue'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore();
+const { role, user, logout } = authStore;
+
 </script>
