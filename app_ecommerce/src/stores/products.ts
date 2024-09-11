@@ -40,6 +40,7 @@ export const useProductStore = defineStore('products', {
   state: () => ({
     products: new Array<Product>,
     productsLowStock: new Array<Product>,
+    productsCategory: new Array<Product>,
     loading: false,
     loadingProduct: false,
     error: false
@@ -119,6 +120,8 @@ export const useProductStore = defineStore('products', {
         this.loading = false
         return { data, error: error.value }
       }
+      
+      this.productsCategory = data.value.data
       // Success
       // Return the data and error
       this.loading = false
