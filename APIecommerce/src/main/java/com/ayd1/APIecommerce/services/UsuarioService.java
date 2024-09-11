@@ -28,6 +28,7 @@ import com.ayd1.APIecommerce.models.request.PasswordChange;
 import com.ayd1.APIecommerce.models.request.UsuarioAyudanteRequest;
 import com.ayd1.APIecommerce.models.request.UsuarioPermisoRequest;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
+import com.ayd1.APIecommerce.repositories.UsuarioRolRepository;
 import com.ayd1.APIecommerce.services.authentication.AuthenticationService;
 import com.ayd1.APIecommerce.services.authentication.JwtGeneratorService;
 import com.ayd1.APIecommerce.tools.MailService;
@@ -48,6 +49,8 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     private AuthenticationManager authenticationManager;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private UsuarioRolRepository usuarioRolRepository;
     @Autowired
     private JwtGeneratorService jwtGenerator;
 
@@ -513,6 +516,23 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
             throw new Exception("No tienes permiso para realizar acciones a este usuario.");
         }
         return true;
+    }
+
+    /**
+     * Obtiene todos los usuarios por su rol
+     *
+     * @param crear
+     * @return
+     * @throws Exception
+     */
+    public List<Usuario> getUsuariosByRol(Rol rol) throws Exception {
+        // validamos
+        this.validarAtributo(rol, "nombre");
+        //traer rol AYUDANTE
+        Rol rolSearch = this.rolService.getRol(rol.getNombre());
+        //buscar todos los usuarios por rol
+        return this.usuarioRolRepository.findUsuariosByRolNombre(
+                rolSearch.getNombre());
     }
 
 }

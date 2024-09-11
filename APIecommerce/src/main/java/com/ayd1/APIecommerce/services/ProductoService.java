@@ -8,18 +8,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ayd1.APIecommerce.models.Producto;
+import com.ayd1.APIecommerce.models.Rol;
+import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.dto.ProductoDto;
 import com.ayd1.APIecommerce.repositories.CategoriaRepository;
 import com.ayd1.APIecommerce.repositories.ProductoRepository;
+import com.ayd1.APIecommerce.tools.MailService;
 import com.ayd1.APIecommerce.tools.mappers.ProductoMapper;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -29,6 +32,10 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
     private ProductoRepository productoRepository;
     @Autowired
     private CategoriaRepository categoriaRepository;
+    @Autowired
+    private UsuarioService usuarioService;
+    @Autowired
+    private MailService mailService;
 
     public List<ProductoDto> getProductosDto() {
         List<Producto> findAll = productoRepository.findAll();
@@ -65,26 +72,58 @@ public class ProductoService extends com.ayd1.APIecommerce.services.Service {
     }
 
     /**
-     * Retorna todos los productos que tengan 5 o menos exsitencias.
+     * Retorna todos los productos que tengan menos de 6 existencias.
      *
      * @return
      * @throws Exception
      */
     public List<ProductoDto> getProductosConBajaExistencia() throws Exception {
-        List<Producto> productos = productoRepository.findAll();
-
-        if (productos.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Producto> productosConBajaExistencia = productos.stream()
-                .filter(producto -> producto.getStock() <= 5)
-                .filter(producto -> producto.getDeletedAt() == null)
-                .collect(Collectors.toList());
-
+        List<Producto> productos = productoRepository.findByStockLessThan(6);
         List<ProductoDto> productosDto
-                = this.listProductoToListProdutoDto(productosConBajaExistencia);
+                = this.listProductoToListProdutoDto(productos);
         return productosDto;
+    }
+
+    /**
+     * Manda a notificar al gmail de los administradores una lista de productos
+     * con menos de 6 existencias, se ejecuta a cada fixedRate
+     *
+     * @return
+     * @throws Exception
+     */
+    @Scheduled(fixedRate = 3000000) // Cada 5 minutos
+    public void notificarProductosBajosEnExistencia() throws Exception {
+        List<ProductoDto> productos = this.getProductosConBajaExistencia();
+        //obtenemos la lista de administradores
+        List<Usuario> admins = this.usuarioService.getUsuariosByRol(
+                new Rol("ADMIN"));
+        //ahora construimos el String que contendra la lista de existencias
+
+        //por cada uno de los admins mandamos a enviar un gmail de alerta
+        for (Usuario item : admins) {
+            //enviar mail
+            this.mailService.enviarCorreoBajoStock(item.getEmail(), productos);
+        }
+    }
+
+    /**
+     * Notifica a todos los administradores de los productos con baja existencia
+     * por medio de email.
+     *
+     * @throws Exception
+     */
+    public void notificarProductosBajaExistenciaUnaVez() throws Exception {
+        List<ProductoDto> productos = this.getProductosConBajaExistencia();
+        //obtenemos la lista de administradores
+        List<Usuario> admins = this.usuarioService.getUsuariosByRol(
+                new Rol("ADMIN"));
+        //ahora construimos el String que contendra la lista de existencias
+
+        //por cada uno de los admins mandamos a enviar un gmail de alerta
+        for (Usuario item : admins) {
+            //enviar mail
+            this.mailService.enviarCorreoBajoStock(item.getEmail(), productos);
+        }
     }
 
     private List<ProductoDto> listProductoToListProdutoDto(List<Producto> productos) {
