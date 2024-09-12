@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ayd1.APIecommerce.models.Usuario;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
+import com.ayd1.APIecommerce.models.request.TwoFactorActivate;
 import com.ayd1.APIecommerce.models.request.UsuarioAyudanteRequest;
 import com.ayd1.APIecommerce.models.request.UsuarioPermisoRequest;
 import com.ayd1.APIecommerce.services.UsuarioService;
@@ -42,11 +43,9 @@ public class UsuarioController {
 
     @Operation(summary = "Obtener usuario por ID", description = "Obtiene la información del usuario basado en el ID proporcionado.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario encontrado",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Usuario.class))}),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Usuario encontrado", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class)) }),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/usuario/protected/{id}")
     public ResponseEntity<?> getUsuario(@PathVariable Long id) {
@@ -60,15 +59,8 @@ public class UsuarioController {
 
     @Operation(summary = "Obtener usuario por ID", description = "Obtiene la información del usuario basado en el ID proporcionado.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario encontrado",
-                content = @Content(mediaType = "application/json",
-                        array = @ArraySchema(
-                                schema = @Schema(
-                                        implementation = Usuario.class
-                                )
-                        )
-                )),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Usuario encontrado", content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Usuario.class)))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/usuario/private/getUsuarios")
     public ResponseEntity<?> getUsuarios() {
@@ -82,19 +74,13 @@ public class UsuarioController {
 
     @Operation(summary = "Enviar correo de recuperación de contraseña", description = "Envía un correo de recuperación de contraseña al usuario basado en la dirección de correo electrónico proporcionada.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Correo enviado exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))}),
-        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+            @ApiResponse(responseCode = "200", description = "Correo enviado exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PostMapping("/usuario/public/recuperarPasswordMail")
     public ResponseEntity<?> enviarMailDeRecuperacion(
-            @Parameter(
-                    description = "ID del producto a buscar",
-                    required = true,
-                    example = "{correoElectronico:\"xd\"}"
-            ) @RequestBody Map<String, Object> requestBody) {
+            @Parameter(description = "ID del producto a buscar", required = true, example = "{correoElectronico:\"xd\"}") @RequestBody Map<String, Object> requestBody) {
         try {
             String correoElectronico = (String) requestBody.get("correoElectronico");
             String mensaje = usuarioService.enviarMailDeRecuperacion(correoElectronico);
@@ -106,11 +92,9 @@ public class UsuarioController {
 
     @Operation(summary = "Recuperar contraseña", description = "Recupera la contraseña del usuario utilizando el código de recuperación y nueva contraseña.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Contraseña recuperada exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))}),
-        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+            @ApiResponse(responseCode = "200", description = "Contraseña recuperada exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PatchMapping("/usuario/public/recuperarPassword")
     public ResponseEntity<?> recuperarPassword(@RequestBody PasswordChange requestBody) {
@@ -124,20 +108,13 @@ public class UsuarioController {
 
     @Operation(summary = "Cambiar contraseña", description = "Permite al usuario cambiar su contraseña actual.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Contraseña cambiada exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))}),
-        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+            @ApiResponse(responseCode = "200", description = "Contraseña cambiada exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PatchMapping("/usuario/private/all/cambioPassword")
     public ResponseEntity<?> cambiarPassword(
-            @Parameter(
-                    description = "ID del producto a buscar",
-                    required = true,
-                    example = "{id:1,password:\"xd\"}"
-            )
-            @RequestBody Usuario requestBody) {
+            @Parameter(description = "ID del producto a buscar", required = true, example = "{id:1,password:\"xd\"}") @RequestBody Usuario requestBody) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String emailUsuarioAutenticado = authentication.getName();
@@ -150,20 +127,13 @@ public class UsuarioController {
 
     @Operation(summary = "Iniciar sesión", description = "Permite a un usuario iniciar sesión en el sistema.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Inicio de sesión exitoso",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = LoginDto.class))}),
-        @ApiResponse(responseCode = "400", description = "Credenciales incorrectas")
+            @ApiResponse(responseCode = "200", description = "Inicio de sesión exitoso", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = LoginDto.class)) }),
+            @ApiResponse(responseCode = "400", description = "Credenciales incorrectas")
     })
     @PostMapping("/usuario/public/login")
     public ResponseEntity<?> login(
-            @Parameter(
-                    description = "ID del producto a buscar",
-                    required = true,
-                    example = "{email:\"nose@nose\",password:\"xd\"}"
-            )
-            @RequestBody Usuario login) {
+            @Parameter(description = "ID del producto a buscar", required = true, example = "{email:\"nose@nose\",password:\"xd\"}") @RequestBody Usuario login) {
         try {
             LoginDto respuesta = usuarioService.iniciarSesion(login);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
@@ -174,12 +144,7 @@ public class UsuarioController {
 
     @PostMapping("/usuario/public/validateTwoFactorToken")
     public ResponseEntity<?> validateTwoFactorToken(
-            @Parameter(
-                    description = "Valida el token de autenticación de dos factores",
-                    required = true,
-                    example = "{email:\"user@email.com\",twoFactorCode:\"67858\"}"
-            )
-            @RequestBody Usuario login) {
+            @Parameter(description = "Valida el token de autenticación de dos factores", required = true, example = "{email:\"user@email.com\",twoFactorCode:\"67858\"}") @RequestBody Usuario login) {
         try {
             LoginDto respuesta = usuarioService.login2FT(login);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
@@ -190,11 +155,9 @@ public class UsuarioController {
 
     @Operation(summary = "Crear usuario", description = "Crea un nuevo usuario en el sistema.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Usuario.class))}),
-        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+            @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class)) }),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PostMapping("/usuario/public/crearUsuario")
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario crear) {
@@ -208,11 +171,9 @@ public class UsuarioController {
 
     @Operation(summary = "Crear administrador", description = "Crea un nuevo administrador en el sistema.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Administrador creado exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Usuario.class))}),
-        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+            @ApiResponse(responseCode = "200", description = "Administrador creado exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class)) }),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PostMapping("/usuario/private/crearAdministrador")
     public ResponseEntity<?> crearAdministrador(@RequestBody Usuario crear) {
@@ -227,11 +188,9 @@ public class UsuarioController {
 
     @Operation(summary = "Crear ayudante", description = "Crea un nuevo ayudante en el sistema.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Ayudante creado exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Usuario.class))}),
-        @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
+            @ApiResponse(responseCode = "200", description = "Ayudante creado exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class)) }),
+            @ApiResponse(responseCode = "400", description = "Solicitud incorrecta")
     })
     @PostMapping("/usuario/private/crearAyudante")
     public ResponseEntity<?> crearAyudante(@RequestBody UsuarioAyudanteRequest crear) {
@@ -246,11 +205,9 @@ public class UsuarioController {
 
     @Operation(summary = "Obtener perfil de usuario", description = "Obtiene el perfil del usuario basado en el ID proporcionado.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Perfil encontrado",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Usuario.class))}),
-        @ApiResponse(responseCode = "400", description = "ID no válido")
+            @ApiResponse(responseCode = "200", description = "Perfil encontrado", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class)) }),
+            @ApiResponse(responseCode = "400", description = "ID no válido")
     })
     @GetMapping("/usuario/private/all/perfil/{id}")
     public ResponseEntity<?> getPerfil(@PathVariable Long id) {
@@ -264,11 +221,9 @@ public class UsuarioController {
 
     @Operation(summary = "Eliminar usuario", description = "Elimina un usuario basado en el ID proporcionado.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario eliminado exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = String.class))}),
-        @ApiResponse(responseCode = "400", description = "ID con formato inválido")
+            @ApiResponse(responseCode = "200", description = "Usuario eliminado exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)) }),
+            @ApiResponse(responseCode = "400", description = "ID con formato inválido")
     })
     @DeleteMapping("/usuario/private/eliminarUsuario/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
@@ -278,7 +233,8 @@ public class UsuarioController {
             String confirmacion = usuarioService.eliminarUsuario(id, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
-            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Id con formato invalido", null, null, ex.getMessage()).sendResponse();
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Id con formato invalido", null, null,
+                    ex.getMessage()).sendResponse();
         } catch (Exception ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
         }
@@ -286,11 +242,9 @@ public class UsuarioController {
 
     @Operation(summary = "Actualizar usuario parcialmente", description = "Actualiza parcialmente la información del usuario basado en los datos proporcionados.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente",
-                content = {
-                    @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Usuario.class))}),
-        @ApiResponse(responseCode = "400", description = "ID con formato inválido")
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class)) }),
+            @ApiResponse(responseCode = "400", description = "ID con formato inválido")
     })
     @PatchMapping("/usuario/private/all/updateUsuario")
     public ResponseEntity<?> actualizarUsuarioParcial(@RequestBody Usuario updates) {
@@ -308,23 +262,38 @@ public class UsuarioController {
         }
     }
 
-    @Operation(summary = "Actualiza los permisos de un usuario ayudante.",
-            description = "Actualiza los permisos d eun usuario ayudante en base a su id y los id "
+    @Operation(summary = "Actualiza los permisos de un usuario ayudante.", description = "Actualiza los permisos d eun usuario ayudante en base a su id y los id "
             + "de los permisos enviados (todo aquel permiso que no se mande se eliminara de la "
             + "lista de permisos del usuario).")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario encontrado",
-                content = @Content(mediaType = "application/json",
-                        schema = @Schema(
-                                implementation = Usuario.class
-                        )
-                )),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Usuario encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Usuario.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PatchMapping("/usuario/private/actualizarPermisos")
     public ResponseEntity<?> actualizarPermisos(@RequestBody UsuarioPermisoRequest updates) {
         try {
             Usuario confirmacion = usuarioService.actualizarPermisosUsuario(updates);
+            return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
+        } catch (NumberFormatException ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
+                    "Id con formato invalido",
+                    null, null, ex.getMessage()).sendResponse();
+        } catch (Exception ex) {
+            return new ApiBaseTransformer(HttpStatus.BAD_REQUEST, "Error", null, null, ex.getMessage()).sendResponse();
+        }
+    }
+
+    @Operation(summary = "Actualiza el two factor de un usuario.", description = "Actualiza el two factor del usuario segun se envie en la request.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Actualziacion completa", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiBaseTransformer.class))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @PatchMapping("/usuario/private/all/cambiarTwoFactor")
+    public ResponseEntity<?> cambiarTwoFactor(@RequestBody TwoFactorActivate updates) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String emailUsuarioAutenticado = authentication.getName();
+            String confirmacion = usuarioService.cambiarTwoFactor(updates, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,

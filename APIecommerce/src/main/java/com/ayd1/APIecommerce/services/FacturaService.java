@@ -78,7 +78,7 @@ public class FacturaService extends Reporte {
         if (idUsuario == null || idUsuario <= 0) {
             throw new Exception("Id invalido.");
         }
-        //Verificamos que el usuario exista
+        // Verificamos que el usuario exista
         Usuario usuario = this.usuarioService.getUsuario(idUsuario);
         if (usuario == null) {
             throw new Exception("Usuario no encontrado.");
@@ -96,24 +96,26 @@ public class FacturaService extends Reporte {
                 desgloce);
     }
 
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     public byte[] guardarVenta(VentaRequest ventaRequest) throws Exception {
 
-        //validamos elobjeto
+        // validamos elobjeto
         this.validar(ventaRequest);
-
-        /*la venta volatil es la creacion de la venta con datos iniciales, 
-        se utiiza para que exista una referencia en la bd y en spring a la cual apuntar
-        con los distintos objetos que se crearan luego
+        /*
+         * la venta volatil es la creacion de la venta con datos iniciales,
+         * se utiiza para que exista una referencia en la bd y en spring a la cual
+         * apuntar
+         * con los distintos objetos que se crearan luego
          */
         Venta venta = new Venta(0.00, 0.00,
                 ventaRequest.getProductos().size(), 0.00);
-        /*la venta volatil2 se utilizara para guardar el desgloce de la factura
-        y el valor total real de la factura
+        /*
+         * la venta volatil2 se utilizara para guardar el desgloce de la factura
+         * y el valor total real de la factura
          */
         Venta save = this.ventaRepository.save(venta);
 
-        //validar la creacion de la venta 
+        // validar la creacion de la venta
         if (save.getId() <= 0) {
             throw new Exception("No se pudo generar la factura");
         }
@@ -124,39 +126,39 @@ public class FacturaService extends Reporte {
         Double totalImpuestos = this.calcularTotalDeImpuestoPagado(desglose);
         Double cuotaPagoContraEntrega = 0.00;
 
-        //si el pago contra entrega esta activado entonces debemos subir a la cuota
+        // si el pago contra entrega esta activado entonces debemos subir a la cuota
         if (ventaRequest.getPagoContraEntrega() && !ventaRequest.getRetiroEnTienda()) {
-            //traer las configs del sistema
+            // traer las configs del sistema
             TiendaConfig tiendaConfig = this.tiendaConfigService.getTiendaConfig();
             cuotaPagoContraEntrega = tiendaConfig.getPrecioPagoContraEntrega();
         }
 
-        //anadimos las propiedades de la venta
+        // anadimos las propiedades de la venta
         save.setValorTotal(total + cuotaPagoContraEntrega);
         save.setLineaVentas(desglose);
         save.setCuotaPagContraEntrega(cuotaPagoContraEntrega);
         save.setTotalImpuestosPagados(totalImpuestos);
         save.setCantidadProductos(cantidadDeProductos);
 
-        //actualizar
+        // actualizar
         this.ventaRepository.save(save);
 
-        //hacemos las restas en el stock
+        // hacemos las restas en el stock
         ArrayList<Producto> productos = this.hacerRestasEnStock(ventaRequest);
-        //guardar las restas
+        // guardar las restas
         this.productoRepository.saveAll(productos);
 
-        //crear la data de la facturacion
+        // crear la data de la facturacion
         DatosFacturacion datosFactuacion = this.crearDatosFacturacion(ventaRequest,
                 save);
-        //guardar los datos de facturacion
+        // guardar los datos de facturacion
         this.datosFacturacionRepository.save(datosFactuacion);
 
         if (datosFactuacion.getId() <= 0) {
             throw new Exception("No se pudieron generar los datos de facturacion.");
         }
 
-        //Crear el envio de ser necesario 
+        // Crear el envio de ser necesario
         if (ventaRequest.getRetiroEnTienda() == false) {
             Envio envio = this.crearEnvio(save, ventaRequest.getDireccion());
             Envio saveEnvio = this.envioRepository.save(envio);
@@ -171,18 +173,23 @@ public class FacturaService extends Reporte {
 
     private ArrayList<LineaVenta> crearDesgloce(Venta venta, VentaRequest ventaRequest) throws Exception {
         ArrayList<LineaVenta> desglose = new ArrayList<>();
-        //por cada uno de los productos realizar un calculo del total, crear las lineas de ventas
+        // por cada uno de los productos realizar un calculo del total, crear las lineas
+        // de ventas
         for (ProductoVentaRequest productosRequest : ventaRequest.getProductos()) {
             this.validar(productosRequest);
-            //nos aseguramos que el producto exista
+            // nos aseguramos que el producto exista
             Producto producto = this.productoService.getProducto(productosRequest.getId());
-            //creamos la linea de venta del producto
+
+            if (producto.getDeletedAt() != null) {
+                throw new Exception(String.format("El producto %s no existe", producto.getNombre()));
+            }
+
+            // creamos la linea de venta del producto
             LineaVenta lineaVenta = new LineaVenta(producto, venta,
                     producto.getPrecio(),
                     productosRequest.getCantidad().intValue(),
-                    (producto.getPrecio() * (producto.getPorcentajeImpuesto() / 100))
-            );
-            //agregamos la linea de venta al array
+                    (producto.getPrecio() * (producto.getPorcentajeImpuesto() / 100)));
+            // agregamos la linea de venta al array
             desglose.add(lineaVenta);
         }
         return desglose;
@@ -191,18 +198,20 @@ public class FacturaService extends Reporte {
     private ArrayList<Producto> hacerRestasEnStock(VentaRequest ventaRequest) throws Exception {
         ArrayList<Producto> productos = new ArrayList<>();
 
-        //por cada uno de los productos realizar un calculo del total, crear las lineas de ventas
+        // por cada uno de los productos realizar un calculo del total, crear las lineas
+        // de ventas
         for (ProductoVentaRequest productosRequest : ventaRequest.getProductos()) {
-            //nos aseguramos que el producto exista
+            // nos aseguramos que el producto exista
             Producto producto = this.productoService.getProducto(productosRequest.getId());
 
-            //verificamos la disponibilidad del producto, de no haber stock se rechaza la venta
+            // verificamos la disponibilidad del producto, de no haber stock se rechaza la
+            // venta
             if (producto.getStock() < productosRequest.getCantidad()) {
                 throw new Exception("No hay suficiente Stock del producto \""
                         + producto.getNombre() + "\"");
             }
 
-            //restamos el stock con la cantidad
+            // restamos el stock con la cantidad
             producto.setStock(producto.getStock()
                     - productosRequest.getCantidad().intValue());
 
@@ -214,7 +223,7 @@ public class FacturaService extends Reporte {
     private Double calcularTotal(ArrayList<LineaVenta> desgloce) {
         Double total = 0.0;
         for (LineaVenta linea : desgloce) {
-            //sumamos el total
+            // sumamos el total
             total += (linea.getPrecio() * linea.getCantidad());
         }
         return total;
@@ -223,7 +232,7 @@ public class FacturaService extends Reporte {
     private Integer calcularCantidadProductos(ArrayList<LineaVenta> desgloce) {
         Integer total = 0;
         for (LineaVenta linea : desgloce) {
-            //sumamos el total
+            // sumamos el total
             total += linea.getCantidad();
         }
         return total;
@@ -231,10 +240,9 @@ public class FacturaService extends Reporte {
 
     private DatosFacturacion crearDatosFacturacion(VentaRequest ventaRequest,
             Venta venta) throws Exception {
-        //traemos el usuario que va a comprar
+        // traemos el usuario que va a comprar
         Usuario usuarioEncontrado = this.usuarioService.getUsuario(
-                ventaRequest.getIdCompradador()
-        );
+                ventaRequest.getIdCompradador());
 
         String nit = "";
 
@@ -250,21 +258,20 @@ public class FacturaService extends Reporte {
         return new DatosFacturacion(
                 nit,
                 usuarioEncontrado.getNombres().trim()
-                + " "
-                + usuarioEncontrado.getApellidos().trim(),
+                        + " "
+                        + usuarioEncontrado.getApellidos().trim(),
                 venta,
                 usuarioEncontrado);
     }
 
     private Envio crearEnvio(Venta venta, String direccion) throws Exception {
-        //mandamos a traer el estado "pendiente"
-        Optional<EstadoEnvio> busquedaEstadoEnvio
-                = this.estadoEnvioRepository.findOneByNombre("PENDIENTE");
+        // mandamos a traer el estado "pendiente"
+        Optional<EstadoEnvio> busquedaEstadoEnvio = this.estadoEnvioRepository.findOneByNombre("PENDIENTE");
         if (busquedaEstadoEnvio.isEmpty()) {
             throw new Exception("Error al asignar el estado del pedido");
         }
         EstadoEnvio estadoEnvio = busquedaEstadoEnvio.get();
-        //mandamos a traer el estado del envio
+        // mandamos a traer el estado del envio
         return new Envio(venta, direccion, estadoEnvio);
     }
 }

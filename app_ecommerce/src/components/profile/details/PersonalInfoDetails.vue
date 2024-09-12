@@ -40,6 +40,19 @@
             </template>
           </v-text-field>
         </v-col>
+        <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+          <v-text-field
+            v-if="role === 'regular'"
+            v-model="user.nit"
+            readonly
+            variant="solo"
+            label="NIT"
+          >
+            <template #prepend>
+              <v-icon icon="mdi-file-document-outline" size="small" />
+            </template>
+          </v-text-field>
+        </v-col>
       </v-row>
     </div>
   </section>
@@ -47,6 +60,10 @@
 <script lang="ts">
 import type { PropType } from 'vue';
 import { type User } from '../../../stores/regular-auth'
+import { storeToRefs } from 'pinia';
+import { useAuthStore } from '@/stores/auth';
+
+const { role } = storeToRefs(useAuthStore())
 
 export default {
   props: {
@@ -62,8 +79,15 @@ export default {
         nombres: '',
         apellidos: '',
         email: '',
-      }
+        nit: ''
+      },
+      role: ''
     }
+  },
+  created() {
+    const authStore = useAuthStore();
+    const { role } = storeToRefs(authStore); // Extract only the 'role' from the store
+    this.role = role.value as string; // Assign role to data property
   },
   watch: {
     src: {

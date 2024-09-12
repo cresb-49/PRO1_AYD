@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.SQLDelete;
 
 /**
  *
@@ -22,6 +23,7 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "imagen")
+@SQLDelete(sql = "UPDATE imagen SET deleted_at = NULL WHERE id = ?")
 public class Imagen extends Auditor {
 
     @ManyToOne//indicador de relacion muchos a uno

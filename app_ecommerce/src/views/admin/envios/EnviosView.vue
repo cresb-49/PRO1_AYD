@@ -6,7 +6,7 @@
         Regresar
       </v-btn>
     </header>
-    
+
     <section>
       <!-- Mostrar mensaje si no hay envíos -->
       <p v-if="orders.length === 0">No hay envíos disponibles</p>
@@ -36,23 +36,18 @@ const { fetchAllOrders } = orderStore; // Para las acciones
 
 // Definir las columnas de la tabla
 const columns = [
-  { name: 'ID Factura', propertyName: 'venta.datosFacturacion.id' },
-  { name: 'ID Venta', propertyName: 'venta.id' },
-  { name: 'ID Pedido', propertyName: 'id' },
+  { name: 'Id Factura', propertyName: 'venta.datosFacturacion.id' },
+  { name: 'Id Venta', propertyName: 'venta.id' },
+  { name: 'Id Envio', propertyName: 'id' },
   { name: 'Dirección', propertyName: 'direccion' },
   { name: 'Estado Pedido', propertyName: 'estadoEnvio.nombre' }
 ];
-
-// Acción al presionar "Ver"
-const viewOrder = (orderId: number) => {
-  orderStore.viewOrder(orderId);
-};
 
 // Definir las acciones de la tabla
 const actionsTable = [
   {
     name: 'Ver',
-    onClick: viewOrder
+    path: '/admin/envio/:id'
   }
 ];
 

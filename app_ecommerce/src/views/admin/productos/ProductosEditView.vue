@@ -24,13 +24,14 @@ const {updateProduct} = useProductStore();
 
 fetchAllCategories()
 
-async function updateProducto(params: {id: number, nombre: string, categoria: number, precio: number, stock: number}) {
+async function updateProducto(params: {id: number, nombre: string, categoria: number, precio: number, stock: number, impuesto: number}) {
   const newAttributes = {
     id: params.id,
     nombre: params.nombre,
     categoria: params.categoria,
     precio: params.precio,
     stock: params.stock,
+    porcentajeImpuesto: params.impuesto,
     habilitado: true
   }
   await updateProduct(newAttributes)

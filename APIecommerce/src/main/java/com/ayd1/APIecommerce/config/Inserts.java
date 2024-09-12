@@ -99,8 +99,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     public Permiso insertarPermisoSiNoExiste(Permiso pa) {
-        Permiso permiso = this.permisoRepository.
-                findOneByNombre(pa.getNombre()).orElse(null);
+        Permiso permiso = this.permisoRepository.findOneByNombre(pa.getNombre()).orElse(null);
         if (permiso == null) {
             return this.permisoRepository.save(
                     pa);
@@ -112,9 +111,9 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
             // siders roles
-            Rol rolUsuario = this.insertarRol(new Rol("USUARIO"));
-            Rol rolAdmin = this.insertarRol(new Rol("ADMIN"));
-            Rol rolAyudante = this.insertarRol(new Rol("AYUDANTE"));
+            this.insertarRol(new Rol("USUARIO"));
+            this.insertarRol(new Rol("ADMIN"));
+            this.insertarRol(new Rol("AYUDANTE"));
 
             Categoria categoria = new Categoria("Hogar");
             this.insertarCategoria(categoria);
@@ -136,7 +135,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             this.insertarTiendaConfig(tiendaConfig);
             // Seeder de usuarios del sistema
             Usuario admin = new Usuario("admin", "admin",
-                    "admin@admin", null,
+                    "elrincondelgamer77@gmail.com", null,
                     "12345",
                     null, null, false);
             Usuario user1 = new Usuario("Carlos",
@@ -149,8 +148,10 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
                     null, "12345",
                     null, null, false);
 
-            /*Crear los usuarios, un catch por usuario para que ignore las 
-            excepciones que puedan haber*/
+            /*
+             * Crear los usuarios, un catch por usuario para que ignore las
+             * excepciones que puedan haber
+             */
             try {
                 this.usuarioService.crearAdministrador(admin);
             } catch (Exception e) {
@@ -162,8 +163,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
             }
             try {
                 this.usuarioService.crearAyudante(
-                        new UsuarioAyudanteRequest(ayudante, new ArrayList<>())
-                );
+                        new UsuarioAyudanteRequest(ayudante, new ArrayList<>()));
             } catch (Exception e) {
             }
 
@@ -173,9 +173,7 @@ public class Inserts implements ApplicationListener<ContextRefreshedEvent> {
                 Permiso insercion = this.insertarPermisoSiNoExiste(
                         new Permiso(
                                 permiso.getNombrePermiso(),
-                                permiso.getRuta()
-                        )
-                );
+                                permiso.getRuta()));
                 try {
                     // Asignacion de permisos a los usuarios
                     Usuario ayudante2 = this.usuarioService.getByEmail(
