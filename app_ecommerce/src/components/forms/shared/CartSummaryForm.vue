@@ -48,6 +48,9 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-text-field v-else v-model="subtotalContraEntrega" label="Cargo Pago Contra Entrega" readonly>
+        <template v-slot:append-inner>Q</template>
+      </v-text-field>
 
       <v-text-field v-model="total" label="Total" readonly>
         <template v-slot:append-inner>Q</template>
@@ -81,6 +84,10 @@ const props = defineProps({
   taxProp: {
     type: Number,
     default: 0
+  },
+  codProp: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -90,6 +97,9 @@ const subtotal = computed(() => {
 const subtotalImpuestos = computed(() => {
     return props.taxProp
 })
+const subtotalContraEntrega = computed(() => {
+    return props.codProp
+})
 const costoEnvio = ref(0)
 const opcionEntrega = ref('0')
 const direccion = ref('')
@@ -97,7 +107,8 @@ const metodoPago = ref('0')
 const numeroTarjeta = ref('')
 const cvvTarjeta = ref('')
 const total = computed(() => {
-    return subtotal.value + subtotalImpuestos.value + costoEnvio.value;
+    const total1 = subtotal.value + subtotalImpuestos.value + costoEnvio.value;
+    return metodoPago.value == '0' ? total1 + subtotalContraEntrega.value : total1
 })
 const consumidorFinal = ref(true)
 
