@@ -9,9 +9,7 @@
         <section>
             <v-row>
                 <v-col>
-                    <h1 class="mb-2">Informacion del Envio</h1>
-                    <v-divider class="mb-2"></v-divider>
-                    <KeyValueList :rows="infoOrder"></KeyValueList>
+                    <KeyValueList title="Informacion del Envio" :rows="infoOrder"></KeyValueList>
                 </v-col>
                 <v-col>
                     <h1>Opciones</h1>
