@@ -57,7 +57,7 @@
         class="ml-2"
         v-model="consumidorFinal"
         :color="consumidorFinal ? 'green' : 'red'"
-        :label="consumidorFinal ? `${loggedUser.nit}` : 'Consumidor Final'"
+        :label="consumidorFinal ? `${user?.nit ?? 'No tienes un NIT asociado'}` : 'Consumidor Final'"
       ></v-switch>
       <v-btn width="100%" prepend-icon="mdi-cart-outline" @click="comprar">Comprar</v-btn>
     </v-form>
@@ -71,11 +71,7 @@ import { computed, ref } from 'vue'
 import { useAuthStore } from '../../../stores/auth'
 import { type User } from '../../../stores/regular-auth'
 
-const authStore = useAuthStore()
-const { user } = authStore
-const loggedUser = computed(() => {
-  return user as User
-})
+const { user } = storeToRefs(useAuthStore())
 
 const props = defineProps({
   subtotalProp: {
@@ -100,7 +96,9 @@ const direccion = ref('')
 const metodoPago = ref('0')
 const numeroTarjeta = ref('')
 const cvvTarjeta = ref('')
-const total = ref(subtotal.value + props.taxProp)
+const total = computed(() => {
+    return subtotal.value + subtotalImpuestos.value + costoEnvio.value;
+})
 const consumidorFinal = ref(true)
 
 const emits = defineEmits(['buy'])
@@ -119,15 +117,10 @@ function comprar() {
 function updateDelivery() {
   if (opcionEntrega.value === '0') {
     costoEnvio.value = 0
-    updateTotal()
   } else {
     const { deliveryCost } = storeToRefs(useConfigsStore())
     costoEnvio.value = deliveryCost.value
-    updateTotal()
   }
 }
 
-function updateTotal() {
-  total.value = subtotal.value + subtotalImpuestos.value + costoEnvio.value
-}
 </script>
