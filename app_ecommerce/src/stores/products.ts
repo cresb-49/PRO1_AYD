@@ -311,7 +311,7 @@ export const useProductStore = defineStore('products', {
       payload.habilitado = true
 
       const { data, error } = await useCustomFetch<any>(
-        'api/producto/private/actualizarProducto',
+        'api/producto/protected/actualizarProducto',
         {
           method: 'PATCH',
           body: JSON.stringify(payload)
