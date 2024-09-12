@@ -1,5 +1,7 @@
 <template>
     <h1>Carrito</h1>
+    {{ totalProducts }}
+    {{ totalTax }}
     <v-row>
         <v-col cols="12" xs="6" sm="6">
             <h2>Productos</h2>
@@ -19,8 +21,8 @@ import { useCartStore } from '@/stores/cart';
 import { useRegularAuthStore } from '@/stores/regular-auth';
 import { storeToRefs } from 'pinia';
 
-const { totalProducts, totalTax, fetchProductsCart, buyProducts } = useCartStore()
-const { products } = storeToRefs(useCartStore())
+const { fetchProductsCart, buyProducts } = useCartStore()
+const { products, totalProducts, totalTax } = storeToRefs(useCartStore())
 
 async function buy(params: {
     consumidorFinal: boolean,

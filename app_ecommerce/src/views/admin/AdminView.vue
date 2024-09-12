@@ -40,14 +40,14 @@
       <h2>Reportes</h2>
     </v-row>
     <v-row>
-      <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
+      <v-col  cols="12" xs="8" sm="4" md="4" lg="4">
         <menu-option-card
           title="Reportes Varios"
           subtitle="Visualizacion de Reportes del sistema"
           path="/admin/reportes"
         ></menu-option-card>
       </v-col>
-      <v-col cols="12" xs="8" sm="4" md="4" lg="4">
+      <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
         <menu-option-card
           title="Graficos"
           subtitle="Visualizacion de graficos del sistema"

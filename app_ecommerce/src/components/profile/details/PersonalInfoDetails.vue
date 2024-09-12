@@ -40,6 +40,18 @@
             </template>
           </v-text-field>
         </v-col>
+        <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+          <v-text-field
+            v-model="user.nit"
+            readonly
+            variant="solo"
+            label="NIT"
+          >
+            <template #prepend>
+              <v-icon icon="mdi-file-document-outline" size="small" />
+            </template>
+          </v-text-field>
+        </v-col>
       </v-row>
     </div>
   </section>
@@ -62,6 +74,7 @@ export default {
         nombres: '',
         apellidos: '',
         email: '',
+        nit: ''
       }
     }
   },

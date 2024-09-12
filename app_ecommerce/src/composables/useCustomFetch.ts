@@ -98,6 +98,8 @@ const useCustomFetchPartial = createFetch({
         }
         return ctx;
       }
+      console.log('aqui estamos')
+      console.log(ctx)
       ctx.error = ctx.data.error as string
       return ctx
     },

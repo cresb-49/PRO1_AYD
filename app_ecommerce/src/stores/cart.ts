@@ -59,10 +59,13 @@ export const useCartStore = defineStore('cart', {
           this.productsInfo.push(null);
           continue
         }
-        
+
         const producto = data.value.data as Product
+        console.log(producto)
         this.totalProducts += producto.precio
+        console.log(this.totalProducts)
         this.totalTax += producto.precio * (producto.porcentajeImpuesto / 100)
+        console.log(this.totalTax)
         this.productsInfo.push(producto);
       }
     },
@@ -118,11 +121,11 @@ export const useCartStore = defineStore('cart', {
     async buyProducts(payload: BuyPayload) {
       payload.idCompradador = payload.idComprador
       payload.productos = this.cart.map(product => {return {id: product.id, cantidad: product.quantity}})
-      
+
       if (payload.direccion === "") {
         payload.direccion = "."
       }
-      
+
       console.log('aqui estamos')
       console.log(payload)
 
@@ -143,13 +146,13 @@ export const useCartStore = defineStore('cart', {
         this.loading = false
         return { data, error: error.value }
       }
-      
+
       useSnackbarStore().showSnackbar({
         title: 'Compra Exitosa',
         message: `La compra se ha realizado exitosamente!`,
         type: SnackbarType.SUCCESS
       })
-      
+
       this.$reset()
       // Return the data and error
       this.loading = false
