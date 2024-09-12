@@ -48,6 +48,9 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-text-field v-else v-model="subtotalContraEntrega" label="Cargo Pago Contra Entrega" readonly>
+        <template v-slot:append-inner>Q</template>
+      </v-text-field>
 
       <v-text-field v-model="total" label="Total" readonly>
         <template v-slot:append-inner>Q</template>
@@ -57,7 +60,7 @@
         class="ml-2"
         v-model="consumidorFinal"
         :color="consumidorFinal ? 'green' : 'red'"
-        :label="consumidorFinal ? `${loggedUser.nit}` : 'Consumidor Final'"
+        :label="consumidorFinal ? `${user?.nit ?? 'No tienes un NIT asociado'}` : 'Consumidor Final'"
       ></v-switch>
       <v-btn width="100%" prepend-icon="mdi-cart-outline" @click="comprar">Comprar</v-btn>
     </v-form>
@@ -71,11 +74,7 @@ import { computed, ref } from 'vue'
 import { useAuthStore } from '../../../stores/auth'
 import { type User } from '../../../stores/regular-auth'
 
-const authStore = useAuthStore()
-const { user } = authStore
-const loggedUser = computed(() => {
-  return user as User
-})
+const { user } = storeToRefs(useAuthStore())
 
 const props = defineProps({
   subtotalProp: {
@@ -83,6 +82,10 @@ const props = defineProps({
     default: 0
   },
   taxProp: {
+    type: Number,
+    default: 0
+  },
+  codProp: {
     type: Number,
     default: 0
   }
@@ -94,13 +97,19 @@ const subtotal = computed(() => {
 const subtotalImpuestos = computed(() => {
     return props.taxProp
 })
+const subtotalContraEntrega = computed(() => {
+    return props.codProp
+})
 const costoEnvio = ref(0)
 const opcionEntrega = ref('0')
 const direccion = ref('')
 const metodoPago = ref('0')
 const numeroTarjeta = ref('')
 const cvvTarjeta = ref('')
-const total = ref(subtotal.value + props.taxProp)
+const total = computed(() => {
+    const total1 = subtotal.value + subtotalImpuestos.value + costoEnvio.value;
+    return metodoPago.value == '0' ? total1 + subtotalContraEntrega.value : total1
+})
 const consumidorFinal = ref(true)
 
 const emits = defineEmits(['buy'])
@@ -119,15 +128,10 @@ function comprar() {
 function updateDelivery() {
   if (opcionEntrega.value === '0') {
     costoEnvio.value = 0
-    updateTotal()
   } else {
     const { deliveryCost } = storeToRefs(useConfigsStore())
     costoEnvio.value = deliveryCost.value
-    updateTotal()
   }
 }
 
-function updateTotal() {
-  total.value = subtotal.value + subtotalImpuestos.value + costoEnvio.value
-}
 </script>

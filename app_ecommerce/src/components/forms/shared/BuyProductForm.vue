@@ -60,7 +60,7 @@
                 <v-icon>mdi-trash-can-outline</v-icon>
               </v-btn>
             </v-col>
-            <v-col v-if="role != 'regular' && producto" cols="12">
+            <v-col v-if="role != 'regular' && producto && role!== null" cols="12">
               <v-btn variant="tonal" width="100%" :to="`/admin/productos/edit/${producto.id}`" prepend-icon="mdi-pen">
                 Editar Producto
               </v-btn>
