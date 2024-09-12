@@ -312,7 +312,7 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         console.log(error.value)
         useSnackbarStore().showSnackbar({
           title: 'Error',
-          message: convertError(error.value),
+          message: error.value,
           type: SnackbarType.ERROR
         })
         this.loading = false
