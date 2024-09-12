@@ -537,10 +537,10 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public String cambiarTwoFactor(TwoFactorActivate cambio) throws Exception {
+    public String cambiarTwoFactor(TwoFactorActivate cambio, String usuarioString) throws Exception {
         this.validar(cambio);// validar objeto
         Usuario usuario = this.getUsuario(cambio.getId());
-
+        this.verificarUsuarioJwt(usuario, usuarioString);
         if (usuario.isTwoFactorEnabled() && cambio.getActivacion()) {
             throw new Exception("Esto ya esta activado.");
         }

@@ -291,7 +291,9 @@ public class UsuarioController {
     @PatchMapping("/usuario/private/all/cambiarTwoFactor")
     public ResponseEntity<?> cambiarTwoFactor(@RequestBody TwoFactorActivate updates) {
         try {
-            String confirmacion = usuarioService.cambiarTwoFactor(updates);
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String emailUsuarioAutenticado = authentication.getName();
+            String confirmacion = usuarioService.cambiarTwoFactor(updates, emailUsuarioAutenticado);
             return new ApiBaseTransformer(HttpStatus.OK, "OK", confirmacion, null, null).sendResponse();
         } catch (NumberFormatException ex) {
             return new ApiBaseTransformer(HttpStatus.BAD_REQUEST,
