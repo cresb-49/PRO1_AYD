@@ -128,6 +128,12 @@ const router = createRouter({
       component: () => import('../views/admin/envios/EnviosView.vue')
     },
     {
+      path: '/admin/envio/:id',
+      name: 'admin-envio',
+      meta: { title: 'Admin Envio', layout: DefaultLayout },
+      component: () => import('../views/admin/envios/EnvioView.vue')
+    },
+    {
       path: '/admin/productos',
       name: 'admin-productos',
       meta: { title: 'Admin Productos', layout: DefaultLayout },
