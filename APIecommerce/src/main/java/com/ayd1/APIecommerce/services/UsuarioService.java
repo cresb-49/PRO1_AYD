@@ -25,6 +25,7 @@ import com.ayd1.APIecommerce.models.UsuarioPermiso;
 import com.ayd1.APIecommerce.models.UsuarioRol;
 import com.ayd1.APIecommerce.models.dto.LoginDto;
 import com.ayd1.APIecommerce.models.request.PasswordChange;
+import com.ayd1.APIecommerce.models.request.TwoFactorActivate;
 import com.ayd1.APIecommerce.models.request.UsuarioAyudanteRequest;
 import com.ayd1.APIecommerce.models.request.UsuarioPermisoRequest;
 import com.ayd1.APIecommerce.repositories.UsuarioRepository;
@@ -533,6 +534,31 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         // buscar todos los usuarios por rol
         return this.ignorarEliminados(this.usuarioRolRepository.findUsuariosByRolNombre(
                 rolSearch.getNombre()));
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public String cambiarTwoFactor(TwoFactorActivate cambio, String usuarioString) throws Exception {
+        this.validar(cambio);// validar objeto
+        Usuario usuario = this.getUsuario(cambio.getId());
+        this.verificarUsuarioJwt(usuario, usuarioString);
+        if (usuario.isTwoFactorEnabled() && cambio.getActivacion()) {
+            throw new Exception("Esto ya esta activado.");
+        }
+
+        if (!usuario.isTwoFactorEnabled() && !cambio.getActivacion()) {
+            throw new Exception("Esto ya esta desactivado.");
+        }
+
+        usuario.setTwoFactorEnabled(cambio.getActivacion());
+        Usuario save = this.usuarioRepository.save(usuario);
+        if (save.getId() > 0) {
+            if (save.isTwoFactorEnabled()) {
+                return "Se activo el two factor con exito";
+            } else {
+                return "Se desactivo el two factor con exito";
+            }
+        }
+        throw new Exception("Error al tratar de actualizar el two factor.");
     }
 
 }
