@@ -18,6 +18,7 @@ export type UpdatePayload = {
   categoria: number,
   stock: number,
   precio: number,
+  porcentajeImpuesto: number,
   habilitado: boolean
 }
 
