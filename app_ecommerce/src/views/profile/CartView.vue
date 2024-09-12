@@ -1,5 +1,7 @@
 <template>
     <h1>Carrito</h1>
+    {{ totalProducts }}
+    {{ totalTax }}
     <v-row>
         <v-col cols="12" xs="6" sm="6">
             <h2>Productos</h2>
