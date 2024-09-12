@@ -51,6 +51,7 @@ export type User = {
   nombres: string
   apellidos: string
   email: string
+  nit: string
   created_at: Date
   updated_at: Date
   roles: RoleResponse[]
