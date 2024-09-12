@@ -55,7 +55,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     private JwtGeneratorService jwtGenerator;
 
     public List<Usuario> getUsuarios() {
-        return usuarioRepository.findAll();
+        return this.ignorarEliminados(usuarioRepository.findAll());
     }
 
     public Usuario getByEmail(String email) throws Exception {
@@ -376,13 +376,12 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     public Usuario crearAyudante(UsuarioAyudanteRequest crear) throws Exception {
         // validamos
         this.validar(crear.getUsuario());
-        //traer rol AYUDANTE
+        // traer rol AYUDANTE
         Rol rol = this.rolService.getRol("AYUDANTE");
         Usuario usuario = this.guardarUsuario(crear.getUsuario(), rol);
-        //mandamos a guardar todos los permisos para el usuario
+        // mandamos a guardar todos los permisos para el usuario
         Usuario actualizarPermisosUsuario = this.actualizarPermisosUsuario(
-                new UsuarioPermisoRequest(usuario.getId(), crear.getPermisos())
-        );
+                new UsuarioPermisoRequest(usuario.getId(), crear.getPermisos()));
         return actualizarPermisosUsuario;
     }
 
@@ -390,7 +389,7 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     public Usuario crearAdministrador(Usuario crear) throws Exception {
         // validamos
         this.validar(crear);
-        //traer rol AYUDANTE
+        // traer rol AYUDANTE
         Rol rol = this.rolService.getRol("ADMIN");
         return this.guardarUsuario(crear, rol);
     }
@@ -406,9 +405,9 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     public LoginDto crearUsuarioNormal(Usuario crear) throws Exception {
         // validamos
         this.validar(crear);
-        //traer rol AYUDANTE
+        // traer rol AYUDANTE
         Rol rol = this.rolService.getRol("USUARIO");
-        //guardamos el usuario
+        // guardamos el usuario
         Usuario userCreado = this.guardarUsuario(crear, rol);
         // Generar el JWT para el usuario creado
         UserDetails userDetails = authenticationService.loadUserByUsername(crear.getEmail());
@@ -446,22 +445,21 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
      */
     @Transactional
     public Usuario actualizarPermisosUsuario(UsuarioPermisoRequest usuarioPermiso) throws Exception {
-        //Buscamos el usuario en la base de datos
+        // Buscamos el usuario en la base de datos
         Usuario usuario = this.getUsuario(usuarioPermiso.getIdUsuario());
 
         List<UsuarioPermiso> permisosNuevos = new ArrayList<>();
-        //por cada permiso que se haya especificado creamos un nuevo permiso
+        // por cada permiso que se haya especificado creamos un nuevo permiso
         for (Permiso item : usuarioPermiso.getPermisos()) // Creamos el permiso
         {
             permisosNuevos.add(new UsuarioPermiso(
-                    usuario, item
-            ));
+                    usuario, item));
         }
 
         if (usuario.getPermisos() == null) {
             usuario.setPermisos(permisosNuevos);
         } else {
-            //asignamos los nuevos permisos al usuario
+            // asignamos los nuevos permisos al usuario
             usuario.getPermisos().clear();
             usuario.getPermisos().addAll(permisosNuevos);
         }
@@ -481,20 +479,22 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
         if (!this.usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw new IllegalArgumentException("El usuario no existe.");
         }
-        //Buscamos el usuario en la base de datos
+        // Buscamos el usuario en la base de datos
         Optional<Usuario> busquedaUsuario = usuarioRepository.findById(usuario.getId());
         if (busquedaUsuario.isEmpty()) {
             throw new Exception("No hemos encontrado el usuario.");
         }
-        //Verificamos que el usuario no haya sido eliminado
+        // Verificamos que el usuario no haya sido eliminado
         if (busquedaUsuario.get().getDeletedAt() != null) {
             throw new Exception("Usuario ya ha sido eliminado.");
         }
         Usuario usuarioEncontrado = busquedaUsuario.get();
         // Creamos el permiso
         UsuarioPermiso usuarioPermiso = new UsuarioPermiso(usuarioEncontrado, permiso);
-        // Verificamos si el objeto ya tiene una lista de permisos, si no la tiene, la inicializamos (sin reemplazar)
-        // Mantenemos las relaciones orphanRemoval = true para evistar inconsistencias en la base de datos
+        // Verificamos si el objeto ya tiene una lista de permisos, si no la tiene, la
+        // inicializamos (sin reemplazar)
+        // Mantenemos las relaciones orphanRemoval = true para evistar inconsistencias
+        // en la base de datos
         usuario.keepOrphanRemoval(usuarioEncontrado);
         if (usuario.getPermisos() == null) {
             usuario.setPermisos(new ArrayList<>());
@@ -528,11 +528,11 @@ public class UsuarioService extends com.ayd1.APIecommerce.services.Service {
     public List<Usuario> getUsuariosByRol(Rol rol) throws Exception {
         // validamos
         this.validarAtributo(rol, "nombre");
-        //traer rol AYUDANTE
+        // traer rol AYUDANTE
         Rol rolSearch = this.rolService.getRol(rol.getNombre());
-        //buscar todos los usuarios por rol
-        return this.usuarioRolRepository.findUsuariosByRolNombre(
-                rolSearch.getNombre());
+        // buscar todos los usuarios por rol
+        return this.ignorarEliminados(this.usuarioRolRepository.findUsuariosByRolNombre(
+                rolSearch.getNombre()));
     }
 
 }

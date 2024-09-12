@@ -7,7 +7,7 @@
           :error="error"
           @signup="signUp($event)"
           title="Registro Administrador"
-          :submitType="UserRole.AYUDANTE"
+          :submitType="UserRole.ADMIN"
           :adminView="true"
           :success="success"
         />
@@ -31,6 +31,8 @@ const router = useRouter()
 const success = ref(false)
 
 async function signUp(payload: SignupPayload) {
+  console.log('payload', payload);
+  
   const { error } = await signupUser(payload, UserRole.ADMIN, false)
   if (error === false) {
     success.value = true

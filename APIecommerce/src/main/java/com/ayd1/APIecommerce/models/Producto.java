@@ -34,7 +34,6 @@ import org.hibernate.annotations.Where;
 @Table(name = "producto")
 @DynamicUpdate
 @SQLDelete(sql = "UPDATE producto SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@Where(clause = "deleted_at IS NULL")
 public class Producto extends Auditor {
 
     @Column(name = "nombre", length = 250, unique = false)
