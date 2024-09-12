@@ -2,6 +2,9 @@ package com.ayd1.APIecommerce.controllers;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,9 @@ public class ProductoController {
     @Autowired
     private ValidadorPermiso validadorPermiso;
 
+    @Autowired
+    private EntityManager entityManager;
+
     @Operation(summary = "Obtener todos los productos", description = "Devuelve una lista de todos los productos disponibles.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente",
@@ -57,6 +63,8 @@ public class ProductoController {
     @GetMapping("/productos/public/getProductos")
     public ResponseEntity<?> getProdutos() {
         try {
+            Session session = entityManager.unwrap(Session.class);
+            session.enableFilter("deletedProductFilter").setParameter("isDeleted", false);
             List<ProductoDto> respuesta = productoService.getProductosDto();
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {

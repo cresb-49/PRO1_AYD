@@ -23,7 +23,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 /**
  *
@@ -33,7 +32,6 @@ import org.hibernate.annotations.Where;
 @Table(name = "usuario")
 @DynamicUpdate
 @SQLDelete(sql = "UPDATE usuario SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
-@Where(clause = "deleted_at IS NULL")
 public class Usuario extends Auditor {
 
     @Column(name = "nombres", length = 250, unique = false)
@@ -74,15 +72,19 @@ public class Usuario extends Auditor {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(hidden = true)
     private boolean estadoActivacion;
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, orphanRemoval = true) // indicamos que la relacion debera
+                                                                                    // ser por medio del atributo
+                                                                                    // "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private List<UsuarioRol> roles;
-    @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
+    @OneToMany(mappedBy = "usuario", orphanRemoval = true) // indicamos que la relacion debera ser por medio del
+                                                           // atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private List<UsuarioPermiso> permisos;
-    @OneToMany(mappedBy = "usuario", orphanRemoval = true)//indicamos que la relacion debera ser por medio del atributo "Paciente" del objeto Tratamiento
+    @OneToMany(mappedBy = "usuario", orphanRemoval = true) // indicamos que la relacion debera ser por medio del
+                                                           // atributo "Paciente" del objeto Tratamiento
     @Cascade(CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Schema(hidden = true)
@@ -107,7 +109,8 @@ public class Usuario extends Auditor {
      * @param nit
      * @param password
      */
-    public Usuario(String nombres, String apellidos, String email, String nit, String password, String codigoActivacion, String codigoRecuperacion, boolean estadoActivacion) {
+    public Usuario(String nombres, String apellidos, String email, String nit, String password, String codigoActivacion,
+            String codigoRecuperacion, boolean estadoActivacion) {
         this.nombres = nombres;
         this.apellidos = apellidos;
         this.email = email;
