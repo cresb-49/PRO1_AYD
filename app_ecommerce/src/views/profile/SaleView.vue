@@ -12,48 +12,12 @@
           <v-row>
             <!-- Primera tarjeta -->
             <v-col cols="12" md="6">
-              <v-card class="mx-auto" max-width="400">
-                <v-card-title>
-                  <h3>General</h3>
-                </v-card-title>
-                <v-card-text>
-                  <v-row
-                    v-for="(item, index) in ventaData"
-                    :key="index"
-                    class="d-flex justify-space-between"
-                  >
-                    <v-col cols="6" class="text-left font-weight-bold">
-                      {{ item.title }}
-                    </v-col>
-                    <v-col cols="6" class="text-right">
-                      {{ item.value }}
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
+                <KeyValueList title="General" :rows="ventaData"/>
             </v-col>
 
             <!-- Segunda tarjeta -->
             <v-col cols="12" md="6">
-              <v-card class="mx-auto" max-width="400">
-                <v-card-title>
-                  <h3>Facturacion</h3>
-                </v-card-title>
-                <v-card-text>
-                  <v-row
-                    v-for="(item, index) in facturacionData"
-                    :key="index"
-                    class="d-flex justify-space-between"
-                  >
-                    <v-col cols="6" class="text-left font-weight-bold">
-                      {{ item.title }}
-                    </v-col>
-                    <v-col cols="6" class="text-right">
-                      {{ item.value }}
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
+                <KeyValueList title="Facturacion" :rows="facturacionData"/>
             </v-col>
           </v-row>
         </v-container>
@@ -77,6 +41,7 @@ import { storeToRefs } from 'pinia'
 import { useSalesStore, type Sale, type SaleLine } from '@/stores/sales'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import KeyValueList from '@/components/partials/KeyValueList.vue'
 
 const route = useRoute()
 const { fetchSaleById } = useSalesStore()
@@ -107,30 +72,28 @@ onMounted(() => {
     .then((s) => {
       sale.value = s
       ventaData.value = [
-        { title: 'ID', value: sale.value.id },
-        { title: 'Fecha', value: new Date(sale.value.createdAt).toLocaleDateString() },
+        { key: 'ID', value: sale.value.id },
+        { key: 'Fecha', value: new Date(sale.value.createdAt).toLocaleDateString() },
         {
-          title: 'Valor Total',
+          key: 'Valor Total',
           value: new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(
             sale.value.valorTotal
           )
         },
         {
-          title: 'Impuesto Total',
+          key: 'Impuesto Total',
           value: new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(
             sale.value.totalImpuestosPagados
           )
         },
         {
-          title: 'Cantida Productos',
-          value: new Intl.NumberFormat('es-GT', { style: 'currency', currency: 'GTQ' }).format(
-            sale.value.cantidadProductos
-          )
+          key: 'Cantidad Productos',
+          value: sale.value.cantidadProductos
         }
       ]
       facturacionData.value = [
-        { title: 'Nombre', value: sale.value.datosFacturacion.nombre },
-        { title: 'NIT', value: sale.value.datosFacturacion.nit }
+        { key: 'Nombre', value: sale.value.datosFacturacion.nombre },
+        { key: 'NIT', value: sale.value.datosFacturacion.nit }
       ]
     })
 })
