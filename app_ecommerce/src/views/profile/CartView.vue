@@ -3,7 +3,7 @@
     <v-row>
         <v-col cols="12" xs="6" sm="6">
             <h2>Productos</h2>
-            <CartProductList :products="products" />
+            <CartProductList :products="products" @remove-product="removerProducto"/>
         </v-col>
         <v-col v-if="products.length > 0" cols="12" xs="6" sm="6">
             <h2>Resumen</h2>
@@ -20,7 +20,7 @@ import { useConfigsStore } from '@/stores/config';
 import { useRegularAuthStore } from '@/stores/regular-auth';
 import { storeToRefs } from 'pinia';
 
-const { fetchProductsCart, buyProducts } = useCartStore()
+const { fetchProductsCart, buyProducts, removeProduct } = useCartStore()
 const { cod } = useConfigsStore()
 const { products, totalProducts, totalTax } = storeToRefs(useCartStore())
 
@@ -41,6 +41,11 @@ async function buy(params: {
     if (error === false) {
         router.go(0)
     }
+}
+
+async function removerProducto(product_id: number) {
+    await removeProduct(product_id)
+    fetchProductsCart()
 }
 
 fetchProductsCart()
