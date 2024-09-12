@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { useConfigsStore } from '@/stores/config';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
     subtotalProp: {
@@ -61,8 +61,12 @@ const props = defineProps({
     },
 })
 
-const subtotal = ref(props.subtotalProp)
-const subtotalImpuestos = ref(props.taxProp)
+const subtotal = computed(() => {
+    return props.subtotalProp
+})
+const subtotalImpuestos = computed(() => {
+    return props.taxProp
+})
 const costoEnvio = ref(0)
 const opcionEntrega = ref('0')
 const direccion = ref('')
