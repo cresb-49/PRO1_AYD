@@ -61,8 +61,4 @@
 - **[Manual de Usuario](https://docs.google.com/document/d/1OC5yxa27GkvM8ZhssXJmV8RjN43u6jcx/edit?usp=sharing&ouid=102396782265652347993&rtpof=true&sd=true)**
 
 ## Autor
-Este proyecto fue desarrollado por **[cresb-49](https://github.com/cresb-49)**.
-
-```
-
-Este archivo `README.md` proporciona una visión general del proyecto, instrucciones de instalación y despliegue, así como enlaces a los manuales técnico y de usuario. Si necesitas alguna modificación o ajuste, no dudes en decírmelo.
+Este proyecto fue desarrollado por **[cresb-49](https://github.com/cresb-49)**, **[FernandoJRR](https://github.com/FernandoJRR)*, **[Caronte-Aqueronte](https://github.com/Caronte-Aqueronte)*, **[CCRR1000x2](https://github.com/CCRR1000x2)* y **[MenWic](https://github.com/MenWic)*
