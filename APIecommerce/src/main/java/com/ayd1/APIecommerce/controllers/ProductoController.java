@@ -63,8 +63,6 @@ public class ProductoController {
     @GetMapping("/productos/public/getProductos")
     public ResponseEntity<?> getProdutos() {
         try {
-            Session session = entityManager.unwrap(Session.class);
-            session.enableFilter("deletedProductFilter").setParameter("isDeleted", false);
             List<ProductoDto> respuesta = productoService.getProductosDto();
             return new ApiBaseTransformer(HttpStatus.OK, "OK", respuesta, null, null).sendResponse();
         } catch (Exception ex) {
