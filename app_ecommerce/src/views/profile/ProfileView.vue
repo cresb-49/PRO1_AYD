@@ -2,9 +2,10 @@
   <main>
     <header class="mb-4">
       <h1>Mi perfil</h1>
-      <h2 v-if="role!='helper'">Tienda</h2>
+      <v-div v-if="role == 'regular'">
+      <h2 >Tienda</h2>
       <v-row>
-        <v-col v-if="role!='helper'" cols="12" xs="8" sm="4" md="4" lg="4">
+        <v-col cols="12" xs="8" sm="4" md="4" lg="4">
           <menu-option-card
           title="Compras"
           subtitle="Ver mis compras"
@@ -13,7 +14,7 @@
         </v-col>
       </v-row>
       <v-divider class="mt-4 mb-6"></v-divider>
-      <h2>Mi Informacion</h2>
+      </v-div>
       <v-btn prepend-icon="mdi-pencil-outline" to="/perfil/edit" class="mt-3"> Editar </v-btn>
     </header>
     <section class="profile-edit-section">

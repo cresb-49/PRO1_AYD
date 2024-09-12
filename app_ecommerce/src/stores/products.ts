@@ -13,11 +13,12 @@ export type CreationPayload = {
 }
 
 export type UpdatePayload = {
-  id: number
-  nombre: string
-  categoria: number
-  stock: number
-  precio: number
+  id: number,
+  nombre: string,
+  categoria: number,
+  stock: number,
+  precio: number,
+  porcentajeImpuesto: number,
   habilitado: boolean
 }
 
