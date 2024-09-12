@@ -155,7 +155,11 @@ export const useRegularAuthStore = defineStore('regular-auth', {
         return { data, error: false, twoFactor: false }
       }
     },
-    async signupUser(payload: SignupPayload | SignUpAyudante, typeUser: UserRole, autoLogin = true) {
+    async signupUser(
+      payload: SignupPayload | SignUpAyudante,
+      typeUser: UserRole,
+      autoLogin = true
+    ) {
       const authStore = useAuthStore()
       this.cleanForm = false
       // const { nombres, apellidos, email, password } = payload
@@ -333,6 +337,37 @@ export const useRegularAuthStore = defineStore('regular-auth', {
       this.user = null
       this.authenticated = false
       this.error = null
+    },
+    async setEstadoDosPasos(estado: boolean, id_usuario: number) {
+      this.loading = true
+
+      const path = 'api/usuario/private/all/cambiarTwoFactor'
+
+      const { data, error } = await useCustomFetch<any>(path, {
+        method: 'PATCH',
+        body: JSON.stringify({ id: id_usuario, activacion: estado })
+      })
+      if (error.value) {
+        console.log(error.value)
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: true }
+      }
+      this.loading = false
+      useSnackbarStore().showSnackbar({
+        title: estado
+          ? 'Verificación de dos pasos activada'
+          : 'Verificación de dos pasos desactivada',
+        message: estado
+          ? 'Se ha activado la verificación de dos pasos'
+          : 'Se ha desactivado la verificación de dos pasos',
+        type: SnackbarType.SUCCESS
+      })
+      return { data, error: false }
     }
     //Here action
   }
