@@ -33,16 +33,6 @@ export const useOrderStore = defineStore('orders', {
       const { data, error } = await useCustomFetch<any>('/api/envio/protected/getEnvios', {
         method: 'GET'
       })
-      // Agregamos logs para ver lo que devuelve la solicitud
-      console.log('Response from /api/envio/protected/getEnvios:', data.value)
-
-      // Verifica que 'data' existe y contiene pedidos
-      if (data && data.value && data.value.data) {
-        this.orders = data.value.data // Almacena solo el array de 'data'
-        console.log('Stored orders:', this.orders) // Verifica el valor de orders en el store
-      } else {
-        console.log('No data returned or invalid structure')
-      }
 
       // Error Handling
       if (error.value) {
@@ -55,11 +45,64 @@ export const useOrderStore = defineStore('orders', {
         return { data, error: error.value }
       }
 
+      this.orders = data.value.data // Almacena solo el array de 'data'
+
       // Success - Guardamos la respuesta en el arreglo de órdenes y mostramos en consola
       // this.orders = data.value;
       // console.log('Stored orders:', this.orders);
       this.loading = false
       // return { data, error: false };
+    },
+    async fetchOrder(order_id: number) {
+      this.loading = true
+
+      const { data, error } = await useCustomFetch<any>(
+        `api/envio/protected/getEnvio/${order_id}`,
+        {
+          method: 'GET'
+        }
+      )
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+      // Success
+      // Return the data and error
+      this.loading = false
+
+      return { data, error: false }
+    },
+    async deliverOrder(order_id: number) {
+      this.loading = true
+
+      const { data, error } = await useCustomFetch<any>(
+        `api/envio/protected/cambiarEstadoEnvio/${order_id}`,
+        {
+          method: 'PATCH'
+        }
+      )
+
+      // Error Handling
+      if (error.value) {
+        useSnackbarStore().showSnackbar({
+          title: 'Error',
+          message: error.value,
+          type: SnackbarType.ERROR
+        })
+        this.loading = false
+        return { data, error: error.value }
+      }
+
+      this.loading = false
+
+      return { data, error: false }
     }
   }
 })
